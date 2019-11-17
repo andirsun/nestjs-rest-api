@@ -1,0 +1,36 @@
+{
+  "name": "backend-timugo",
+  "version": "1.0.0",
+  "description": "timugo backend",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Timugo/Backend.git"
+  },
+  "keywords": [
+    "timugo"
+  ],
+  "author": "timugo development team",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Timugo/Backend/issues"
+  },
+  "homepage": "https://github.com/Timugo/Backend#readme",
+  "dependencies": {
+    "bcrypt": "^3.0.6",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "express-fileupload": "^1.1.6-alpha.6",
+    "google-auth-library": "^5.5.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.7.11",
+    "mongoose-unique-validator": "^2.0.3",
+    "nodemon": "^1.19.4",
+    "npm": "^6.13.0",
+    "underscore": "^1.9.1"
+  }
+}
