@@ -4,7 +4,10 @@ const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
 const bodyParser = require('body-parser');
-
+const cors = require('cors')
+////////////////////////////////////
+// Brings security in the api rest petitions
+app.use(cors());
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
 
