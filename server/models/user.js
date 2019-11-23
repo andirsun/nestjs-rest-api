@@ -18,6 +18,11 @@ let usuarioSchema = new Schema({
         type: String,
         required: [true, 'El nombre es necesario']
     },
+    phone: {
+        type: Number,
+        unique: true,
+        required: [true, 'Es necesario el numero de celular']
+    },
     lastName: {
         type: String,
         required: [true, 'Los apellidos son necesarios']
@@ -29,7 +34,7 @@ let usuarioSchema = new Schema({
     email: {
         type: String,
         unique: true,
-        required: [true, 'El correo es necesario']
+        required: [true, 'Este correo ya esta registrado']
     },
     password:{
         type: String,
