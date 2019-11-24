@@ -80,7 +80,8 @@ app.post('/login', function (req, res) {
                 if(response){
                     res.status(200).json({
                         response: 2,
-                        content: "Genial !!, te has logeado correctamente."
+                        content: "Genial !!, te has logeado correctamente.",
+                        token:123,
                     });
                 }else{
                     res.status(200).json({

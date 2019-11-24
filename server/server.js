@@ -13,9 +13,10 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 
+app.use(require('./routes/index')); // import all routes 
 
 
-app.use(require('./routes/user'));
+
 
 
 
