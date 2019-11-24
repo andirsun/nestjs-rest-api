@@ -4,7 +4,7 @@
   "description": "timugo backend",
   "main": "index.js",
   "scripts": {
-    "start":"nodemon server/server.js",
+    "start": "nodemon server/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/Timugo/Backend#readme",
   "dependencies": {
-    "bcrypt": "^3.0.6",
+    "bcrypt": "^3.0.7",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
