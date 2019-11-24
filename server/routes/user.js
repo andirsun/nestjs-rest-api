@@ -80,11 +80,16 @@ app.post('/login', function (req, res) {
                     });
                 }
                 if(response){
-                    let token = jwt.sign
+                    let token = jwt.sign({
+                        user : user
+                    },process.env.TOKEN_SEED,{expiresIn: process.env.TOKEN_EXPIRATION });
                     res.status(200).json({
                         response: 2,
-                        content: "Genial !!, te has logeado correctamente.",
-                        token:123
+                        content:{
+                            message:"Genial !!, te has logeado correctamente.",
+                            user,
+                            token
+                        } ,
                     });
                 }else{
                     res.status(200).json({
