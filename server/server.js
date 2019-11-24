@@ -3,8 +3,10 @@ const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
 const bodyParser = require('body-parser');
+const morgan = require('morgan');
 const cors = require('cors');
 ////////////////////////////////////
+app.use(morgan('dev'));
 // Brings security in the api rest petitions
 app.use(cors());
 // parse application/x-www-form-urlencoded

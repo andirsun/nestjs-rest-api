@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const _ = require('underscore');
 const User = require('../models/user');
+
 const app = express();
 /////////////////////////////////
 
@@ -53,7 +54,8 @@ app.post('/addUser', function (req, res) { ///Add user to DB the data is read by
 });
 app.post('/login', function (req, res) {
     //Use to login and validate if a user exists
-    let body = _.pick(req.body, ['email', 'password']);   
+    //let body = _.pick(req.body, ['email', 'password']);   
+    let body = req.query;
     User.findOne({
         email: body.email
     }, function (err, user) {

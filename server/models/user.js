@@ -20,7 +20,7 @@ let usuarioSchema = new Schema({
     },
     phone: {
         type: Number,
-        unique: true,
+        unique: true, 
         required: [true, 'Es necesario el numero de celular']
     },
     lastName: {
