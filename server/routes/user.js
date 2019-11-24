@@ -5,7 +5,7 @@ const User = require('../models/user');
 const app = express();
 /////////////////////////////////
 
-app.post('/addUser', function (req, res) {///Add user to DB the data is read by body of the petition     
+app.post('/addUser', function (req, res) { ///Add user to DB the data is read by body of the petition     
     let body = req.body;
     User.find(function (err, userDB) {
         if (err) {
@@ -25,12 +25,12 @@ app.post('/addUser', function (req, res) {///Add user to DB the data is read by 
         let userSave = new User({
             id: id,
             name: name,
-            lastName:lastName,
-            address:address,
-            email:email,
-            birth:birth,
-            phone:phone,
-            password:pass
+            lastName: lastName,
+            address: address,
+            email: email,
+            birth: birth,
+            phone: phone,
+            password: pass
         });
         userSave.save((err, usuarioDB) => {
             //callback que trae error si no pudo grabar en la base de datos y usuarioDB si lo inserto
@@ -43,15 +43,60 @@ app.post('/addUser', function (req, res) {///Add user to DB the data is read by 
             usuarioDB.password = null;
             res.status(200).json({
                 response: 2,
-                content:{
+                content: {
                     user: usuarioDB,
                     message: "User registered !!!"
-                } 
+                }
             });
         });
     });
 });
-
+app.post('/login', function (req, res) {
+    //Use to login and validate if a user exists
+    let body = _.pick(req.body, ['email', 'password']);   
+    User.findOne({
+        email: body.email
+    }, function (err, user) {
+        if (err) {
+            return res.status(400).json({
+                response: 3,
+                content: {
+                    error: err,
+                    message: "Error at search for user"
+                }
+            });
+        }
+        if (user) {
+            bcrypt.compare(body.password, user.password, function(err, response) {
+                if (err) {
+                    return res.status(400).json({
+                        response: 3,
+                        content: {
+                            error: err,
+                            message: "Error comparing the encrypted password"
+                        }
+                    });
+                }
+                if(response){
+                    res.status(200).json({
+                        response: 2,
+                        content: "Genial !!, te has logeado correctamente."
+                    });
+                }else{
+                    res.status(200).json({
+                        response: 1,
+                        content: "Ups, el correo o la contrasena no son correctos, revisalos e intenta de nuevo."
+                    });
+                }
+            });
+        }else{
+            res.json({
+                response: 1,
+                content: "Ups, el correo o la contrasena no son correctos, revisalos e intenta de nuevo."
+            });
+        }
+    });
+});
 app.get('/usuario', function (req, res) {
     let desde = req.query.desde || 0;
     desde = Number(desde);
