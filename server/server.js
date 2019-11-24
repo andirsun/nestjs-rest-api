@@ -31,10 +31,11 @@ mongoose.connect(process.env.URLDB,
     console.log('Base de datos ONLINE');
 
 });
-process.on('uncaughtException', function (error) {
-    console.log(error.stack);
-    
- });
+process.on('unhandledRejection', (reason, promise) => {
+    console.log('Unhandled Rejection at:', reason.stack || reason)
+    // Recommended: send the information to sentry.io
+    // or whatever crash reporting service you use
+});
 app.listen(process.env.PORT, () => {
     console.log('Escuchando puerto: ', process.env.PORT);
 });

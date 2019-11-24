@@ -80,10 +80,11 @@ app.post('/login', function (req, res) {
                     });
                 }
                 if(response){
+                    let token = jwt.sign
                     res.status(200).json({
                         response: 2,
                         content: "Genial !!, te has logeado correctamente.",
-                        token:123,
+                        token:123
                     });
                 }else{
                     res.status(200).json({
