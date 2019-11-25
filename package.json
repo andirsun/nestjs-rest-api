@@ -4,6 +4,7 @@
   "description": "timugo backend",
   "main": "index.js",
   "scripts": {
+    "start": "nodemon server/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -20,7 +21,7 @@
   },
   "homepage": "https://github.com/Timugo/Backend#readme",
   "dependencies": {
-    "bcrypt": "^3.0.6",
+    "bcrypt": "^3.0.7",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
@@ -29,8 +30,11 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.7.11",
     "mongoose-unique-validator": "^2.0.3",
+    "morgan": "^1.9.1",
     "nodemon": "^1.19.4",
     "npm": "^6.13.0",
+    "path": "^0.12.7",
+    "socket.io": "^2.3.0",
     "underscore": "^1.9.1"
   }
 }

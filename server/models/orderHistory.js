@@ -1,0 +1,84 @@
+const mongoose = require('mongoose');
+const uniqueValidator = require('mongoose-unique-validator');
+
+
+let validMethodTypes= {
+    values: ['cash','creditCard','debitCard','BonusCode'],
+    message: '{VALUE} no es un metodo de pago valido'
+};
+let Schema = mongoose.Schema;
+
+let orderHistory = new Schema({
+    id:{
+        type:Number,
+        require:[true,'EL id es necesario'],
+        default: 0
+    },
+    idClient: {
+        type: Number,
+        required: [true, 'El id del cliente es necesario']
+    },
+    dateBeginOrder: {
+        type: Date, 
+        required: [true, 'La fecha de inicio del pedido es necesaria']
+    },
+    dateFinishOrder: {
+        type: Date,
+        required: [false]
+    },
+    duration: {
+        type: Number,
+        required: [false]
+    },
+    stars: {
+        type: Number,
+        required: [false ]
+    },
+    comments:{
+        type: String,
+        required: [true, 'Los comentarios son obligatorios.']
+    },
+    price: {
+        type: Number,
+        required: [true, 'El precio es necesario']
+    },
+    typeService: {
+        type: String,
+        required: [true,'El tipo de servicio es necesario']
+    },
+    status: {
+        type: Boolean,
+        default: true,
+        required:[true,"El status del servicio es necesario"]
+    },
+    payMethod:{
+        type: String,
+        required:[true,"el metodo de pago es necesario"],
+        enum: validMethodTypes
+    },
+    bonusCode:{
+        type: String,
+        required:[false]
+    },
+
+    card: {
+        type: Number,
+        default: 0,
+        required:[false]
+    }
+});
+
+
+orderHistory.methods.toJSON = function() {
+
+    let order = this;
+    let orderObject = order.toObject();
+    delete orderObject.card;
+    return orderObject;
+}
+
+
+orderHistory.plugin(uniqueValidator, { message: '{PATH} debe de ser único' });
+
+
+module.exports = mongoose.model('OrderHistory', orderHistory);
