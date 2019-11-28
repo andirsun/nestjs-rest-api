@@ -11,13 +11,16 @@ const socketIO = require('socket.io');
 const http = require('http');
 let server = http.createServer(app);
 const publicPath = path.resolve(__dirname, '../public');
-
-const client = require('twilio')("AC84fa440ef3fab3ec0388540866f2bb98","78ba97e4fbb62d01eef8f20364640712");
+require('dotenv').config();
+const wilioId = process.env.ACCOUNT_SID;
+const wilioToken= process.env.AUTH_TOKEN;
+const client = require('twilio')(wilioId,wilioToken);
 ////////////////////////////////////
 
+//'+14403974927',
 client.messages.create({
-    from:'whatsapp:+573188758481',
-    to: 'whatsapp:+573106838163',
+    from:'+14403974927',
+    to: process.env.MY_PHONE_NUMBER,
     body: "hola mi rats"
 }).then(message => console.log(message.sid));
 
