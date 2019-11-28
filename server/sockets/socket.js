@@ -1,6 +1,24 @@
 const {io} = require("../server");
+const {TicketControl} = require('../classes/ticketControl');
 
+
+
+
+const ticketControl = new TicketControl(); // instance of the class ticketContol
 io.on('connection',(client)=>{
+    
+    client.on('nextTicket', (data,callback) =>  {
+        // here is where we listen a petition of the apps and create the ticket
+        let next = ticketControl.nextTicket();
+        console.log(next);
+        callback(next);
+    });
+    
+    client.emit('currentTicket',{
+        current : ticketControl.getLastTicket()//current order in proccess
+    });
+
+    /*
     console.log('user connected'); //detection of user conection server side
 
     //send info to user from server side
@@ -29,6 +47,6 @@ io.on('connection',(client)=>{
         //         content:"todo ml"
         //     });
         // }
-    })
+    })*/
     
 });

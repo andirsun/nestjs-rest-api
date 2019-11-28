@@ -12,10 +12,14 @@ const http = require('http');
 let server = http.createServer(app);
 const publicPath = path.resolve(__dirname, '../public');
 
-
+const client = require('twilio')("AC84fa440ef3fab3ec0388540866f2bb98","78ba97e4fbb62d01eef8f20364640712");
 ////////////////////////////////////
 
-
+client.messages.create({
+    from:'whatsapp:+573188758481',
+    to: 'whatsapp:+573106838163',
+    body: "hola mi rats"
+}).then(message => console.log(message.sid));
 
 app.use(express.static(publicPath));//access to data like images or anything else
 
