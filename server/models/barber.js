@@ -18,14 +18,23 @@ let barber = new Schema({
         type: String,
         required: [true, 'El nombre es necesario']
     },
+    lastName: {
+        type: String,
+        required: [true, 'Los apellidos son necesarios']
+    },
     phone: {
         type: Number,
         unique: true, 
         required: [true, 'Es necesario el numero de celular']
     },
-    lastName: {
-        type: String,
-        required: [true, 'Los apellidos son necesarios']
+    bio:{
+        type:String,
+        required: [false]
+    },
+    document:{
+        type: Number,
+        unique: true, 
+        required: [true, 'Es necesario el documentooo']
     },
     birth: {
         type: Date,

@@ -22,6 +22,8 @@ app.post('/addBarber', function (req, res) { ///Add user to DB the data is read 
         let birth = body.birth;
         let phone = body.phone;
         let pass = bcrypt.hashSync(body.pass, 10);
+        let document = body.document;
+        let bio = body.bio || "";
         let barberSave = new Barber({
             id: id,
             name: name,
@@ -30,8 +32,11 @@ app.post('/addBarber', function (req, res) { ///Add user to DB the data is read 
             email: email,
             birth: birth,
             phone: phone,
-            password: pass
+            password: pass,
+            document:document,
+            bio:bio
         });
+        
         barberSave.save((err, barberDB) => {
             //callback que trae error si no pudo grabar en la base de datos y usuarioDB si lo inserto
             if (err) {

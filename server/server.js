@@ -1,4 +1,5 @@
 require('./config/config');
+
 const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
@@ -10,6 +11,8 @@ const socketIO = require('socket.io');
 const http = require('http');
 let server = http.createServer(app);
 const publicPath = path.resolve(__dirname, '../public');
+
+
 ////////////////////////////////////
 
 
@@ -32,10 +35,11 @@ app.use(require('./routes/index')); // import all routes
 
 //IO is the comunication with the backend
 
-let io = socketIO(server); //Conection to socket server
-io.on('connection',(client)=>{
-    console.log('user connected');
-});
+//let io = socketIO(server); //Conection to socket server
+module.exports.io = socketIO(server);
+require('./sockets/socket');
+
+
 
 
 mongoose.connect(process.env.URLDB,
