@@ -24,6 +24,7 @@
     "bcrypt": "^3.0.7",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-fileupload": "^1.1.6-alpha.6",
     "google-auth-library": "^5.5.1",
@@ -35,6 +36,7 @@
     "npm": "^6.13.0",
     "path": "^0.12.7",
     "socket.io": "^2.3.0",
+    "twilio": "^3.37.1",
     "underscore": "^1.9.1"
   }
 }
