@@ -15,8 +15,30 @@ io.on('connection',(client)=>{
     });
     
     client.emit('currentTicket',{
-        current : ticketControl.getLastTicket()//current order in proccess
+        current : ticketControl.getLastTicket(),//current order in proccess
+        last4 : ticketControl.get4LastTicket()
     });
+
+    client.on('takeTicket',(data,callback)=>{//when a barber push the button an take a ticket
+
+        if(!data.barber){
+            return callback({
+                response:1,
+                content: "el barbero es necesario"
+            })
+        }
+        let takeTicket = ticketControl.takeTicket(data.barber);
+
+        callback(takeTicket);
+        
+
+        client.broadcast.emit('last4Tickets',{//refresh the info in the front of the tickets
+            last4: ticketControl.get4LastTicket()
+        });
+
+    });
+
+    
 
     /*
     console.log('user connected'); //detection of user conection server side

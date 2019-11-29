@@ -17,13 +17,14 @@ const wilioToken= process.env.AUTH_TOKEN;
 const client = require('twilio')(wilioId,wilioToken);
 ////////////////////////////////////
 
+/*
 //'+14403974927',
 client.messages.create({
     from:'+14403974927',
     to: process.env.MY_PHONE_NUMBER,
     body: "hola mi rats"
 }).then(message => console.log(message.sid));
-
+*/
 app.use(express.static(publicPath));//access to data like images or anything else
 
 app.use(morgan('dev'));
