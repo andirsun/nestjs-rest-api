@@ -6,9 +6,10 @@ const {TicketControl} = require('../classes/ticketControl');
 
 const ticketControl = new TicketControl(); // instance of the class ticketContol
 io.on('connection',(client)=>{
-    
+    console.log("Server Conected");
     client.on('nextTicket', (data,callback) =>  {
         // here is where we listen a petition of the apps and create the ticket
+        
         let next = ticketControl.nextTicket();
         console.log(next);
         callback(next);
