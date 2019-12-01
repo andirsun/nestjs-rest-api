@@ -3,15 +3,13 @@
 // ============================
 process.env.PORT = process.env.PORT || 3000;
 
-
 // ============================
 //  Enviroment
 // ============================
-process.env.NODE_ENV = process.env.NODE_ENV || 'dev';
-
+process.env.NODE_ENV = process.env.NODE_ENV || "dev";
 
 // ============================
-//  Database 
+//  Database
 // ============================
 let urlDB;
 /*
@@ -22,16 +20,17 @@ if (process.env.NODE_ENV === 'dev') {
     //urlDB = process.env.MONGO_URI;
 }*/
 
-urlDB = "mongodb+srv://admin:y8Rf@bnjiYKEk8_@timugo-d2l1g.mongodb.net/timugoBackend";
+urlDB =
+  "mongodb+srv://admin:y8Rf@bnjiYKEk8_@timugo-d2l1g.mongodb.net/timugoBackend";
 
 process.env.URLDB = urlDB;
 // ============================
 //  Token Expiration
 // ============================
-process.env.TOKEN_EXPIRATION =  60*60*24*30;
+process.env.TOKEN_EXPIRATION = 60 * 60 * 24 * 30;
 
 // ============================
 //  seed of the token
 // ============================
 
-process.env.TOKEN_SEED = process.env.TOKEN_SEED || 'tokenSeed';
+process.env.TOKEN_SEED = process.env.TOKEN_SEED || "tokenSeed";
