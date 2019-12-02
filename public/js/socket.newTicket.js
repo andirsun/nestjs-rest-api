@@ -16,6 +16,6 @@ socket.on("currentTicket", function(resp) {
 $("button").on("click", function() {
   console.log("Generate New Ticket");
   socket.emit("nextTicket", null, function(nextTicket) {
-    label.text(nextTicket);
+    
   });
 });

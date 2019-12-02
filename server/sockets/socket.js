@@ -7,7 +7,7 @@ io.on("connection", client => {
   client.on("nextTicket", (data, callback) => {
     // here is where we listen a petition of the apps and create the ticket
 
-    let next = ticketControl.nextTicket();
+    let next = ticketControl.nextTicket(data.idClient);
     console.log(next);
     callback(next);
   });
@@ -16,6 +16,7 @@ io.on("connection", client => {
     current: ticketControl.getLastTicket(), //current order in proccess
     last4: ticketControl.get4LastTicket()
   });
+
 
   client.on("takeTicket", (data, callback) => {
     //when a barber push the button an take a ticket
