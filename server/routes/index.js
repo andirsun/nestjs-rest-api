@@ -7,6 +7,7 @@ const app = express();
 
 app.use(require('./user'));
 app.use(require('./barber'));
+app.use(require('./order'));
 
 
 
