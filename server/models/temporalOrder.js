@@ -26,11 +26,19 @@ let temporalOrder = new Schema({
     required: [true,"la direccion es necesaria"]
   },
   dateBeginOrder: {
-    type: Date,
+    type: String,
     required: [true, "La fecha de inicio del pedido es necesaria"]
   },
+  hourStart: {
+    type: String,
+    required: [true, "La Hora de creacion es necesaria"]
+  },
+  hourEnd: {
+    type: String,
+    required: [false]
+  },
   dateFinishOrder: {
-    type: Date,
+    type: String,
     required: [false]
   },
   typeService: {
