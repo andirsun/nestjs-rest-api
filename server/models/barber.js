@@ -30,6 +30,16 @@ let barber = new Schema({
     type: String,
     required: [false]
   },
+  stairs:{
+    type: Number,
+    required:[false],
+    default: 5
+  },
+  numberServices:{
+    type: Number,
+    required:[false],
+    default:0
+  },
   document: {
     type: Number,
     unique: true,
