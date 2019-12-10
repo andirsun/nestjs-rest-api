@@ -1,7 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
 const _ = require("underscore");
-const Order = require("../models/orderHistory");
+const order = require("../models/orderHistory");
 const temporalOrder = require("../models/temporalOrder");
 const barber= require("../models/barber");
 const jwt = require("jsonwebtoken");
@@ -9,7 +9,90 @@ const app = express();
 const moment = require('moment');
 //const timezone = require('moment-timezone');
 
+app.post("/finishOrder",function(req,res){
+  let body = req.body;
+  let idOrder = parseInt(body.idOrder);
+  let stars = parseInt(body.stars) || 5;
+  let comment = body.comment || "Sin comentarios";
+  temporalOrder.findOne({id:idOrder},function(err,temporalOrderDB){
+    if (err) {
+      return res.status(500).json({
+        response: 1,
+        content: err
+      });
+    }
+    if(temporalOrderDB){
+      let tempOrder = temporalOrderDB.toJSON();
+      order.find(function(err,ordersDB){
+        if (err) {
+          return res.status(500).json({
+            response: 1,
+            content: err
+          });
+        }
+        if(ordersDB){ 
+          let orderSave = new order({
+            id : ordersDB.length + 1,
+            idClient : tempOrder.idClient,
+            idBarber: tempOrder.idBarber,
+            address: tempOrder.address,
+            dateBeginOrder : tempOrder.dateBeginOrder,
+            dateFinishOrder : moment().format("YYYY-MM-DD"),
+            duration : 15,
+            stars : stars,
+            comments : comment,
+            price : 15000,
+            typeService : tempOrder.typeService,
+            status: true,
+            payMethod:"cash",
+            bonusCode: "none",
+            card: "none"
+          });
+          orderSave.save((err,orderDb)=>{
+            if (err) {
+              return res.status(500).json({
+                response: 1,
+                content: err
+              });
+            }
+            if(orderDb){
+              res.status(200).json({
+                response: 2,
+                content:{
+                  orderDb,
+                  message: "Se guardo la orden en el historial"
+                } 
+              });
+            }else{
+              res.status(200).json({
+                response: 1,
+                content:{
+                  message: "UPss. NO pudimos enviar la orden al historial"
+                } 
+              });
+            }    
+          });
+        }else{
+          res.status(200).json({
+            response: 1,
+            content:{
+              message: "NO SE PUDIERON ENCONTRAR LAS ORDENES"
+            } 
+          });
+        }
+      });
+      
 
+    }else{
+      res.status(200).json({
+        response: 1,
+        content:{
+          message: "Upss. No concontramos esa orden"
+        } 
+      });
+    }
+  });
+})
 app.put("/assignBarberToOrder",function(req,res){
   let body = req.body;
   let idOrder = parseInt(body.idOrder);
@@ -79,7 +162,6 @@ app.put("/assignBarberToOrder",function(req,res){
     }
   });
 });
-
 app.get("/getCurrentOrder",function(req,res){
   let body = req.body;
   let idClient = parseInt(body.id);
@@ -159,17 +241,5 @@ app.post("/createOrder", function (req, res) {
     });
   });
 });
-
-
-
-
-
-
-
-
-
-
-
-
 
 module.exports = app;

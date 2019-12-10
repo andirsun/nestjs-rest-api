@@ -17,6 +17,10 @@ let orderHistory = new Schema({
     type: Number,
     required: [true, "El id del cliente es necesario"]
   },
+  address: {
+    type: String,
+    required: [true, "la direccion es necesaria"]
+  },
   dateBeginOrder: {
     type: Date,
     required: [true, "La fecha de inicio del pedido es necesaria"]
@@ -61,7 +65,7 @@ let orderHistory = new Schema({
   },
 
   card: {
-    type: Number,
+    type: String,
     default: 0,
     required: [false]
   }
@@ -76,4 +80,4 @@ orderHistory.methods.toJSON = function() {
 
 orderHistory.plugin(uniqueValidator, { message: "{PATH} debe de ser único" });
 
-module.exports = mongoose.model("OrderHistory", orderHistory);
+module.exports = mongoose.model("Order", orderHistory);
