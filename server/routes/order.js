@@ -3,11 +3,82 @@ const bcrypt = require("bcrypt");
 const _ = require("underscore");
 const Order = require("../models/orderHistory");
 const temporalOrder = require("../models/temporalOrder");
+const barber= require("../models/barber");
 const jwt = require("jsonwebtoken");
 const app = express();
 const moment = require('moment');
 //const timezone = require('moment-timezone');
 
+
+app.put("/assignBarberToOrder",function(req,res){
+  let body = req.body;
+  let idOrder = parseInt(body.idOrder);
+  let idBarber = parseInt(body.idBarber);
+  temporalOrder.findOne({id:idOrder},function(err,temporalOrderDB){
+    if (err) {
+      return res.status(500).json({
+        response: 1,
+        content: err
+      });
+    }
+    if(temporalOrderDB){
+      let order = temporalOrderDB.toJSON();
+      console.log(order);
+      barber.findOne({id:idBarber},function(err,barberDB){
+        if (err) {
+          return res.status(500).json({
+            response: 3,
+            content: err
+          });
+        }
+        if(barberDB){
+          let barbero = barberDB.toJSON();
+          temporalOrder.findOneAndUpdate({id:idOrder},{idBarber:barbero.id},function(err,orden){
+            if (err) {
+              return res.status(500).json({
+                response: 3,
+                content:{
+                  err,
+                  message: "No se puedo asignar el barbero a la orden"
+                } 
+              });
+            }   
+            if(orden){
+              res.status(200).json({
+                response: 2,
+                content:{
+                  message: "Genial, se asigno a "+barbero.name+" a la orden"
+                } 
+              });
+            }else{
+              res.status(200).json({
+                response: 1,
+                content:{
+                  message: "Paso alguna monda rara"
+                } 
+              });
+            }
+          });
+          console.log(order); 
+        }else{
+          res.status(200).json({
+            response: 1,
+            content: {
+              message: "Upssss. No encontramos a un barbero con ese id"
+            }
+          });    
+        }
+      });
+    }else{
+      res.status(200).json({
+        response: 1,
+        content: {
+          message: "Upssss. No pudimos encontrar esa orden"
+        }
+      });
+    }
+  });
+});
 
 app.get("/getCurrentOrder",function(req,res){
   let body = req.body;
