@@ -14,7 +14,7 @@ app.post("/finishOrder",function(req,res){
   let idOrder = parseInt(body.idOrder);
   let stars = parseInt(body.stars) || 5;
   let comment = body.comment || "Sin comentarios";
-  let status = body.status //this status its if the service was complete or was cancel
+  let status = body.status || 1//this status its if the service was complete or was cancel
   temporalOrder.findOneAndUpdate({id:idOrder},{status:false},function(err,temporalOrderDB){
     if (err) {
       return res.status(500).json({
@@ -44,7 +44,7 @@ app.post("/finishOrder",function(req,res){
             comments : comment,
             price : 15000,
             typeService : tempOrder.typeService,
-            status: true,
+            status: status,
             payMethod:"cash",
             bonusCode: "none",
             card: "none"

@@ -50,7 +50,7 @@ let orderHistory = new Schema({
     required: [true, "El tipo de servicio es necesario"]
   },
   status: {
-    type: Boolean,
+    type: Number,
     default: true,
     required: [true, "El status del servicio es necesario"]
   },
