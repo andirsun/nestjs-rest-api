@@ -46,7 +46,7 @@ let orderHistory = new Schema({
     required: [true, "El precio es necesario"]
   },
   typeService: {
-    type: String,
+    type: Number,
     required: [true, "El tipo de servicio es necesario"]
   },
   status: {
