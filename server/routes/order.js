@@ -14,7 +14,8 @@ app.post("/finishOrder",function(req,res){
   let idOrder = parseInt(body.idOrder);
   let stars = parseInt(body.stars) || 5;
   let comment = body.comment || "Sin comentarios";
-  temporalOrder.findOne({id:idOrder},function(err,temporalOrderDB){
+  let status = body.status //this status its if the service was complete or was cancel
+  temporalOrder.findOneAndUpdate({id:idOrder},{status:false},function(err,temporalOrderDB){
     if (err) {
       return res.status(500).json({
         response: 1,
@@ -60,7 +61,7 @@ app.post("/finishOrder",function(req,res){
                 response: 2,
                 content:{
                   orderDb,
-                  message: "Se guardo la orden en el historial"
+                  message: "Se guardo la orden en el historial y se desactivo de las ordenes activas"
                 } 
               });
             }else{
