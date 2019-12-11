@@ -8,6 +8,10 @@ const user= require("../models/user");
 const jwt = require("jsonwebtoken");
 const app = express();
 const moment = require('moment');
+require("dotenv").config();
+const wilioId = process.env.ACCOUNT_SID;
+const wilioToken = process.env.AUTH_TOKEN;
+const client = require("twilio")(wilioId, wilioToken);
 //const timezone = require('moment-timezone');
 
 app.post("/finishOrder",function(req,res){
@@ -323,13 +327,45 @@ app.post("/createOrder", function (req, res) {
             });
           }
           if (response) {
-            res.status(200).json({
-              response: 2,
-              content: {
-                orderDB:response,
-                message: "Temporal Order Created !!!"
-              }
+            //////////////////////////////Sending information of the order by whatsAPP with twillio
+            let orderWs = response.toJSON();
+            user.findOne({id:orderWs.idClient},function(err,user){
+              var userToSend = user.toJSON();
+              orderWs.nombreCliente = userToSend.name+" "+userToSend.lastName; //CLient name who take the order
+              orderWs.telefonoCliente = userToSend.phone;
+              orderWs.Direccion=user.address;
+              orderWs.Servicio= "Corte de Cabello";
+              delete orderWs._id;
+              delete orderWs.idBarber;
+              delete orderWs.address;
+              delete orderWs.dateBeginOrder;
+              delete orderWs.typeService;
+              delete orderWs.__v;
+              delete orderWs.hourStart;
+              delete orderWs.status;
+              client.messages.create({
+                from:'+14403974927',
+                to: '+573188758481',
+                body: "Detalle: id:"+orderWs.idClient+",nombre: "+orderWs.nombreCliente+",celular: "+orderWs.telefonoCliente+",dir: "+orderWs.Direccion+","+orderWs.Servicio
+              }).then(message => console.log(message.sid));
+              client.messages.create({
+                from:'+14403974927',
+                to: '+573106838163',
+                body: "Detalle: id:"+orderWs.idClient+",nombre: "+orderWs.nombreCliente+",celular: "+orderWs.telefonoCliente+",dir: "+orderWs.Direccion+","+orderWs.Servicio
+              }).then(message => console.log(message.sid));
+              ////////////////////////////////////////////////////////////////////////////////////////
+              /*Sending Response of petition if the order was created correctly */
+              res.status(200).json({
+                response: 2,
+                content: {
+                  orderDB:response,
+                  message: "Temporal Order Created !!!"
+                }
+              });
+              /****************************************************************** */
             });
+  
+
           }else{
             res.status(200).json({
               response: 1,
@@ -343,5 +379,7 @@ app.post("/createOrder", function (req, res) {
     });
   });
 });
+//14403974927 NUmero para envio de mensajes de texto
+//whatsapp:+14155238886   envio de whatsapp
 
 module.exports = app;
