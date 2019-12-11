@@ -230,7 +230,7 @@ app.post("/createOrder", function (req, res) {
   temporalOrder.find(function (err, temporalOrderDB) {
     if (err) {
       return res.status(500).json({
-        response: 1,
+        response: 3,
         content: err
       });
     }
@@ -252,21 +252,48 @@ app.post("/createOrder", function (req, res) {
       hourStart,
       status,
     });
-
-    order.save((err, orderDB) => {
-      //callback que trae error si no pudo grabar en la base de datos y usuarioDB si lo inserto
+    temporalOrder.findOne({idClient:idClient,status:true},function(err,orden){
       if (err) {
         return res.status(500).json({
-          response: 1,
+          response: 3,
           content: err
         });
       }
-      if (orderDB) {
+      if(orden){
+        console.log("entre por qye hay una orden");
         res.status(200).json({
-          response: 2,
+          response: 1,
           content: {
-            orderDB,
-            message: "Temporal Order Created !!!"
+            message: "Upss, Aun tienes una orden en progreso o pendiente por calificar. Terminala para poder pedir otra orden."
+          }
+        });
+      }else{
+        order.save((err, response) => {
+          //callback que trae error si no pudo grabar en la base de datos y usuarioDB si lo inserto
+          if (err) {
+            return res.status(500).json({
+              response: 1,
+              content:{
+                err,
+                message:"Error al guardar la orden"
+              } 
+            });
+          }
+          if (response) {
+            res.status(200).json({
+              response: 2,
+              content: {
+                orderDB:response,
+                message: "Temporal Order Created !!!"
+              }
+            });
+          }else{
+            res.status(200).json({
+              response: 1,
+              content: {
+                message: "No se guardardo la orden."
+              }
+            });
           }
         });
       }
