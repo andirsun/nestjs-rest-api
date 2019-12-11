@@ -4,6 +4,7 @@ const _ = require("underscore");
 const order = require("../models/orderHistory");
 const temporalOrder = require("../models/temporalOrder");
 const barber= require("../models/barber");
+const user= require("../models/user");
 const jwt = require("jsonwebtoken");
 const app = express();
 const moment = require('moment');
@@ -15,6 +16,22 @@ app.post("/finishOrder",function(req,res){
   let stars = parseInt(body.stars) || 5;
   let comment = body.comment || "Sin comentarios";
   let status = body.status || 1//this status its if the service was complete or was cancel
+  var pointsBarber = 0;
+  if(stars == 1){
+    pointsBarber =10;
+  }
+  if(stars == 2){
+    pointsBarber = 20; 
+  }
+  if(stars == 3){
+    pointsBarber = 30; 
+  }
+  if(stars == 4){
+    pointsBarber = 40; 
+  }
+  if(stars == 5){
+    pointsBarber = 50; 
+  }
   temporalOrder.findOneAndUpdate({id:idOrder},{status:false},function(err,temporalOrderDB){
     if (err) {
       return res.status(500).json({
@@ -24,6 +41,32 @@ app.post("/finishOrder",function(req,res){
     }
     if(temporalOrderDB){
       let tempOrder = temporalOrderDB.toJSON();
+      barber.findOneAndUpdate({id:tempOrder.idBarber},{$inc:{points:pointsBarber}},function(err,barberDb){//updating points to a barber
+        if (err) {
+          return res.status(500).json({
+            response: 3,
+            content: err
+          });
+        }
+        if(barberDb){
+          console.log("se sumaron los puntos al barbero");
+        }else{
+          console.log("No se le sumaron los puntos al barbero");
+        }
+      });
+      user.findOneAndUpdate({id:tempOrder.idClient},{$inc:{points:50}},function(err,userDb){//updating points to a barber
+        if (err) {
+          return res.status(500).json({
+            response: 3,
+            content: err
+          });
+        }
+        if(userDb){
+          console.log("Se sumaron los punto al usuario");
+        }else{
+          console.log("No se le sumaron los puntos al usuario");
+        }
+      });
       order.find(function(err,ordersDB){
         if (err) {
           return res.status(500).json({
