@@ -52,6 +52,16 @@ let usuarioSchema = new Schema({
     default: "USER_ROLE",
     enum: rolesValidos
   },
+  numServices:{
+    type : Number,
+    required:[false],
+    default:0
+  },
+  points: {
+    type: Number,
+    required: false,
+    default:0
+  },
   status: {
     type: Boolean,
     default: true
