@@ -169,19 +169,50 @@ app.post("/getCurrentOrder",function(req,res){
   temporalOrder.findOne({idClient:idClient},function(err,temporalOrderDB){
     if (err) {
       return res.status(500).json({
-        response: 1,
+        response: 3,
         content: err
       });
     }
-    //Here i need to conslut the information aboout the barber and build a json with all information to return
     if(temporalOrderDB){
-      res.status(200).json({
-        response: 2,
-        content: {
-          order:temporalOrderDB,
-          barber: "Aqui va la informacion del barbero"
-        }
-      });
+      let temporal = temporalOrderDB.toJSON();
+
+      if(temporal.idBarber != 0){
+        barber.findOne({id:temporal.idBarber},function(err,barberDB){
+          if (err) {
+            return res.status(500).json({
+              response: 3,
+              content: err
+            });
+          }
+          if(barberDB){
+            let temporalBarber = barberDB.toJSON();
+            temporal.nameBarber = temporalBarber.name;
+            temporal.urlImgBarber = temporalBarber.urlImg;  
+            res.status(200).json({
+              response: 2,
+              content: {
+                order:temporal,
+              }
+            });
+          }else{
+            res.status(200).json({
+              response: 1,
+              content:{
+                message: "NO hemos encontrado ningun barbero con ese id asociado a la orden"
+              }
+            });
+          }  
+        });
+      }else{
+        temporal.nameBarber = "Sin asignar";
+        temporal.urlImgBarber = "null";
+        res.status(200).json({
+          response: 2,
+          content: {
+            order:temporal,
+          }
+        });
+      }
     }else{
       res.status(200).json({
         response: 1,

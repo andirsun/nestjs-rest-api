@@ -62,6 +62,11 @@ let barber = new Schema({
     type: String,
     required: [true, "La direccion es necesaria"]
   },
+  urlImg:{
+    type: String,
+    required:[false],
+    default: "sin asignar"
+  },
   img: {
     type: String,
     required: false
