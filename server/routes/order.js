@@ -162,7 +162,7 @@ app.put("/assignBarberToOrder",function(req,res){
     }
   });
 });
-app.get("/getCurrentOrder",function(req,res){
+app.post("/getCurrentOrder",function(req,res){
   let body = req.body;
   let idClient = parseInt(body.id);
   
