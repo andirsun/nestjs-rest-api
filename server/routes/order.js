@@ -166,7 +166,7 @@ app.post("/getCurrentOrder",function(req,res){
   let body = req.body;
   let idClient = parseInt(body.id);
   
-  temporalOrder.findOne({idClient:idClient},function(err,temporalOrderDB){
+  temporalOrder.findOne({idClient:idClient,status:true},function(err,temporalOrderDB){
     if (err) {
       return res.status(500).json({
         response: 3,
