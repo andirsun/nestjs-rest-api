@@ -17,6 +17,16 @@ let orderHistory = new Schema({
     type: Number,
     required: [true, "El id del cliente es necesario"]
   },
+  idBarber:{
+    type: Number,
+    required: [false],
+    default: 0
+  },
+  nameBarber:{
+    type: String,
+    required:[false],
+    default: "Sin asignar"
+  },
   address: {
     type: String,
     required: [true, "la direccion es necesaria"]
