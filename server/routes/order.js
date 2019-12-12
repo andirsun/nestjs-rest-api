@@ -346,12 +346,12 @@ app.post("/createOrder", function (req, res) {
               client.messages.create({
                 from:'+14403974927',
                 to: '+573188758481',
-                body: "Detalle: id:"+orderWs.idClient+",nombre: "+orderWs.nombreCliente+",celular: "+orderWs.telefonoCliente+",dir: "+orderWs.Direccion+","+orderWs.Servicio
+                body: "Detalle: id:"+orderWs.id+",nombre: "+orderWs.nombreCliente+",celular: "+orderWs.telefonoCliente+",dir: "+orderWs.Direccion+","+orderWs.Servicio
               }).then(message => console.log(message.sid));
               client.messages.create({
                 from:'+14403974927',
                 to: '+573106838163',
-                body: "Detalle: id:"+orderWs.idClient+",nombre: "+orderWs.nombreCliente+",celular: "+orderWs.telefonoCliente+",dir: "+orderWs.Direccion+","+orderWs.Servicio
+                body: "Detalle: id:"+orderWs.id+",nombre: "+orderWs.nombreCliente+",celular: "+orderWs.telefonoCliente+",dir: "+orderWs.Direccion+","+orderWs.Servicio
               }).then(message => console.log(message.sid));
               ////////////////////////////////////////////////////////////////////////////////////////
               /*Sending Response of petition if the order was created correctly */
