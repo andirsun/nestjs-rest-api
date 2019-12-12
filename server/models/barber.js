@@ -30,6 +30,21 @@ let barber = new Schema({
     type: String,
     required: [false]
   },
+  points: {
+    type: Number,
+    required: false,
+    default:0
+  },
+  stairs:{
+    type: Number,
+    required:[false],
+    default: 5
+  },
+  numberServices:{
+    type: Number,
+    required:[false],
+    default:0
+  },
   document: {
     type: Number,
     unique: true,
@@ -51,6 +66,11 @@ let barber = new Schema({
   address: {
     type: String,
     required: [true, "La direccion es necesaria"]
+  },
+  urlImg:{
+    type: String,
+    required:[false],
+    default: "sin asignar"
   },
   img: {
     type: String,
