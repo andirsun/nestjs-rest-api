@@ -322,7 +322,7 @@ app.post("/createOrder", function (req, res) {
               response: 1,
               content:{
                 err,
-                message:"Error al guardar la orden"
+                message:"Error al guardar la orden, contacta con el administrador"
               } 
             });
           }
@@ -359,7 +359,7 @@ app.post("/createOrder", function (req, res) {
                 response: 2,
                 content: {
                   orderDB:response,
-                  message: "Temporal Order Created !!!"
+                  message: "Genial, Se creo la orden Correctamente, un barbero te contactara pronto."
                 }
               });
               /****************************************************************** */
@@ -370,7 +370,7 @@ app.post("/createOrder", function (req, res) {
             res.status(200).json({
               response: 1,
               content: {
-                message: "No se guardardo la orden."
+                message: "Upss, No se guardardo la orden, contacta con el administrador."
               }
             });
           }
