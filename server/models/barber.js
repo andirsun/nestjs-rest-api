@@ -30,6 +30,11 @@ let barber = new Schema({
     type: String,
     required: [false]
   },
+  points: {
+    type: Number,
+    required: false,
+    default:0
+  },
   stairs:{
     type: Number,
     required:[false],

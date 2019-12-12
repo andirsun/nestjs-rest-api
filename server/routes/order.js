@@ -4,9 +4,14 @@ const _ = require("underscore");
 const order = require("../models/orderHistory");
 const temporalOrder = require("../models/temporalOrder");
 const barber= require("../models/barber");
+const user= require("../models/user");
 const jwt = require("jsonwebtoken");
 const app = express();
 const moment = require('moment');
+require("dotenv").config();
+const wilioId = process.env.ACCOUNT_SID;
+const wilioToken = process.env.AUTH_TOKEN;
+const client = require("twilio")(wilioId, wilioToken);
 //const timezone = require('moment-timezone');
 
 app.post("/finishOrder",function(req,res){
@@ -15,6 +20,22 @@ app.post("/finishOrder",function(req,res){
   let stars = parseInt(body.stars) || 5;
   let comment = body.comment || "Sin comentarios";
   let status = body.status || 1//this status its if the service was complete or was cancel
+  var pointsBarber = 0;
+  if(stars == 1){
+    pointsBarber =10;
+  }
+  if(stars == 2){
+    pointsBarber = 20; 
+  }
+  if(stars == 3){
+    pointsBarber = 30; 
+  }
+  if(stars == 4){
+    pointsBarber = 40; 
+  }
+  if(stars == 5){
+    pointsBarber = 50; 
+  }
   temporalOrder.findOneAndUpdate({id:idOrder},{status:false},function(err,temporalOrderDB){
     if (err) {
       return res.status(500).json({
@@ -24,6 +45,32 @@ app.post("/finishOrder",function(req,res){
     }
     if(temporalOrderDB){
       let tempOrder = temporalOrderDB.toJSON();
+      barber.findOneAndUpdate({id:tempOrder.idBarber},{$inc:{points:pointsBarber}},function(err,barberDb){//updating points to a barber
+        if (err) {
+          return res.status(500).json({
+            response: 3,
+            content: err
+          });
+        }
+        if(barberDb){
+          console.log("se sumaron los puntos al barbero");
+        }else{
+          console.log("No se le sumaron los puntos al barbero");
+        }
+      });
+      user.findOneAndUpdate({id:tempOrder.idClient},{$inc:{points:50}},function(err,userDb){//updating points to a barber
+        if (err) {
+          return res.status(500).json({
+            response: 3,
+            content: err
+          });
+        }
+        if(userDb){
+          console.log("Se sumaron los punto al usuario");
+        }else{
+          console.log("No se le sumaron los puntos al usuario");
+        }
+      });
       order.find(function(err,ordersDB){
         if (err) {
           return res.status(500).json({
@@ -230,7 +277,7 @@ app.post("/createOrder", function (req, res) {
   temporalOrder.find(function (err, temporalOrderDB) {
     if (err) {
       return res.status(500).json({
-        response: 1,
+        response: 3,
         content: err
       });
     }
@@ -252,26 +299,87 @@ app.post("/createOrder", function (req, res) {
       hourStart,
       status,
     });
-
-    order.save((err, orderDB) => {
-      //callback que trae error si no pudo grabar en la base de datos y usuarioDB si lo inserto
+    temporalOrder.findOne({idClient:idClient,status:true},function(err,orden){
       if (err) {
         return res.status(500).json({
-          response: 1,
+          response: 3,
           content: err
         });
       }
-      if (orderDB) {
+      if(orden){
+        console.log("entre por qye hay una orden");
         res.status(200).json({
-          response: 2,
+          response: 1,
           content: {
-            orderDB,
-            message: "Temporal Order Created !!!"
+            message: "Upss, Aun tienes una orden en progreso o pendiente por calificar. Terminala para poder pedir otra orden."
+          }
+        });
+      }else{
+        order.save((err, response) => {
+          //callback que trae error si no pudo grabar en la base de datos y usuarioDB si lo inserto
+          if (err) {
+            return res.status(500).json({
+              response: 1,
+              content:{
+                err,
+                message:"Error al guardar la orden, contacta con el administrador"
+              } 
+            });
+          }
+          if (response) {
+            //////////////////////////////Sending information of the order by whatsAPP with twillio
+            let orderWs = response.toJSON();
+            user.findOne({id:orderWs.idClient},function(err,user){
+              var userToSend = user.toJSON();
+              orderWs.nombreCliente = userToSend.name+" "+userToSend.lastName; //CLient name who take the order
+              orderWs.telefonoCliente = userToSend.phone;
+              orderWs.Direccion=user.address;
+              orderWs.Servicio= "Corte de Cabello";
+              delete orderWs._id;
+              delete orderWs.idBarber;
+              delete orderWs.address;
+              delete orderWs.dateBeginOrder;
+              delete orderWs.typeService;
+              delete orderWs.__v;
+              delete orderWs.hourStart;
+              delete orderWs.status;
+              client.messages.create({
+                from:'+14403974927',
+                to: '+573188758481',
+                body: "Detalle: id:"+orderWs.id+",nombre: "+orderWs.nombreCliente+",celular: "+orderWs.telefonoCliente+",dir: "+orderWs.Direccion+","+orderWs.Servicio
+              }).then(message => console.log(message.sid));
+              client.messages.create({
+                from:'+14403974927',
+                to: '+573106838163',
+                body: "Detalle: id:"+orderWs.id+",nombre: "+orderWs.nombreCliente+",celular: "+orderWs.telefonoCliente+",dir: "+orderWs.Direccion+","+orderWs.Servicio
+              }).then(message => console.log(message.sid));
+              ////////////////////////////////////////////////////////////////////////////////////////
+              /*Sending Response of petition if the order was created correctly */
+              res.status(200).json({
+                response: 2,
+                content: {
+                  orderDB:response,
+                  message: "Genial, Se creo la orden Correctamente, un barbero te contactara pronto."
+                }
+              });
+              /****************************************************************** */
+            });
+  
+
+          }else{
+            res.status(200).json({
+              response: 1,
+              content: {
+                message: "Upss, No se guardardo la orden, contacta con el administrador."
+              }
+            });
           }
         });
       }
     });
   });
 });
+//14403974927 NUmero para envio de mensajes de texto
+//whatsapp:+14155238886   envio de whatsapp
 
 module.exports = app;

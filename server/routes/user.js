@@ -175,6 +175,12 @@ app.post("/usuario", function(req, res) {
   });
 });
 
+app.get("/getMessageWelcome",function(req,res){
+  res.status(200).json({
+    response:2,
+    content : "Bienvenido :)"
+  });
+});
 app.put("/usuario/:id", function(req, res) {
   let id = req.params.id;
   let body = _.pick(req.body, ["nombre", "email", "img", "role", "estado"]);
