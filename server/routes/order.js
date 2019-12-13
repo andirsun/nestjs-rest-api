@@ -345,7 +345,7 @@ app.post("/createOrder", function (req, res) {
               delete orderWs.status;
               client.messages.create({
                 from:'+14403974927',
-                to: '+573188758481',
+                to: '+573162452663',
                 body: "Detalle: id:"+orderWs.id+",nombre: "+orderWs.nombreCliente+",celular: "+orderWs.telefonoCliente+",dir: "+orderWs.Direccion+","+orderWs.Servicio
               }).then(message => console.log(message.sid));
               client.messages.create({
