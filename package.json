@@ -35,7 +35,7 @@
     "mongoose-unique-validator": "^2.0.3",
     "morgan": "^1.9.1",
     "nodemon": "^1.19.4",
-    "npm": "^6.13.0",
+    "npm": "^6.13.4",
     "path": "^0.12.7",
     "socket.io": "^2.3.0",
     "twilio": "^3.37.1",
