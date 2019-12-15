@@ -13,6 +13,37 @@ const wilioId = process.env.ACCOUNT_SID;
 const wilioToken = process.env.AUTH_TOKEN;
 const client = require("twilio")(wilioId, wilioToken);
 //const timezone = require('moment-timezone');
+/**********************************************/
+// Functions to support api 
+function sendSMS(numberDestiny,message){
+  client.messages.create({
+    from:'+14403974927',
+    to: '+57'+numberDestiny,
+    body : message
+  }).then(message => console.log(message.sid));
+}
+function findBarber(idBarber){ // NOt working
+  barber.findOne({id:idBarber},function(err,barberDb){
+    let response;
+    if (err) {
+      response = {
+        response: 1,
+        content: err
+      }
+      return response;
+    }
+    if(barberDb){
+      return barberDb
+    }else{
+      console.log("NO lo encontre");
+      response ={
+        response: 1,
+        content: "nose encontro el barbero"
+      } 
+    }
+    return response;
+  });
+}
 
 app.post("/finishOrder",function(req,res){
   let body = req.body;
@@ -83,6 +114,7 @@ app.post("/finishOrder",function(req,res){
             id : ordersDB.length + 1,
             idClient : tempOrder.idClient,
             idBarber: tempOrder.idBarber,
+            nameBarber : "Asignar nombre de barbero",
             address: tempOrder.address,
             dateBeginOrder : tempOrder.dateBeginOrder,
             dateFinishOrder : moment().format("YYYY-MM-DD"),
@@ -140,7 +172,7 @@ app.post("/finishOrder",function(req,res){
       });
     }
   });
-})
+});
 app.put("/assignBarberToOrder",function(req,res){
   let body = req.body;
   let idOrder = parseInt(body.idOrder);
@@ -154,7 +186,6 @@ app.put("/assignBarberToOrder",function(req,res){
     }
     if(temporalOrderDB){
       let order = temporalOrderDB.toJSON();
-      console.log(order);
       barber.findOne({id:idBarber},function(err,barberDB){
         if (err) {
           return res.status(500).json({
@@ -164,7 +195,7 @@ app.put("/assignBarberToOrder",function(req,res){
         }
         if(barberDB){
           let barbero = barberDB.toJSON();
-          temporalOrder.findOneAndUpdate({id:idOrder},{idBarber:barbero.id},function(err,orden){
+          temporalOrder.findOneAndUpdate({id:idOrder},{idBarber:barbero.id,nameBarber:barbero.name},function(err,orden){
             if (err) {
               return res.status(500).json({
                 response: 3,
@@ -175,11 +206,44 @@ app.put("/assignBarberToOrder",function(req,res){
               });
             }   
             if(orden){
-              res.status(200).json({
-                response: 2,
-                content:{
-                  message: "Genial, se asigno a "+barbero.name+" a la orden"
-                } 
+              let orderJson = orden.toJSON();
+              let messageToBarber = "Hola "+barbero.name
+                                    +", Aqui esta el detalle de tu orden asignada: "
+                                    +", Nombre Cliente: "+orderJson.nameClient
+                                    +", Direccion:" +orderJson.address
+                                    +", Celular: "+ orderJson.phone
+                                    +", Servicio: Solo corte de cabello";
+
+              sendSMS(barbero.phone,messageToBarber)//notification to barber
+              user.findOne({id:orderJson.idClient},function(err,clientDb){
+                if (err) {
+                  return res.status(500).json({
+                    response: 3,
+                    content: err
+                  });
+                }
+                if(clientDb){
+                  let client = clientDb.toJSON();
+                  let messageToClient = "Hola "+orderJson.nameClient
+                                    +", Gracias por Ordernar en Timugo, Esta es la informacion de tu Barbero"
+                                    +", Nombre: "+orderJson.nameBarber
+                                    +", Celular: "+ barbero.phone
+                                    +". El barbero se contactara con tigo en breve.";
+                  sendSMS(client.phone,messageToClient);
+                  res.status(200).json({
+                    response: 2,
+                    content:{
+                      message: "Genial, se asigno a "+barbero.name+" a la orden, tambien se notifico el mensaje al barbero"
+                    } 
+                  });
+                }else{
+                  res.status(200).json({
+                    response: 1,
+                    content:{
+                      message: "Ups, no se pudo consultar al cliente de la orden"
+                    } 
+                  });    
+                }       
               });
             }else{
               res.status(200).json({
@@ -190,7 +254,6 @@ app.put("/assignBarberToOrder",function(req,res){
               });
             }
           });
-          console.log(order); 
         }else{
           res.status(200).json({
             response: 1,
@@ -272,15 +335,15 @@ app.post("/getCurrentOrder",function(req,res){
   });
 });
 app.post("/createOrder", function (req, res) {
-  ///Add user to DB the data is read by body of the petition
   let body = req.body;
-  temporalOrder.find(function (err, temporalOrderDB) {
+  temporalOrder.find(function (err, temporalOrderDB) {//this query is to know the number of documents 
     if (err) {
       return res.status(500).json({
         response: 3,
         content: err
       });
     }
+    //Assing all parameters to create the order
     let id = temporalOrderDB.length + 1; //Autoincremental id
     let idClient = body.idClient;
     let idBarber = body.idBarber || 0;
@@ -289,25 +352,16 @@ app.post("/createOrder", function (req, res) {
     let hourStart = moment().format("HH:mm");
     let typeService = body.typeService;
     let status = body.status;
-    let order = new temporalOrder({
-      id,
-      idClient,
-      idBarber,
-      address,
-      dateBeginOrder,
-      typeService,
-      hourStart,
-      status,
-    });
+    ////////////////////////////////////////
     temporalOrder.findOne({idClient:idClient,status:true},function(err,orden){
-      if (err) {
+      //THIS query is to know is the user has a current order in progress
+      if (err) {//Handlinf error in the query 
         return res.status(500).json({
           response: 3,
           content: err
         });
       }
-      if(orden){
-        console.log("entre por qye hay una orden");
+      if(orden){//If exists a orden in progress i need to return this response
         res.status(200).json({
           response: 1,
           content: {
@@ -315,69 +369,97 @@ app.post("/createOrder", function (req, res) {
           }
         });
       }else{
-        order.save((err, response) => {
-          //callback que trae error si no pudo grabar en la base de datos y usuarioDB si lo inserto
-          if (err) {
+        //If the user dont have a order in progress we need to create and save the temporal order
+        user.findOne({id:idClient},function(err,clientDB){
+          //searching the user to have his name 
+          if (err) {//Handling error in qeury 
             return res.status(500).json({
-              response: 1,
-              content:{
-                err,
-                message:"Error al guardar la orden, contacta con el administrador"
-              } 
+              response: 3,
+              content: err
             });
           }
-          if (response) {
-            //////////////////////////////Sending information of the order by whatsAPP with twillio
-            let orderWs = response.toJSON();
-            user.findOne({id:orderWs.idClient},function(err,user){
-              var userToSend = user.toJSON();
-              orderWs.nombreCliente = userToSend.name+" "+userToSend.lastName; //CLient name who take the order
-              orderWs.telefonoCliente = userToSend.phone;
-              orderWs.Direccion=user.address;
-              orderWs.Servicio= "Corte de Cabello";
-              delete orderWs._id;
-              delete orderWs.idBarber;
-              delete orderWs.address;
-              delete orderWs.dateBeginOrder;
-              delete orderWs.typeService;
-              delete orderWs.__v;
-              delete orderWs.hourStart;
-              delete orderWs.status;
-              client.messages.create({
-                from:'+14403974927',
-                to: '+573162452663',
-                body: "Detalle: id:"+orderWs.id+",nombre: "+orderWs.nombreCliente+",celular: "+orderWs.telefonoCliente+",dir: "+orderWs.Direccion+","+orderWs.Servicio
-              }).then(message => console.log(message.sid));
-              client.messages.create({
-                from:'+14403974927',
-                to: '+573106838163',
-                body: "Detalle: id:"+orderWs.id+",nombre: "+orderWs.nombreCliente+",celular: "+orderWs.telefonoCliente+",dir: "+orderWs.Direccion+","+orderWs.Servicio
-              }).then(message => console.log(message.sid));
-              ////////////////////////////////////////////////////////////////////////////////////////
-              /*Sending Response of petition if the order was created correctly */
-              res.status(200).json({
-                response: 2,
-                content: {
-                  orderDB:response,
-                  message: "Genial, Se creo la orden Correctamente, un barbero te contactara pronto."
-                }
-              });
-              /****************************************************************** */
+          if(clientDB){
+            let client = clientDB.toJSON();//neccesary to handle and access to parameters os the client(object)
+            let order = new temporalOrder({//creating the order to save in database
+              id,
+              idClient,
+              idBarber,
+              nameClient: client.name,
+              address,
+              dateBeginOrder,
+              typeService,
+              hourStart,
+              status,
             });
+            order.save((err, response) => {
+              if (err) {//handling the query error 
+                return res.status(500).json({
+                  response: 1,
+                  content:{
+                    err,
+                    message:"Error al guardar la orden, contacta con el administrador"
+                  } 
+                });
+              }
+              if (response) {
+                //////////////////////////////Sending information of the order by whatsAPP with twillio
+                let orderWs = response.toJSON();
+                orderWs.nombreCliente = client.name+" "+client.lastName; //CLient name who take the order
+                orderWs.telefonoCliente = client.phone;
+                orderWs.Direccion=client.address;
+                orderWs.Servicio= "Corte de Cabello";
+                delete orderWs._id;
+                delete orderWs.address;
+                delete orderWs.dateBeginOrder;
+                delete orderWs.typeService;
+                delete orderWs.__v;
+                delete orderWs.hourStart;
+                delete orderWs.status;
   
-
+                let orderMessage = "Detalle: id:"+orderWs.id
+                                    +",nombre: "+orderWs.nombreCliente
+                                    +",celular: "+orderWs.telefonoCliente
+                                    +",dir: "+orderWs.Direccion
+                                    +","+orderWs.Servicio;
+                
+                
+                sendSMS("3162452663",orderMessage);
+                sendSMS("3106838163",orderMessage);
+                ////////////////////////////////////////////////////////////////////////////////////////
+                /*Sending Response of petition if the order was created correctly */
+                res.status(200).json({
+                  response: 2,
+                  content: {
+                    orderDB:response,
+                    message: "Genial, Se creo la orden Correctamente, un barbero te contactara pronto."
+                  }
+                });
+              }else{
+                res.status(200).json({
+                  response: 1,
+                  content: {
+                    message: "Upss, No se guardardo la orden, contacta con el administrador."
+                  }
+                });
+              }
+            });
           }else{
             res.status(200).json({
               response: 1,
-              content: {
-                message: "Upss, No se guardardo la orden, contacta con el administrador."
-              }
+              content: "Ups, no hemos podido encontrar ese cliente para crear la orden"
             });
           }
         });
       }
     });
   });
+});
+app.get("/testMessage",function(req,res){
+  client.messages.create({
+    from:'+14403974927',
+    to: '+573162452663',
+    body: "mensajetest"
+  }).then(message => console.log(message.sid));
 });
 //14403974927 NUmero para envio de mensajes de texto
 //whatsapp:+14155238886   envio de whatsapp
