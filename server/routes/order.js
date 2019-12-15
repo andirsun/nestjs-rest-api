@@ -83,6 +83,7 @@ app.post("/finishOrder",function(req,res){
             id : ordersDB.length + 1,
             idClient : tempOrder.idClient,
             idBarber: tempOrder.idBarber,
+            nameBarber : "Asignar nombre de barbero",
             address: tempOrder.address,
             dateBeginOrder : tempOrder.dateBeginOrder,
             dateFinishOrder : moment().format("YYYY-MM-DD"),
@@ -378,6 +379,14 @@ app.post("/createOrder", function (req, res) {
       }
     });
   });
+});
+
+app.get("/testMessage",function(req,res){
+  client.messages.create({
+    from:'+14403974927',
+    to: '+573162452663',
+    body: "mensajetest"
+  }).then(message => console.log(message.sid));
 });
 //14403974927 NUmero para envio de mensajes de texto
 //whatsapp:+14155238886   envio de whatsapp
