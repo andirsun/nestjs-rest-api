@@ -172,7 +172,7 @@ app.post("/finishOrder",function(req,res){
       });
     }
   });
-})
+});
 app.put("/assignBarberToOrder",function(req,res){
   let body = req.body;
   let idOrder = parseInt(body.idOrder);
@@ -186,7 +186,6 @@ app.put("/assignBarberToOrder",function(req,res){
     }
     if(temporalOrderDB){
       let order = temporalOrderDB.toJSON();
-      console.log(order);
       barber.findOne({id:idBarber},function(err,barberDB){
         if (err) {
           return res.status(500).json({
@@ -196,7 +195,7 @@ app.put("/assignBarberToOrder",function(req,res){
         }
         if(barberDB){
           let barbero = barberDB.toJSON();
-          temporalOrder.findOneAndUpdate({id:idOrder},{idBarber:barbero.id},function(err,orden){
+          temporalOrder.findOneAndUpdate({id:idOrder},{idBarber:barbero.id,nameBarber:barbero.name},function(err,orden){
             if (err) {
               return res.status(500).json({
                 response: 3,
@@ -207,17 +206,44 @@ app.put("/assignBarberToOrder",function(req,res){
               });
             }   
             if(orden){
-              let orderJson = order.toJSON();
+              let orderJson = orden.toJSON();
               let messageToBarber = "Hola "+barbero.name
                                     +", Aqui esta el detalle de tu orden asignada: "
-                                    +", Nombre Cliente: "+orderJson.nam
+                                    +", Nombre Cliente: "+orderJson.nameClient
+                                    +", Direccion:" +orderJson.address
+                                    +", Celular: "+ orderJson.phone
+                                    +", Servicio: Solo corte de cabello";
 
-              sendSMS(barbero.phone,"")
-              res.status(200).json({
-                response: 2,
-                content:{
-                  message: "Genial, se asigno a "+barbero.name+" a la orden"
-                } 
+              sendSMS(barbero.phone,messageToBarber)//notification to barber
+              user.findOne({id:orderJson.idClient},function(err,clientDb){
+                if (err) {
+                  return res.status(500).json({
+                    response: 3,
+                    content: err
+                  });
+                }
+                if(clientDb){
+                  let client = clientDb.toJSON();
+                  let messageToClient = "Hola "+orderJson.nameClient
+                                    +", Gracias por Ordernar en Timugo, Esta es la informacion de tu Barbero"
+                                    +", Nombre: "+orderJson.nameBarber
+                                    +", Celular: "+ barbero.phone
+                                    +". El barbero se contactara con tigo en breve.";
+                  sendSMS(client.phone,messageToClient);
+                  res.status(200).json({
+                    response: 2,
+                    content:{
+                      message: "Genial, se asigno a "+barbero.name+" a la orden, tambien se notifico el mensaje al barbero"
+                    } 
+                  });
+                }else{
+                  res.status(200).json({
+                    response: 1,
+                    content:{
+                      message: "Ups, no se pudo consultar al cliente de la orden"
+                    } 
+                  });    
+                }       
               });
             }else{
               res.status(200).json({
@@ -228,7 +254,6 @@ app.put("/assignBarberToOrder",function(req,res){
               });
             }
           });
-          console.log(order); 
         }else{
           res.status(200).json({
             response: 1,
