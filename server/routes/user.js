@@ -4,6 +4,10 @@ const _ = require("underscore");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const app = express();
+require("dotenv").config();
+const wilioId = process.env.ACCOUNT_SID;
+const wilioToken = process.env.AUTH_TOKEN;
+const client = require("twilio")(wilioId, wilioToken);
 /////////////////////////////////
 
 
@@ -11,6 +15,10 @@ app.get("/getHistoryOrders",function(req,res){
   let id = req.params.id;
   console.log(id);
 });
+
+
+
+
 app.post("/addUser", function(req, res) {
   ///Add user to DB the data is read by body of the petition
   let body = req.body;

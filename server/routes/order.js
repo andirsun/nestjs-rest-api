@@ -22,6 +22,9 @@ function sendSMS(numberDestiny,message){
     body : message
   }).then(message => console.log(message.sid));
 }
+
+
+
 function findBarber(idBarber){ // NOt working
   barber.findOne({id:idBarber},function(err,barberDb){
     let response;
@@ -44,6 +47,22 @@ function findBarber(idBarber){ // NOt working
     return response;
   });
 }
+
+
+app.get("/verificationCode",function(req,res){
+  //whatsapp:+14155238886   envio de whatsapp
+  
+  client.messages.create({
+    from:'whatsapp:+14155238886',
+    body: 'Your {{1}} code is {{2}}',
+    to: 'whatsapp+573188758481',
+  }).then(message => console.log(message.sid));
+  
+  res.status(200).json({
+    response: 2,
+    content: "Mensaje Enviado"
+  });
+}); 
 
 app.post("/finishOrder",function(req,res){
   let body = req.body;
