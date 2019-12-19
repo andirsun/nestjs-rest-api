@@ -35,6 +35,10 @@ let orderHistory = new Schema({
     type: String,
     required: [true, "la direccion es necesaria"]
   },
+  city:{
+    type: String,
+    required: [true, "la ciudad es necesaria"]
+  },
   dateBeginOrder: {
     type: Date,
     required: [true, "La fecha de inicio del pedido es necesaria"]

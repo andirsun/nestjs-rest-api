@@ -67,6 +67,10 @@ let barber = new Schema({
     type: String,
     required: [true, "La direccion es necesaria"]
   },
+  city:{
+    type: String,
+    required: [true, "la ciudad es necesaria"]
+  },
   urlImg:{
     type: String,
     required:[false],
