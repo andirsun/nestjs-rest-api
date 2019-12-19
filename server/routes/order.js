@@ -62,8 +62,14 @@ app.get("/verificationCode",function(req,res){
     response: 2,
     content: "Mensaje Enviado"
   });
+});
+app.get("/testMessage",function(req,res){
+  client.messages.create({
+    from:'+14403974927',
+    to: '+573162452663',
+    body: "mensajetest"
+  }).then(message => console.log(message.sid));
 }); 
-
 app.post("/finishOrder",function(req,res){
   let body = req.body;
   let idOrder = parseInt(body.idOrder);
@@ -192,106 +198,6 @@ app.post("/finishOrder",function(req,res){
     }
   });
 });
-app.put("/assignBarberToOrder",function(req,res){
-  let body = req.body;
-  let idOrder = parseInt(body.idOrder);
-  let idBarber = parseInt(body.idBarber);
-  temporalOrder.findOne({id:idOrder},function(err,temporalOrderDB){
-    if (err) {
-      return res.status(500).json({
-        response: 1,
-        content: err
-      });
-    }
-    if(temporalOrderDB){
-      let order = temporalOrderDB.toJSON();
-      barber.findOne({id:idBarber},function(err,barberDB){
-        if (err) {
-          return res.status(500).json({
-            response: 3,
-            content: err
-          });
-        }
-        if(barberDB){
-          let barbero = barberDB.toJSON();
-          temporalOrder.findOneAndUpdate({id:idOrder},{idBarber:barbero.id,nameBarber:barbero.name},function(err,orden){
-            if (err) {
-              return res.status(500).json({
-                response: 3,
-                content:{
-                  err,
-                  message: "No se puedo asignar el barbero a la orden"
-                } 
-              });
-            }   
-            if(orden){
-              let orderJson = orden.toJSON();
-              let messageToBarber = "Hola "+barbero.name
-                                    +", Aqui esta el detalle de tu orden asignada: "
-                                    +", Nombre Cliente: "+orderJson.nameClient
-                                    +", Direccion:" +orderJson.address
-                                    +", Celular: "+ orderJson.phone
-                                    +", Servicio: Solo corte de cabello";
-
-              sendSMS(barbero.phone,messageToBarber)//notification to barber
-              user.findOne({id:orderJson.idClient},function(err,clientDb){
-                if (err) {
-                  return res.status(500).json({
-                    response: 3,
-                    content: err
-                  });
-                }
-                if(clientDb){
-                  let client = clientDb.toJSON();
-                  let messageToClient = "Hola "+orderJson.nameClient
-                                    +", Gracias por Ordernar en Timugo, Esta es la informacion de tu Barbero"
-                                    +", Nombre: "+orderJson.nameBarber
-                                    +", Celular: "+ barbero.phone
-                                    +". El barbero se contactara con tigo en breve.";
-                  sendSMS(client.phone,messageToClient);
-                  res.status(200).json({
-                    response: 2,
-                    content:{
-                      message: "Genial, se asigno a "+barbero.name+" a la orden, tambien se notifico el mensaje al barbero"
-                    } 
-                  });
-                }else{
-                  res.status(200).json({
-                    response: 1,
-                    content:{
-                      message: "Ups, no se pudo consultar al cliente de la orden"
-                    } 
-                  });    
-                }       
-              });
-            }else{
-              res.status(200).json({
-                response: 1,
-                content:{
-                  message: "Paso alguna monda rara"
-                } 
-              });
-            }
-          });
-        }else{
-          res.status(200).json({
-            response: 1,
-            content: {
-              message: "Upssss. No encontramos a un barbero con ese id"
-            }
-          });    
-        }
-      });
-    }else{
-      res.status(200).json({
-        response: 1,
-        content: {
-          message: "Upssss. No pudimos encontrar esa orden"
-        }
-      });
-    }
-  });
-});
 app.post("/getCurrentOrder",function(req,res){
   let body = req.body;
   let idClient = parseInt(body.id);
@@ -370,6 +276,7 @@ app.post("/createOrder", function (req, res) {
     let dateBeginOrder = moment().format("YYYY-MM-DD");
     let hourStart = moment().format("HH:mm");
     let typeService = body.typeService;
+    let city = body.city;
     let status = body.status;
     ////////////////////////////////////////
     temporalOrder.findOne({idClient:idClient,status:true},function(err,orden){
@@ -408,6 +315,7 @@ app.post("/createOrder", function (req, res) {
               dateBeginOrder,
               typeService,
               hourStart,
+              city,
               status,
             });
             order.save((err, response) => {
@@ -442,8 +350,8 @@ app.post("/createOrder", function (req, res) {
                                     +","+orderWs.Servicio;
                 
                 
-                sendSMS("3162452663",orderMessage);
-                sendSMS("3106838163",orderMessage);
+                //sendSMS("3162452663",orderMessage);
+                //sendSMS("3106838163",orderMessage);
                 ////////////////////////////////////////////////////////////////////////////////////////
                 /*Sending Response of petition if the order was created correctly */
                 res.status(200).json({
@@ -473,13 +381,109 @@ app.post("/createOrder", function (req, res) {
     });
   });
 });
-app.get("/testMessage",function(req,res){
-  client.messages.create({
-    from:'+14403974927',
-    to: '+573162452663',
-    body: "mensajetest"
-  }).then(message => console.log(message.sid));
+app.put("/assignBarberToOrder",function(req,res){
+  let body = req.body;
+  let idOrder = parseInt(body.idOrder);
+  let idBarber = parseInt(body.idBarber);
+  temporalOrder.findOne({id:idOrder},function(err,temporalOrderDB){
+    if (err) {
+      return res.status(500).json({
+        response: 1,
+        content: err
+      });
+    }
+    if(temporalOrderDB){
+      let order = temporalOrderDB.toJSON();
+      barber.findOne({id:idBarber},function(err,barberDB){
+        if (err) {
+          return res.status(500).json({
+            response: 3,
+            content: err
+          });
+        }
+        if(barberDB){
+          let barbero = barberDB.toJSON();
+          temporalOrder.findOneAndUpdate({id:idOrder},{idBarber:barbero.id,nameBarber:barbero.name},function(err,orden){
+            if (err) {
+              return res.status(500).json({
+                response: 3,
+                content:{
+                  err,
+                  message: "No se puedo asignar el barbero a la orden"
+                } 
+              });
+            }   
+            if(orden){
+              let orderJson = orden.toJSON();
+              let messageToBarber = "Hola "+barbero.name
+                                    +", Aqui esta el detalle de tu orden asignada: "
+                                    +", Nombre Cliente: "+orderJson.nameClient
+                                    +", Direccion:" +orderJson.address
+                                    +", Celular: "+ orderJson.phone
+                                    +", Servicio: Solo corte de cabello";
+
+              sendSMS(barbero.phone,messageToBarber)//notification to barber
+              user.findOne({id:orderJson.idClient},function(err,clientDb){
+                if (err) {
+                  return res.status(500).json({
+                    response: 3,
+                    content: err
+                  });
+                }
+                if(clientDb){
+                  let client = clientDb.toJSON();
+                  let messageToClient = "Hola "+orderJson.nameClient
+                                    +", Gracias por Ordernar en Timugo, Esta es la informacion de tu Barbero"
+                                    +", Nombre: "+orderJson.nameBarber
+                                    +", Celular: "+ barbero.phone
+                                    +". El barbero se contactara con tigo en breve.";
+                  //sendSMS(client.phone,messageToClient);
+                  res.status(200).json({
+                    response: 2,
+                    content:{
+                      message: "Genial, se asigno a "+barbero.name+" a la orden, tambien se notifico el mensaje al barbero"
+                    } 
+                  });
+                }else{
+                  res.status(200).json({
+                    response: 1,
+                    content:{
+                      message: "Ups, no se pudo consultar al cliente de la orden"
+                    } 
+                  });    
+                }       
+              });
+            }else{
+              res.status(200).json({
+                response: 1,
+                content:{
+                  message: "Paso alguna monda rara"
+                } 
+              });
+            }
+          });
+        }else{
+          res.status(200).json({
+            response: 1,
+            content: {
+              message: "Upssss. No encontramos a un barbero con ese id"
+            }
+          });    
+        }
+      });
+    }else{
+      res.status(200).json({
+        response: 1,
+        content: {
+          message: "Upssss. No pudimos encontrar esa orden"
+        }
+      });
+    }
+  });
 });
+
+
+
 //14403974927 NUmero para envio de mensajes de texto
 //whatsapp:+14155238886   envio de whatsapp
 
