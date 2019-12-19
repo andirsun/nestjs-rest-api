@@ -59,6 +59,29 @@ app.post("/loginBarber" ,function(req,res){
   );
 
 });
+app.get("/getAvailableOrdersByCity",function(req,res){
+  let city = req.query.city || "none";
+  console.log(city);
+  temporalOrder.find({city:city},function(err,response){
+    if (err) {
+      return res.status(400).json({
+        response: 3,
+        content: err
+      });
+    }
+    if(response.length!=0){
+      res.status(200).json({
+        response: 2,
+        content:response 
+      });
+    }else{
+      res.status(200).json({
+        response: 1,
+        content: "Ups, no hay ordenes disponibles en esa ciudad"
+      });
+    }
+  });
+});
 app.post("/addBarber", function(req, res) {
   ///Add user to DB the data is read by body of the petition
   let body = req.body;
