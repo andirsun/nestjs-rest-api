@@ -70,6 +70,28 @@ app.get("/testMessage",function(req,res){
     body: "mensajetest"
   }).then(message => console.log(message.sid));
 }); 
+app.get("/getInfoCurrentOrder",function(req,res){
+  let idOrder = req.query.idOrder;
+  temporalOrder.findOne({id:idOrder},function(err,response){
+    if(err){
+      return res.status(500).json({
+        response: 3,
+        content : err,
+      });
+    }
+    if(response){
+      res.status(200).json({
+        response: 2,
+        content :response,
+      });
+    }else{
+      res.status(400).json({
+        response: 1,
+        content : "Orden no encontrada con ese id",
+      });
+    }
+  });
+});
 app.post("/finishOrder",function(req,res){
   let body = req.body;
   let idOrder = parseInt(body.idOrder);
