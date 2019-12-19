@@ -92,7 +92,7 @@ app.get("/getInfoCurrentOrder",function(req,res){
     }
   });
 });
-app.post("/finishOrder",function(req,res){
+/*app.post("/finishOrder",function(req,res){
   let body = req.body;
   let idOrder = parseInt(body.idOrder);
   let stars = parseInt(body.stars) || 5;
@@ -219,7 +219,7 @@ app.post("/finishOrder",function(req,res){
       });
     }
   });
-});
+});*/
 app.post("/getCurrentOrder",function(req,res){
   let body = req.body;
   let idClient = parseInt(body.id);

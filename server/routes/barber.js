@@ -4,6 +4,11 @@ const _ = require("underscore");
 const Barber = require("../models/barber");
 const jwt = require("jsonwebtoken");
 const app = express();
+const user = require("../models/user");
+const order = require("../models/orderHistory");
+//const moment = require('moment');
+const moment = require('moment-timezone');
+const service = require("../models/service")
 const temporalOrder = require("../models/temporalOrder");
 
 /////////////////////////////////
@@ -78,6 +83,136 @@ app.get("/getAvailableOrdersByCity",function(req,res){
       res.status(200).json({
         response: 1,
         content: "Ups, no hay ordenes disponibles en esa ciudad"
+      });
+    }
+  });
+});
+app.post("/finishOrder",function(req,res){
+  let body = req.body;
+  let idOrder = parseInt(body.idOrder);
+  let nameBarber = body.nameBarber;
+  let comment = body.comment || "Sin comentarios";
+  let status = body.status;
+  temporalOrder.findOneAndUpdate({id:idOrder},{status:false},function(err,temporalOrderDB){
+    if (err) {
+      return res.status(500).json({
+        response: 1,
+        content: err
+      });
+    }
+    if(temporalOrderDB){
+      let tempOrder = temporalOrderDB.toJSON();
+      Barber.findOneAndUpdate({id:tempOrder.idBarber},{$inc:{points:50}},function(err,barberDb){//updating points to a barber
+        if (err) {
+          return res.status(500).json({
+            response: 3,
+            content: err
+          });
+        }
+        if(barberDb){
+          console.log("se sumaron los puntos al barbero");
+        }else{
+          console.log("No se le sumaron los puntos al barbero");
+        }
+      });
+      user.findOneAndUpdate({id:tempOrder.idClient},{$inc:{points:50}},function(err,userDb){//updating points to a barber
+        if (err) {
+          return res.status(500).json({
+            response: 3,
+            content: err
+          });
+        }
+        if(userDb){
+          console.log("Se sumaron los punto al usuario");
+        }else{
+          console.log("No se le sumaron los puntos al usuario");
+        }
+      });
+      order.find(function(err,ordersDB){
+        if (err) {
+          return res.status(500).json({
+            response: 1,
+            content: err
+          });
+        }
+        if(ordersDB){ 
+          
+          service.findOne({id:tempOrder.typeService},function(err,response){
+            if (err) {
+              return res.status(500).json({
+                response: 1,
+                content: err
+              });
+            }
+            if(response){
+              let service = response.toJSON();
+              let orderSave = new order({
+                id : ordersDB.length + 1,
+                idClient : tempOrder.idClient,
+                idBarber: tempOrder.idBarber,
+                nameBarber : nameBarber,
+                nameClient : tempOrder.nameClient,
+                address: tempOrder.address,
+                dateBeginOrder : tempOrder.dateBeginOrder + " "+tempOrder.hourStart,
+                dateFinishOrder : moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm"),
+                duration : 15,
+                comments : comment,
+                price : service.price,
+                typeService : tempOrder.typeService,
+                status: status,
+                payMethod:"cash",
+                city: tempOrder.city,
+                bonusCode: "none",
+                card: "none"
+              });
+              orderSave.save((err,orderDb)=>{
+                if (err) {
+                  return res.status(500).json({
+                    response: 1,
+                    content: err
+                  });
+                }
+                if(orderDb){
+                  res.status(200).json({
+                    response: 2,
+                    content:{
+                      orderDb,
+                      message: "Se guardo la orden en el historial y se desactivo de las ordenes activas"
+                    } 
+                  });
+                }else{
+                  res.status(200).json({
+                    response: 1,
+                    content:{
+                      message: "UPss. NO pudimos enviar la orden al historial"
+                    } 
+                  });
+                }    
+              });
+            }else{
+              res.status(200).json({
+                response: 1,
+                content:{
+                  message: "No se pudo obtener el precio del servicio con el id dado"
+                } 
+              });    
+            }
+          });
+        }else{
+          res.status(200).json({
+            response: 1,
+            content:{
+              message: "NO SE PUDIERON ENCONTRAR LAS ORDENES"
+            } 
+          });
+        }
+      });
+    }else{
+      res.status(200).json({
+        response: 1,
+        content:{
+          message: "Upss. No concontramos esa orden"
+        } 
       });
     }
   });
