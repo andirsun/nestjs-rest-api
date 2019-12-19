@@ -61,6 +61,10 @@ let temporalOrder = new Schema({
     type: Boolean,
     default: true,
     required: [false]
+  },
+  price:{
+    type: Number,
+    required:[true, "EL precio es estrictamente necesario"]
   }
   
 });
