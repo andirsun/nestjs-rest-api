@@ -54,8 +54,8 @@ app.get("/verificationCode",function(req,res){
   
   client.messages.create({
     from:'whatsapp:+14155238886',
-    body: 'Your {{1}} code is {{2}}',
-    to: 'whatsapp+573188758481',
+    body: 'Your verification code is 096571',
+    to: 'whatsapp:+573188758481',
   }).then(message => console.log(message.sid));
   
   res.status(200).json({
