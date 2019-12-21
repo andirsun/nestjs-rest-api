@@ -15,6 +15,12 @@ app.get("/getHistoryOrders",function(req,res){
   let id = req.params.id;
   console.log(id);
 });
+app.post("/verificationCode",function(req,res){
+  let body = req.body;
+  let phone = body.phonel;
+  let code = body.code;
+  user.findOne({phone:phone,registrationCode:code});
+});
 app.post("/loginUser",function(req,res){
   let body = req.body;
   let phone = body.phone;
@@ -44,7 +50,8 @@ app.post("/loginUser",function(req,res){
           let userSave = new User({
             id: records.length +1 ,            
             phone,
-            registrationCode :code
+            registrationCode :code,
+            email:phone.toString()+"@timugo.com" //temporal fix
           });
           userSave.save((err,usuarioDB)=>{
             if(err){
@@ -279,7 +286,6 @@ app.put("/usuario/:id", function(req, res) {
     }
   );
 });
-
 app.delete("/usuario/:id", function(req, res) {
   let id = req.params.id;
 
