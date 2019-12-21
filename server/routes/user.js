@@ -117,7 +117,7 @@ app.post("/verificationCode",function(req,res){
         });
       }else{
         res.status(200).json({
-          response: 1,
+          response: 2,
           content:{
             code : 0,
             message : "El usuario ya esta registrado, se debe enviar a los servicios"
