@@ -11,13 +11,22 @@ const client = require("twilio")(wilioId, wilioToken);
 /////////////////////////////////
 
 
-function sendSMS(numberDestiny,message){
+function sendSMS2(numberDestiny,message){
   client.messages.create({
     from:'+14403974927',
     to: '+57'+numberDestiny,
     body : message
   }).then(message => console.log(message.sid));
 }
+
+function sendSMS(numberDestiny,message){
+  client.messages.create({
+    from:'whatsapp:+14155238886',
+    to: 'whatsapp:+57'+numberDestiny,
+    body : message
+  }).then(message => console.log(message.sid));
+}
+
 
 app.get("/getHistoryOrders",function(req,res){
   let id = req.params.id;
