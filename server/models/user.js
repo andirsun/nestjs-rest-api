@@ -15,7 +15,7 @@ let usuarioSchema = new Schema({
   },
   name: {
     type: String,
-    required: [true, "El nombre es necesario"]
+    required: false
   },
   phone: {
     type: Number,
@@ -24,24 +24,20 @@ let usuarioSchema = new Schema({
   },
   lastName: {
     type: String,
-    required: [true, "Los apellidos son necesarios"]
+    required: false
   },
   birth: {
     type: Date,
-    required: [true, "La edad es necesaria"]
+    required: false
   },
   email: {
     type: String,
     unique: true,
-    required: [true, "Este correo ya esta registrado"]
-  },
-  password: {
-    type: String,
-    required: [true, "La contraseña es obligatoria"]
+    required: false
   },
   address: {
     type: String,
-    required: [true, "La direccion es necesaria"]
+    required: false
   },
   img: {
     type: String,
@@ -54,7 +50,7 @@ let usuarioSchema = new Schema({
   },
   numServices:{
     type : Number,
-    required:[false],
+    required:false,
     default:0
   },
   points: {
