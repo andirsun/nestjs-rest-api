@@ -26,10 +26,6 @@ let usuarioSchema = new Schema({
     unique: true,
     required: [true, "Es necesario el numero de celular"]
   },
-  lastName: {
-    type: String,
-    required: false
-  },
   birth: {
     type: Date,
     required: false
