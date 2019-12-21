@@ -44,6 +44,7 @@ app.use(require("./routes/index")); // import all routes
 module.exports.io = socketIO(server);
 require("./sockets/socket");
 
+
 mongoose.connect(
   process.env.URLDB,
   { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true ,useFindAndModify: false},
