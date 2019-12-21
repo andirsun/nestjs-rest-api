@@ -15,11 +15,76 @@ app.get("/getHistoryOrders",function(req,res){
   let id = req.params.id;
   console.log(id);
 });
+app.put("/editInfoUser",function(req,res){
+  let body = req.body;
+  let phone = body.phone;
+  let name = body.name || "none" ;
+  let email = body.email;
+  console.log(phone,name,email);
+  User.findOneAndUpdate({phone:phone},{name:name,email:email},function(err,response){
+    if (err) {
+      return res.status(500).json({
+        response: 3,
+        content:{
+          message: "Error al actualizar la informacion del usuario",
+          err
+        } 
+      });
+    }
+    if(response){
+      res.status(200).json({
+        response: 2,
+        content:"El usuario fue actualizado correctamente"
+      });
+    }else{
+      res.status(400).json({
+        response: 1,
+        content:"El usuario no se actualizo"
+      });
+    }
+  });
+
+});
 app.post("/verificationCode",function(req,res){
   let body = req.body;
-  let phone = body.phonel;
-  let code = body.code;
-  user.findOne({phone:phone,registrationCode:code});
+  let phone = body.phone;
+  let code = body.code.toString();
+  User.findOne({phone:phone,registrationCode:code},function(err,response){
+    if (err) {
+      return res.status(500).json({
+        response: 3,
+        content:{
+          message: "Error al tratar de encontrar al usuario con un codigo",
+          err
+        } 
+      });
+    }
+    if(response){
+      let user = response.toJSON();
+      if(!user.name){
+        res.status(200).json({
+          response: 2,
+          content:{
+            code :1,
+            message :"El usuario no esta registrado, debe seguir con el registro"
+          } //1 its because user isnt registered and need to continious with the registration
+        });
+      }else{
+        res.status(200).json({
+          response: 1,
+          content:{
+            code : 0,
+            message : "El usuario ya esta registrado, se debe enviar a los servicios"
+          }, // 0 because he is already registered 
+        });
+      }
+    }else{
+      res.status(400).json({
+        response: 1,
+        content:"No encontramos al usuario o el codigo no coincide" //1 its because user isnt registered and need to continious with the registration
+      });
+    }
+  });
 });
 app.post("/loginUser",function(req,res){
   let body = req.body;
