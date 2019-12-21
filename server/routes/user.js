@@ -15,17 +15,78 @@ app.get("/getHistoryOrders",function(req,res){
   let id = req.params.id;
   console.log(id);
 });
-
-
-
-
+app.post("/loginUser",function(req,res){
+  let body = req.body;
+  let phone = body.phone;
+  User.find(function(err,records){
+    if (err) {
+      return res.status(400).json({
+        response: 3,
+        content: err
+      });
+    }
+    if(records){
+      User.findOne({phone:phone},function(err,response){
+        if (err) {
+          return res.status(500).json({
+            response: 3,
+            content: err
+          });
+        }
+        if(response){
+          //if the user is already register, then we need to add other logic here
+          res.status(200).json({
+            response: 2,
+            content:"El usuario ya esta registrado y tiene codigo"
+          });
+        }else{
+          let code = Math.floor(100000 + Math.random() * 900000).toString(); //a number between 100.000 and 999.999
+          let userSave = new User({
+            id: records.length +1 ,            
+            phone,
+            registrationCode :code
+          });
+          userSave.save((err,usuarioDB)=>{
+            if(err){
+              return res.status(400).json({
+                response: 1,
+                content:{
+                  err,
+                  message:"No se pudo guardar al usuario en la base de datos"
+                  }  
+                });
+            }
+            if(usuarioDB){
+              
+              res.status(200).json({
+                response: 2,
+                content:"Usuario Creado Correctamente"
+              });
+            }else{
+              console.log("entre al else");
+              res.status(400).json({
+                response: 1,
+                content:"No se pudo calcular el numero total de usuarios"
+              });        
+            }
+          });
+        }
+      });
+    }else{
+      res.status(400).json({
+        response: 1,
+        content:"No se pudo calcular el numero total de usuarios"
+      });
+    }
+  });
+});
 app.post("/addUser", function(req, res) {
   ///Add user to DB the data is read by body of the petition
   let body = req.body;
   User.find(function(err, userDB) {
     if (err) {
-      return res.status(400).json({
-        response: 1,
+      return res.status(500).json({
+        response: 3,
         content: err
       });
     }
@@ -187,7 +248,6 @@ app.post("/usuario", function(req, res) {
     });
   });
 });
-
 app.get("/getMessageWelcome",function(req,res){
   res.status(200).json({
     response:2,
