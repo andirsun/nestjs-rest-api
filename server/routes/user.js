@@ -11,6 +11,14 @@ const client = require("twilio")(wilioId, wilioToken);
 /////////////////////////////////
 
 
+function sendSMS(numberDestiny,message){
+  client.messages.create({
+    from:'+14403974927',
+    to: '+57'+numberDestiny,
+    body : message
+  }).then(message => console.log(message.sid));
+}
+
 app.get("/getHistoryOrders",function(req,res){
   let id = req.params.id;
   console.log(id);
@@ -44,6 +52,36 @@ app.put("/editInfoUser",function(req,res){
     }
   });
 
+});
+app.get("/sendCode",function(req,res){
+  let phone = req.query.phone;
+  console.log(phone);
+  User.findOne({phone:phone},function(err,response){
+    if (err) {
+      return res.status(500).json({
+        response: 3,
+        content:{
+          message: "Error al tratar de encontrar al usuario con el numero",
+          err
+        } 
+      });
+    }
+    if(response){
+      let user = response.toJSON();
+      let code = user.registrationCode;
+      let message = 'Your verification code is '+code.toString();
+      sendSMS(user.phone,message);
+      res.status(200).json({
+        response: 2,
+        content:"El mensaje se envio correctamente"
+      });
+    }else{
+      res.status(200).json({
+        response: 1,
+        content:"No se encontro ningun usuario con ese telefono"
+      });
+    }
+  });
 });
 app.post("/verificationCode",function(req,res){
   let body = req.body;
@@ -106,9 +144,28 @@ app.post("/loginUser",function(req,res){
         }
         if(response){
           //if the user is already register, then we need to add other logic here
-          res.status(200).json({
-            response: 2,
-            content:"El usuario ya esta registrado y tiene codigo"
+          let code = Math.floor(100000 + Math.random() * 900000).toString(); //a number between 100.000 and 999.999
+          response["registrationCode"] = code;
+          response.save((err,response)=>{
+            if (err) {
+              return res.status(500).json({
+                response: 3,
+                content: err
+              });
+            }
+            if(response){
+              let updateUser = response.toJSON();
+              console.log(updateUser);
+              res.status(200).json({
+                response: 2,
+                content:"El usuario ya esta registrado y tiene codigo nuevo"
+              });
+            }else{
+              res.status(400).json({
+                response: 1,
+                content:"No se le pudo actualizar el codigo"
+              });
+            }
           });
         }else{
           let code = Math.floor(100000 + Math.random() * 900000).toString(); //a number between 100.000 and 999.999
