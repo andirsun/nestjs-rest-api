@@ -17,6 +17,10 @@ let usuarioSchema = new Schema({
     type: String,
     required: false
   },
+  registrationCode :{
+    type : String,
+    require: [true,"Es necesario el mismo"]
+  },
   phone: {
     type: Number,
     unique: true,
