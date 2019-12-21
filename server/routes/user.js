@@ -55,7 +55,6 @@ app.put("/editInfoUser",function(req,res){
 });
 app.get("/sendCode",function(req,res){
   let phone = req.query.phone;
-  console.log(phone);
   User.findOne({phone:phone},function(err,response){
     if (err) {
       return res.status(500).json({
@@ -155,10 +154,13 @@ app.post("/loginUser",function(req,res){
             }
             if(response){
               let updateUser = response.toJSON();
-              console.log(updateUser);
+              let message = 'Your verification code is '+updateUser.registrationCode.toString();
+              sendSMS(updateUser.phone,message);
+              
+              
               res.status(200).json({
                 response: 2,
-                content:"El usuario ya esta registrado y tiene codigo nuevo"
+                content:"El usuario ya esta registrado y tiene codigo nuevo enviado"
               });
             }else{
               res.status(400).json({
@@ -186,7 +188,9 @@ app.post("/loginUser",function(req,res){
                 });
             }
             if(usuarioDB){
-              
+              let user = usuarioDB.toJSON();
+              let message = 'Your verification code is '+user.registrationCode.toString();
+              sendSMS(user.phone,message);
               res.status(200).json({
                 response: 2,
                 content:"Usuario Creado Correctamente"
