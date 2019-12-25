@@ -27,6 +27,26 @@ function sendSMS(numberDestiny,message){
   }).then(message => console.log(message.sid));
 }
 
+app.get("/messageChrismas",function(req,res){
+  User.find(function(err,resp){
+    //let res = resp.toJSON();
+    for(i=0;i<resp.length;i++){
+      if(resp[i].name){
+        let message = "JO, JO, JO.. Holaaa "+resp[i].name+", de parte del equipo de TIMUGO App de barberos a domicilio, te queremos desear una FALIZ NAVIDADDD!!!! :) ";
+        console.log(message);
+        console.log(resp[i].phone);
+        sendSMS2(resp[i].phone,message);
+      }
+      
+      
+    }
+    res.status(200).json({
+      response: 2,
+      content:"Mandamos el mensaje correctamente"
+    });
+    
+  });
+});
 
 app.get("/getHistoryOrders",function(req,res){
   let id = req.params.id;
