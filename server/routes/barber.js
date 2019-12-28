@@ -13,6 +13,8 @@ const temporalOrder = require("../models/temporalOrder");
 
 /////////////////////////////////
 
+
+
 app.post("/loginBarber" ,function(req,res){
   
   let body = _.pick(req.body, ["phone"]);
@@ -43,12 +45,19 @@ app.post("/loginBarber" ,function(req,res){
           if(response){
             res.status(200).json({
               response: 2,
-              content:"Barbero logeado, pero con pedido en curso"
+              content:{
+                message:"Barbero logeado, pero con pedido en curso",
+                barber:response
+              }
+                
             });    
           }else{
             res.status(200).json({
               response: 2,
-              content:"Barbero logeado correctamente"
+              content:{
+                message:"Barbero logeado correctamente",
+                barber
+              }
             });
           }
         });
