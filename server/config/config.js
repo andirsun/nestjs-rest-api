@@ -22,8 +22,8 @@ if (process.env.NODE_ENV === 'dev') {
 
 
 
-//urlDB = 'mongodb://localhost:27017/timugoClientApp';
-urlDB ="mongodb+srv://admin:y8Rf@bnjiYKEk8_@timugo-d2l1g.mongodb.net/timugoBackend";
+//urlDB = 'mongodb://localhost:27017/timugoClientApp'; //develop
+urlDB ="mongodb+srv://admin:y8Rf@bnjiYKEk8_@timugo-d2l1g.mongodb.net/timugoBackend"; //produccion 
 
 process.env.URLDB = urlDB;
 // ============================
