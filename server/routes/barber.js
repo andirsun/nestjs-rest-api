@@ -100,7 +100,7 @@ app.post("/loginBarber" ,function(req,res){
               response: 2,
               content:{
                 message:"Barbero logeado, pero con pedido en curso",
-                barber:response
+                order:response
               }
                 
             });    
