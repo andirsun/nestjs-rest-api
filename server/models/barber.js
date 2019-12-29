@@ -13,6 +13,11 @@ let barber = new Schema({
     require: [true, "EL id es necesario"],
     default: 0
   },
+  updated: { 
+    type: Date,
+    required:false,
+    default: Date.now 
+  },
   name: {
     type: String,
     required: [true, "El nombre es necesario"]

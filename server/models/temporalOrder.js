@@ -13,6 +13,11 @@ let temporalOrder = new Schema({
     require: [true, "EL id es necesario"],
     default: 0
   },
+  updated: { 
+    type: Date,
+    required:false,
+    default: Date.now 
+  },
   idClient: {
     type: Number,
     required: [true, "El id del cliente es necesario"]
