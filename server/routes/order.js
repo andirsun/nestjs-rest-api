@@ -49,27 +49,6 @@ function findBarber(idBarber){ // NOt working
 }
 
 
-app.get("/verificationCode",function(req,res){
-  //whatsapp:+14155238886   envio de whatsapp
-  
-  client.messages.create({
-    from:'whatsapp:+14155238886',
-    body: 'Your verification code is 096571',
-    to: 'whatsapp:+573188758481',
-  }).then(message => console.log(message.sid));
-  
-  res.status(200).json({
-    response: 2,
-    content: "Mensaje Enviado"
-  });
-});
-app.get("/testMessage",function(req,res){
-  client.messages.create({
-    from:'+14403974927',
-    to: '+573162452663',
-    body: "mensajetest"
-  }).then(message => console.log(message.sid));
-}); 
 app.get("/getInfoCurrentOrder",function(req,res){
   let idOrder = req.query.idOrder;
   temporalOrder.findOne({id:idOrder},function(err,response){

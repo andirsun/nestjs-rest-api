@@ -13,6 +13,61 @@ const temporalOrder = require("../models/temporalOrder");
 
 /////////////////////////////////
 
+app.get("/getBarbersTop",function(req,res){
+  Barber.find(function(err,response){
+    if (err) {
+      return res.status(500).json({
+        response: 3,
+        content: {
+          error: err,
+          message: "Error al buscar los barberos"
+        }
+      });
+    }
+    if(response){
+      
+      res.status(200).json({
+        response: 2,
+        content:response
+      }); 
+    }else{
+      res.status(400).json({
+        response: 1,
+        content:"No Existen Barberos Top"
+      }); 
+
+    }
+  });
+});
+
+app.get("/getBarberByPhone",function(req,res){
+  let phone = req.query.phoneBarber || 0;
+  phone = parseInt(phone);
+  Barber.findOne({phone:phone},function(err,response){
+    if (err) {
+      return res.status(500).json({
+        response: 3,
+        content: {
+          error: err,
+          message: "Error al buscar el barbero"
+        }
+      });
+    }
+    if(response){
+      res.status(200).json({
+        response: 2,
+        content:response
+      }); 
+    }else{
+      res.status(400).json({
+        response: 1,
+        content:"No Existe Barbero con ese celular"
+      }); 
+
+    }
+  });
+});
+
 app.post("/loginBarber" ,function(req,res){
   
   let body = _.pick(req.body, ["phone"]);
@@ -43,12 +98,19 @@ app.post("/loginBarber" ,function(req,res){
           if(response){
             res.status(200).json({
               response: 2,
-              content:"Barbero logeado, pero con pedido en curso"
+              content:{
+                message:"Barbero logeado, pero con pedido en curso",
+                barber:response
+              }
+                
             });    
           }else{
             res.status(200).json({
               response: 2,
-              content:"Barbero logeado correctamente"
+              content:{
+                message:"Barbero logeado correctamente",
+                barber
+              }
             });
           }
         });
