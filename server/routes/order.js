@@ -60,9 +60,29 @@ app.get("/getInfoCurrentOrder",function(req,res){
       });
     }
     if(response){
-      res.status(200).json({
-        response: 2,
-        content :response,
+      let order = response.toJSON();
+      let idClient = order["idClient"];
+      user.findOne({id:idClient},function(err,resp){
+        if(err){
+          return res.status(500).json({
+            response: 3,
+            content : err,
+          });
+        }
+        if(resp){
+          let user = resp.toJSON();//handling parameters 
+          let phoneUser= user.phone;
+          order["phoneClient"]= phoneUser;
+          res.status(200).json({
+            response: 2,
+            content :order,
+          });
+        }else{
+          res.status(400).json({
+            response: 1,
+            content :"no encontramos el cliente con ese id",
+          });
+        }  
       });
     }else{
       res.status(400).json({
