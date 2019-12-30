@@ -50,8 +50,55 @@ app.get("/messageChrismas",function(req,res){
 
 app.get("/getHistoryOrders",function(req,res){
   let id = req.params.id;
-  console.log(id);
+  //
+  //
+  //
+  //
+  //
+  //
+  //
 });
+
+app.put("/addAddressUser",function(req,res){
+  let body = req.body;
+  let id = body.idUser;
+  let city = body.city || "none";
+  let address = body.address || "none";
+  User.findOneAndUpdate({id:id},{
+    $push : {
+       addresses :  {
+                "city":city ,
+                "address":address,
+                "favorite" :false
+              } //inserted data is the object to be inserted 
+     }
+  },function(err,response){
+    if (err) {
+      return res.status(500).json({
+        response: 3,
+        content:{
+          message: "Error al agregar la direccion del usuario",
+          err
+        } 
+      });
+    }
+    if(response){
+      res.status(200).json({
+        response: 2,
+        content:{
+          message:"la direccion se actualizo correctamente",
+          user : response
+        }
+      });
+    }else{
+      res.status(200).json({
+        response: 2,
+        content:"no se aniadio la direccion al usuario"
+      });
+    }
+  });
+});
+
 app.put("/editInfoUser",function(req,res){
   let body = req.body;
   let phone = body.phone;

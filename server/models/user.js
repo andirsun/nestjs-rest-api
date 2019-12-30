@@ -13,6 +13,11 @@ let usuarioSchema = new Schema({
     require: [true, "EL id es necesario"],
     default: 0
   },
+  updated: { 
+    type: Date,
+    required:false,
+    default: Date.now 
+  },
   name: {
     type: String,
     required: false
@@ -34,10 +39,12 @@ let usuarioSchema = new Schema({
     type: String,
     required: false
   },
-  address: {
-    type: String,
-    required: false
-  },
+  addresses : [{
+    city : String,
+    address : String,
+    favorite : Boolean,
+    default:[]
+  }],
   img: {
     type: String,
     required: false
