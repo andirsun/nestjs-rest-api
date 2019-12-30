@@ -45,7 +45,6 @@ let usuarioSchema = new Schema({
     favorite : Boolean,
     lat : String,
     lng : String,
-    default:[]
   }],
   img: {
     type: String,

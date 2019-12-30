@@ -58,7 +58,31 @@ app.get("/getHistoryOrders",function(req,res){
   //
   //
 });
-
+app.get("/getAddressesUser",function(req,res){
+  let idUser = req.query.idUser;
+  User.findOne({id:idUser},function(err,response){
+    if (err) {
+      return res.status(500).json({
+        response: 3,
+        content:{
+          message: "Error al buscar al usuario",
+          err
+        } 
+      });
+    }if(response){
+      let user = response.toJSON();
+      res.status(200).json({
+        response: 2,
+        content:user.addresses
+      });
+    }else{
+      res.status(400).json({
+        response: 1,
+        content:"no encontramos un usuario con ese id "
+      });
+    }
+  });
+});
 app.put("/addAddressUser",function(req,res){
   let body = req.body;
   let id = body.idUser;
@@ -98,7 +122,6 @@ app.put("/addAddressUser",function(req,res){
     }
   });
 });
-
 app.put("/editInfoUser",function(req,res){
   let body = req.body;
   let phone = body.phone;
