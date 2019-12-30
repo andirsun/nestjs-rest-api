@@ -43,6 +43,8 @@ let usuarioSchema = new Schema({
     city : String,
     address : String,
     favorite : Boolean,
+    lat : String,
+    lng : String,
     default:[]
   }],
   img: {
