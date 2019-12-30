@@ -88,7 +88,7 @@ app.get("/getAditionalServices",function(req,res){
     
 });
 app.get("/getServices",function(req,res){
-    service.find(function(err,serviceDB){
+    Service.find(function(err,serviceDB){
         if (err) {
             return res.status(500).json({
                 response: 3,
