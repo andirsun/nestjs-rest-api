@@ -13,6 +13,10 @@ let usuarioSchema = new Schema({
     require: [true, "EL id es necesario"],
     default: 0
   },
+  phoneToken:{
+    type:String,
+    default:"none"
+  },
   updated: { 
     type: Date,
     required:false,

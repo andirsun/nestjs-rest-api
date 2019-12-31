@@ -18,7 +18,6 @@ function sendSMS2(numberDestiny,message){
     body : message
   }).then(message => console.log(message.sid));
 }
-
 function sendSMS(numberDestiny,message){
   client.messages.create({
     from:'whatsapp:+14155238886',
@@ -26,7 +25,6 @@ function sendSMS(numberDestiny,message){
     body : message
   }).then(message => console.log(message.sid));
 }
-
 app.get("/messageChrismas",function(req,res){
   User.find(function(err,resp){
     //let res = resp.toJSON();
@@ -47,7 +45,6 @@ app.get("/messageChrismas",function(req,res){
     
   });
 });
-
 app.get("/getHistoryOrders",function(req,res){
   let id = req.params.id;
   //
@@ -83,75 +80,6 @@ app.get("/getAddressesUser",function(req,res){
     }
   });
 });
-app.put("/addAddressUser",function(req,res){
-  let body = req.body;
-  let id = body.idUser;
-  let city = body.city || "none";
-  let address = body.address || "none";
-  User.findOneAndUpdate({id:id},{
-    $push : {
-       addresses :  {
-                "city":city ,
-                "address":address,
-                "favorite" :false
-              } //inserted data is the object to be inserted 
-     }
-  },function(err,response){
-    if (err) {
-      return res.status(500).json({
-        response: 3,
-        content:{
-          message: "Error al agregar la direccion del usuario",
-          err
-        } 
-      });
-    }
-    if(response){
-      res.status(200).json({
-        response: 2,
-        content:{
-          message:"la direccion se actualizo correctamente",
-          user : response
-        }
-      });
-    }else{
-      res.status(200).json({
-        response: 2,
-        content:"no se aniadio la direccion al usuario"
-      });
-    }
-  });
-});
-app.put("/editInfoUser",function(req,res){
-  let body = req.body;
-  let phone = body.phone;
-  let name = body.name || "none" ;
-  let email = body.email;
-  console.log(phone,name,email);
-  User.findOneAndUpdate({phone:phone},{name:name,email:email},function(err,response){
-    if (err) {
-      return res.status(500).json({
-        response: 3,
-        content:{
-          message: "Error al actualizar la informacion del usuario",
-          err
-        } 
-      });
-    }
-    if(response){
-      res.status(200).json({
-        response: 2,
-        content:"El usuario fue actualizado correctamente"
-      });
-    }else{
-      res.status(400).json({
-        response: 1,
-        content:"El usuario no se actualizo"
-      });
-    }
-  });
-
-});
 app.get("/sendCode",function(req,res){
   let phone = req.query.phone;
   User.findOne({phone:phone},function(err,response){
@@ -180,6 +108,109 @@ app.get("/sendCode",function(req,res){
       });
     }
   });
+});
+app.put("/addPhoneTokenUser",function(req,res){
+  let body = req.body;
+  let phoneUser = body.phoneUser;
+  let phoneToken = body.phoneToken;
+  User.findOneAndUpdate({phone:phoneUser},{$set : {phoneToken : phoneToken}},{new: true,runValidators: true},function(err,response){
+    if (err) {
+      return res.status(500).json({
+        response: 3,
+        content:{
+          message: "Error al buscar al usuario con ese celular.",
+          err
+        } 
+      });
+    }
+    if(response){
+      res.status(200).json({
+        response: 2,
+        content:{
+          message:"se agrego correctamente el token al usuario "+ response.name,
+          user : response
+        }
+      });
+    }else{
+      res.status(400).json({
+        response: 1,
+        content:"no se agrego el token al usuario"
+      });
+    }
+    
+  });
+})
+app.put("/addAddressUser",function(req,res){
+  let body = req.body;
+  let id = body.idUser;
+  let city = body.city || "none";
+  let address = body.address || "none";
+  User.findOneAndUpdate({id:id},{
+    $push : {
+       addresses :  {
+                "city":city ,
+                "address":address,
+                "favorite" :false
+              } //inserted data is the object to be inserted 
+     }
+  },{
+    new: true,
+    runValidators: true
+  },function(err,response){
+    if (err) {
+      return res.status(500).json({
+        response: 3,
+        content:{
+          message: "Error al agregar la direccion del usuario",
+          err
+        } 
+      });
+    }
+    if(response){
+      res.status(200).json({
+        response: 2,
+        content:{
+          message:"la direccion se actualizo correctamente",
+          user : response
+        }
+      });
+    }else{
+      res.status(400).json({
+        response: 1,
+        content:"no se agrego la direccion al usuario"
+      });
+    }
+  });
+});
+app.put("/editInfoUser",function(req,res){
+  let body = req.body;
+  let phone = body.phone;
+  let name = body.name || "none" ;
+  let email = body.email;
+  console.log(phone,name,email);
+  User.findOneAndUpdate({phone:phone},{name:name,email:email},{new: true,runValidators: true},function(err,response){
+    if (err) {
+      return res.status(500).json({
+        response: 3,
+        content:{
+          message: "Error al actualizar la informacion del usuario",
+          err
+        } 
+      });
+    }
+    if(response){
+      res.status(200).json({
+        response: 2,
+        content:"El usuario fue actualizado correctamente"
+      });
+    }else{
+      res.status(400).json({
+        response: 1,
+        content:"El usuario no se actualizo"
+      });
+    }
+  });
+
 });
 app.post("/verificationCode",function(req,res){
   let body = req.body;
@@ -422,7 +453,7 @@ app.post("/login", function(req, res) {
     }
   );
 });
-app.get("/usuario", function(req, res) {
+app.get("/paginateQuery", function(req, res) {
   let desde = req.query.desde || 0;
   desde = Number(desde);
   let limite = req.query.limite || 5;
@@ -456,99 +487,4 @@ app.get("/usuario", function(req, res) {
       );
     });
 });
-app.post("/usuario", function(req, res) {
-  let body = req.body;
-
-  let usuario = new Usuario({
-    nombre: body.nombre,
-    email: body.email,
-    password: bcrypt.hashSync(body.password, 10),
-    role: body.role
-  });
-
-  usuario.save((err, usuarioDB) => {
-    if (err) {
-      return res.status(400).json({
-        ok: false,
-        err
-      });
-    }
-
-    res.json({
-      ok: true,
-      usuario: usuarioDB
-    });
-  });
-});
-app.get("/getMessageWelcome",function(req,res){
-  res.status(200).json({
-    response:2,
-    content : "Bienvenido :)"
-  });
-});
-app.put("/usuario/:id", function(req, res) {
-  let id = req.params.id;
-  let body = _.pick(req.body, ["nombre", "email", "img", "role", "estado"]);
-
-  Usuario.findByIdAndUpdate(
-    id,
-    body,
-    {
-      new: true,
-      runValidators: true
-    },
-    (err, usuarioDB) => {
-      if (err) {
-        return res.status(400).json({
-          ok: false,
-          err
-        });
-      }
-      res.json({
-        ok: true,
-        usuario: usuarioDB
-      });
-    }
-  );
-});
-app.delete("/usuario/:id", function(req, res) {
-  let id = req.params.id;
-
-  // Usuario.findByIdAndRemove(id, (err, usuarioBorrado) => {
-
-  let cambiaEstado = {
-    estado: false
-  };
-
-  Usuario.findByIdAndUpdate(
-    id,
-    cambiaEstado,
-    {
-      new: true
-    },
-    (err, usuarioBorrado) => {
-      if (err) {
-        return res.status(400).json({
-          ok: false,
-          err
-        });
-      }
-
-      if (!usuarioBorrado) {
-        return res.status(400).json({
-          ok: false,
-          err: {
-            message: "Usuario no encontrado"
-          }
-        });
-      }
-
-      res.json({
-        ok: true,
-        usuario: usuarioBorrado
-      });
-    }
-  );
-});
-
 module.exports = app;
