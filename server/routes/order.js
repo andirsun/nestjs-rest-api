@@ -23,9 +23,6 @@ function sendSMS(numberDestiny,message){
     body : message
   }).then(message => console.log(message.sid));
 }
-
-
-
 function findBarber(idBarber){ // NOt working
   barber.findOne({id:idBarber},function(err,barberDb){
     let response;
@@ -48,8 +45,6 @@ function findBarber(idBarber){ // NOt working
     return response;
   });
 }
-
-
 app.get("/getInfoCurrentOrder",function(req,res){
   let idOrder = req.query.idOrder;
   temporalOrder.findOne({id:idOrder},function(err,response){
@@ -92,134 +87,6 @@ app.get("/getInfoCurrentOrder",function(req,res){
     }
   });
 });
-/*app.post("/finishOrder",function(req,res){
-  let body = req.body;
-  let idOrder = parseInt(body.idOrder);
-  let stars = parseInt(body.stars) || 5;
-  let comment = body.comment || "Sin comentarios";
-  let status = body.status || 1//this status its if the service was complete or was cancel
-  var pointsBarber = 0;
-  if(stars == 1){
-    pointsBarber =10;
-  }
-  if(stars == 2){
-    pointsBarber = 20; 
-  }
-  if(stars == 3){
-    pointsBarber = 30; 
-  }
-  if(stars == 4){
-    pointsBarber = 40; 
-  }
-  if(stars == 5){
-    pointsBarber = 50; 
-  }
-  temporalOrder.findOneAndUpdate({id:idOrder},{status:false},function(err,temporalOrderDB){
-    if (err) {
-      return res.status(500).json({
-        response: 1,
-        content: err
-      });
-    }
-    if(temporalOrderDB){
-      let tempOrder = temporalOrderDB.toJSON();
-      barber.findOneAndUpdate({id:tempOrder.idBarber},{$inc:{points:pointsBarber}},function(err,barberDb){//updating points to a barber
-        if (err) {
-          return res.status(500).json({
-            response: 3,
-            content: err
-          });
-        }
-        if(barberDb){
-          console.log("se sumaron los puntos al barbero");
-        }else{
-          console.log("No se le sumaron los puntos al barbero");
-        }
-      });
-      user.findOneAndUpdate({id:tempOrder.idClient},{$inc:{points:50}},function(err,userDb){//updating points to a barber
-        if (err) {
-          return res.status(500).json({
-            response: 3,
-            content: err
-          });
-        }
-        if(userDb){
-          console.log("Se sumaron los punto al usuario");
-        }else{
-          console.log("No se le sumaron los puntos al usuario");
-        }
-      });
-      order.find(function(err,ordersDB){
-        if (err) {
-          return res.status(500).json({
-            response: 1,
-            content: err
-          });
-        }
-        if(ordersDB){ 
-          let orderSave = new order({
-            id : ordersDB.length + 1,
-            idClient : tempOrder.idClient,
-            idBarber: tempOrder.idBarber,
-            nameBarber : "Asignar nombre de barbero",
-            address: tempOrder.address,
-            dateBeginOrder : tempOrder.dateBeginOrder,
-            dateFinishOrder : moment().format("YYYY-MM-DD"),
-            duration : 15,
-            stars : stars,
-            comments : comment,
-            price : 15000,
-            typeService : tempOrder.typeService,
-            status: status,
-            payMethod:"cash",
-            bonusCode: "none",
-            card: "none"
-          });
-          orderSave.save((err,orderDb)=>{
-            if (err) {
-              return res.status(500).json({
-                response: 1,
-                content: err
-              });
-            }
-            if(orderDb){
-              res.status(200).json({
-                response: 2,
-                content:{
-                  orderDb,
-                  message: "Se guardo la orden en el historial y se desactivo de las ordenes activas"
-                } 
-              });
-            }else{
-              res.status(200).json({
-                response: 1,
-                content:{
-                  message: "UPss. NO pudimos enviar la orden al historial"
-                } 
-              });
-            }    
-          });
-        }else{
-          res.status(200).json({
-            response: 1,
-            content:{
-              message: "NO SE PUDIERON ENCONTRAR LAS ORDENES"
-            } 
-          });
-        }
-      });
-      
-
-    }else{
-      res.status(200).json({
-        response: 1,
-        content:{
-          message: "Upss. No concontramos esa orden"
-        } 
-      });
-    }
-  });
-});*/
 app.post("/getCurrentOrder",function(req,res){
   let body = req.body;
   let idClient = parseInt(body.id);
@@ -424,7 +291,7 @@ app.put("/assignBarberToOrder",function(req,res){
   let body = req.body;
   let idOrder = parseInt(body.idOrder);
   let idBarber = parseInt(body.idBarber);
-  temporalOrder.findOne({id:idOrder},function(err,temporalOrderDB){
+  temporalOrder.findOne({id:idOrder, idBarber:0},function(err,temporalOrderDB){
     if (err) {
       return res.status(500).json({
         response: 1,
@@ -454,14 +321,13 @@ app.put("/assignBarberToOrder",function(req,res){
             }   
             if(orden){
               let orderJson = orden.toJSON();
-              let messageToBarber = "Hola "+barbero.name
-                                    +", Aqui esta el detalle de tu orden asignada: "
-                                    +", Nombre Cliente: "+orderJson.nameClient
-                                    +", Direccion:" +orderJson.address
-                                    +", Celular: "+ orderJson.phone
-                                    +", Servicio: Solo corte de cabello";
-
-              sendSMS(barbero.phone,messageToBarber)//notification to barber
+              // let messageToBarber = "Hola "+barbero.name
+              //                       +", Aqui esta el detalle de tu orden asignada: "
+              //                       +", Nombre Cliente: "+orderJson.nameClient
+              //                       +", Direccion:" +orderJson.address
+              //                       +", Celular: "+ orderJson.phone
+              //                       +", Servicio: Solo corte de cabello";
+              // //sendSMS(barbero.phone,messageToBarber)//notification to barber
               user.findOne({id:orderJson.idClient},function(err,clientDb){
                 if (err) {
                   return res.status(500).json({
@@ -480,7 +346,7 @@ app.put("/assignBarberToOrder",function(req,res){
                   res.status(200).json({
                     response: 2,
                     content:{
-                      message: "Genial, se asigno a "+barbero.name+" a la orden, tambien se notifico el mensaje al barbero"
+                      message: "Genial, se asigno a "+barbero.name+" a la orden, tambien se notifico el mensaje al cliente "+orderJson.nameClient
                     } 
                   });
                 }else{
@@ -514,7 +380,7 @@ app.put("/assignBarberToOrder",function(req,res){
       res.status(200).json({
         response: 1,
         content: {
-          message: "Upssss. No pudimos encontrar esa orden"
+          message: "Upssss. No pudimos encontrar esa orden o ya fue tomada por otro barbero"
         }
       });
     }
