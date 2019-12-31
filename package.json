@@ -1,6 +1,6 @@
 {
   "name": "backend-timugo",
-  "version": "1.0.3",
+  "version": "1.0.6",
   "description": "timugo backend",
   "main": "index.js",
   "scripts": {
@@ -37,6 +37,7 @@
     "nodemon": "^1.19.4",
     "npm": "^6.13.4",
     "path": "^0.12.7",
+    "request": "^2.88.0",
     "socket.io": "^2.3.0",
     "twilio": "^3.37.1",
     "underscore": "^1.9.1"
