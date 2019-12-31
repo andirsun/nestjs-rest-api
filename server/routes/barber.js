@@ -39,7 +39,6 @@ app.get("/getBarbersTop",function(req,res){
     }
   });
 });
-
 app.get("/getBarberByPhone",function(req,res){
   let phone = req.query.phoneBarber || 0;
   phone = parseInt(phone);
@@ -67,7 +66,6 @@ app.get("/getBarberByPhone",function(req,res){
     }
   });
 });
-
 app.post("/loginBarber" ,function(req,res){
   
   let body = _.pick(req.body, ["phone"]);
@@ -85,7 +83,7 @@ app.post("/loginBarber" ,function(req,res){
       if (user) {
         //in case that the barber exists in de data base
         let barber = user.toJSON(); //handling theresponse
-        temporalOrder.findOne({idBarber:barber.id},function(err,response){
+        temporalOrder.findOne({idBarber:barber.id,status:true},function(err,response){
           if (err) {
             return res.status(500).json({
               response: 3,
