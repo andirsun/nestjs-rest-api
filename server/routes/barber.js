@@ -129,7 +129,7 @@ app.post("/loginBarber" ,function(req,res){
 app.get("/getAvailableOrdersByCity",function(req,res){
   let city = req.query.city || "none";
   console.log(city);
-  temporalOrder.find({city:city},function(err,response){
+  temporalOrder.find({city:city,status:true},function(err,response){
     if (err) {
       return res.status(400).json({
         response: 3,
@@ -137,10 +137,18 @@ app.get("/getAvailableOrdersByCity",function(req,res){
       });
     }
     if(response.length!=0){
-      res.status(200).json({
-        response: 2,
-        content:response 
-      });
+      response = response.filter(function(item){return item.idBarber == 0;}); //delete the orders with a associated barber
+      if(response.length==0){
+        res.status(200).json({
+          response: 1,
+          content: "Ups, no hay ordenes disponibles en esa ciudad"
+        });  
+      }else{
+        res.status(200).json({
+          response: 2,
+          content:response
+        });
+      }
     }else{
       res.status(200).json({
         response: 1,
