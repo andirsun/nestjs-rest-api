@@ -14,6 +14,9 @@ const wilioId = process.env.ACCOUNT_SID;
 const wilioToken = process.env.AUTH_TOKEN;
 const client = require("twilio")(wilioId, wilioToken);
 const request = require('request')
+var FCM = require('fcm-node');
+var serverKey = process.env.FCM_TOKEN; //put your server key here
+var fcm = new FCM(serverKey);
 
 
 //const timezone = require('moment-timezone');
@@ -26,6 +29,32 @@ function sendSMS(numberDestiny,message){
     body : message
   }).then(message => console.log(message.sid));
 }
+function sendPushMessage(token,title,message){
+  var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
+    to: token, 
+    collapse_key: 'your_collapse_key',
+    
+    notification: {
+        title: title, 
+        body: message 
+    },
+    
+    data: {  //you can send only notification or only data(or include both)
+        my_key: 'my value',
+        my_another_key: 'my another value'
+    }
+  };
+
+  fcm.send(message, function(err, response){
+      if (err) {
+          console.log("Error Sending Message!");
+      } else {
+          console.log("Successfully sent with response: ", response);
+      }
+  });
+}
+
+
 function findBarber(idBarber){ // NOt working
   barber.findOne({id:idBarber},function(err,barberDb){
     let response;
@@ -389,36 +418,6 @@ app.put("/assignBarberToOrder",function(req,res){
     }
   });
 });
-
-app.get("/test",function(req,res){
-  var options = {
-    url: 'https://fcm.googleapis.com/fcm/send',
-    method: 'POST', // Don't forget this line
-    headers: {
-        'Authorization': 'key=AAAA1e_9gJY:APA91bH6Skb5Rm_Eid4fx2HwS9_hxqRz94JLP_EE011PlvQKyAU1nHMWCuJ1GxmDoDxIkv5X0kzmye6poNLo771OL4DKw5hUbQy1-b2n7XNIiTJ7Hc_Xpqp1g3kqlluNDsmR1CZUVECd',
-        'Content-Type': 'application/json', // blah, blah, blah...
-    },
-    form:{
-        "to":"eXPIu0eR9CA:APA91bHRSKOJW5KAzkK5jcPbjHJ-VaryhZ-57ocoW1oq0DgDNylMOJdf84wjeCRQFPAYMK-lDum_zjIg7x51CiPqpri28D7dfgykTW-GYmc5PAo9N-2bq7VsBzI1NPPLlzRoEp4yldXH",
-        "notification":{
-          "title":"Postman",
-          "body":"BOdy desde postman"
-        },
-        "data":{
-          "phone":"3188758481"
-        } 
-    }
-  };
-  // Create request to get data
-  request(options, (err, response, body) => {
-      if (err) {
-          console.log(err);
-      } else {
-          console.log('body:',body);
-      }
-});
-});
-
 
 //14403974927 NUmero para envio de mensajes de texto
 //whatsapp:+14155238886   envio de whatsapp
