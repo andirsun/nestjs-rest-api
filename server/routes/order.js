@@ -44,7 +44,6 @@ function sendPushMessage(token,title,message){
         my_another_key: 'my another value'
     }
   };
-
   fcm.send(message, function(err, response){
       if (err) {
           console.log("Error Sending Message!");
@@ -53,7 +52,9 @@ function sendPushMessage(token,title,message){
       }
   });
 }
-
+app.get("/sendPushNotification",function(req,res){
+  sendPushMessage("eGow2nKxrr4:APA91bH3hYRK3Qe8fWwAPuvAKLCJS3JvWqfU0VVh7uDSiHjrVlzjQVAaSF8ePwnP-qSW-dDaSrsLXthLQ6dpgyX_kM5yah9tNGgUGEvl4zRRzJIlr1Riy4n63eVd3gefEiDS_iJAino3","Hola","HOla a la verga del mic");
+});
 
 function findBarber(idBarber){ // NOt working
   barber.findOne({id:idBarber},function(err,barberDb){
@@ -281,8 +282,8 @@ app.post("/createOrder", function (req, res) {
                                         +","+orderWs.Servicio;
                     
                     
-                    sendSMS("3162452663",orderMessage);
-                    sendSMS("3106838163",orderMessage);
+                    //sendSMS("3162452663",orderMessage);
+                    //sendSMS("3106838163",orderMessage);
                     ////////////////////////////////////////////////////////////////////////////////////////
                     /*Sending Response of petition if the order was created correctly */
                     res.status(200).json({
@@ -359,7 +360,6 @@ app.put("/assignBarberToOrder",function(req,res){
               //                       +", Direccion:" +orderJson.address
               //                       +", Celular: "+ orderJson.phone
               //                       +", Servicio: Solo corte de cabello";
-              // //sendSMS(barbero.phone,messageToBarber)//notification to barber
               user.findOne({id:orderJson.idClient},function(err,clientDb){
                 if (err) {
                   return res.status(500).json({
@@ -369,12 +369,12 @@ app.put("/assignBarberToOrder",function(req,res){
                 }
                 if(clientDb){
                   let client = clientDb.toJSON();
-                  let messageToClient = "Hola "+orderJson.nameClient
-                                    +", Gracias por Ordernar en Timugo, Esta es la informacion de tu Barbero"
-                                    +", Nombre: "+orderJson.nameBarber
-                                    +", Celular: "+ barbero.phone
-                                    +". El barbero se contactara con tigo en breve.";
-                  //sendSMS(client.phone,messageToClient);
+                  let title = "Encontramos un Barbero !!"
+                  let message = orderJson.nameClient+"!"
+                                +", tu barbero "+orderJson.nameBarber
+                                +" esta en marcha a tu direccion.";
+                  let tokenClient = client.phoneToken;
+                  sendPushMessage(tokenClient,title,message);//notify to the client about his barber assigned
                   res.status(200).json({
                     response: 2,
                     content:{
