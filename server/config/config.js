@@ -16,7 +16,7 @@ let urlDB;
 
 if (process.env.ENVIROMENT === 'dev') {
     console.log("Develop MODE ");
-    urlDB = 'mongodb://localhost:27017/test';
+    urlDB = 'mongodb://localhost:27017/timugoClientApp';
 } else {
     console.log("production mode");
     urlDB = process.env.MONGO_URL;
