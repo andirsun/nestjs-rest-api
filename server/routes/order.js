@@ -55,7 +55,6 @@ function sendPushMessage(token,title,message){
 app.get("/sendPushNotification",function(req,res){
   sendPushMessage("eGow2nKxrr4:APA91bH3hYRK3Qe8fWwAPuvAKLCJS3JvWqfU0VVh7uDSiHjrVlzjQVAaSF8ePwnP-qSW-dDaSrsLXthLQ6dpgyX_kM5yah9tNGgUGEvl4zRRzJIlr1Riy4n63eVd3gefEiDS_iJAino3","Hola","HOla a la verga del mic");
 });
-
 function findBarber(idBarber){ // NOt working
   barber.findOne({id:idBarber},function(err,barberDb){
     let response;
@@ -318,6 +317,189 @@ app.post("/createOrder", function (req, res) {
         });
       }
     });
+  });
+});
+app.post("/finishOrder",function(req,res){
+  let body = req.body;
+  let idOrder = parseInt(body.idOrder);
+  let nameBarber = body.nameBarber;
+  let comment = body.comment || "Sin comentarios";
+  let status = body.status;
+  temporalOrder.findOneAndUpdate({id:idOrder},{status:false},function(err,temporalOrderDB){
+    if (err) {
+      return res.status(500).json({
+        response: 1,
+        content: err
+      });
+    }
+    if(temporalOrderDB){
+      let tempOrder = temporalOrderDB.toJSON();
+      Barber.findOneAndUpdate({id:tempOrder.idBarber},{$inc:{points:50}},function(err,barberDb){//updating points to a barber
+        if (err) {
+          return res.status(500).json({
+            response: 3,
+            content: err
+          });
+        }
+        if(barberDb){
+          console.log("se sumaron los puntos al barbero");
+        }else{
+          console.log("No se le sumaron los puntos al barbero");
+        }
+      });
+      user.findOneAndUpdate({id:tempOrder.idClient},{$inc:{points:50}},function(err,userDb){//updating points to a barber
+        if (err) {
+          return res.status(500).json({
+            response: 3,
+            content: err
+          });
+        }
+        if(userDb){
+          console.log("Se sumaron los punto al usuario");
+        }else{
+          console.log("No se le sumaron los puntos al usuario");
+        }
+      });
+      order.find(function(err,ordersDB){
+        if (err) {
+          return res.status(500).json({
+            response: 1,
+            content: err
+          });
+        }
+        if(ordersDB){ 
+          
+          service.findOne({id:tempOrder.typeService},function(err,response){
+            if (err) {
+              return res.status(500).json({
+                response: 1,
+                content: err
+              });
+            }
+            if(response){
+              let service = response.toJSON();
+              let orderSave = new order({
+                id : ordersDB.length + 1,
+                idClient : tempOrder.idClient,
+                idBarber: tempOrder.idBarber,
+                nameBarber : nameBarber,
+                nameClient : tempOrder.nameClient,
+                address: tempOrder.address,
+                dateBeginOrder : tempOrder.dateBeginOrder + " "+tempOrder.hourStart,
+                dateFinishOrder : moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm"),
+                duration : 15,
+                comments : comment,
+                price : service.price,
+                typeService : tempOrder.typeService,
+                status: status,
+                payMethod:"cash",
+                city: tempOrder.city,
+                bonusCode: "none",
+                card: "none"
+              });
+              orderSave.save((err,orderDb)=>{
+                if (err) {
+                  return res.status(500).json({
+                    response: 1,
+                    content: err
+                  });
+                }
+                if(orderDb){
+                  res.status(200).json({
+                    response: 2,
+                    content:{
+                      orderDb,
+                      message: "Se guardo la orden en el historial y se desactivo de las ordenes activas"
+                    } 
+                  });
+                }else{
+                  res.status(200).json({
+                    response: 1,
+                    content:{
+                      message: "UPss. NO pudimos enviar la orden al historial"
+                    } 
+                  });
+                }    
+              });
+            }else{
+              res.status(200).json({
+                response: 1,
+                content:{
+                  message: "No se pudo obtener el precio del servicio con el id dado"
+                } 
+              });    
+            }
+          });
+        }else{
+          res.status(200).json({
+            response: 1,
+            content:{
+              message: "NO SE PUDIERON ENCONTRAR LAS ORDENES"
+            } 
+          });
+        }
+      });
+    }else{
+      res.status(200).json({
+        response: 1,
+        content:{
+          message: "Upss. No concontramos esa orden"
+        } 
+      });
+    }
+  });
+});
+app.put("/cancelOrderBarber",function(req,res){
+  let body = req.body;
+  let idOrder = parseInt(body.idOrder) || 0;
+  let idUser = body.idUser || 0
+  temporalOrder.findOneAndUpdate({id:idOrder},{idBarber:0},{new: true,runValidators: true},function(err,response){
+    if (err) {
+      return res.status(500).json({
+        response: 1,
+        content: err
+      });
+    }
+    if(response){
+      /*
+      
+      Here i need to send the free order to all barbers phone
+      
+      
+      */ 
+      console.log(idUser);
+      user.findOne({id:idUser},function(err,clientDb){
+        if (err) {
+          return res.status(500).json({
+            response: 3,
+            content: err
+          });
+        }
+        if(clientDb){
+          console.log(clientDb);
+          let client = clientDb.toJSON();
+          let title = "El Barbero cancelo la orden :("
+          let message = "No te preopues, estamos buscando otro barbero profesional";
+          let tokenClient = client.phoneToken;
+          sendPushMessage(tokenClient,title,message);//notify to the client about his barber assigned
+          return res.status(200).json({
+            response: 2,
+            content: response
+          });
+        }else{
+          return res.status(400).json({
+            response: 1,
+            content: "No se pudo notificar al cliente"
+          });
+        }
+      });
+      
+    }else{
+      return res.status(400).json({
+        response: 1,
+        content: "Orden no encontrada"
+      });
+    }
   });
 });
 app.put("/assignBarberToOrder",function(req,res){
