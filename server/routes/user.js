@@ -411,7 +411,7 @@ app.post("/login", function(req, res) {
       if (user) {
         bcrypt.compare(body.password, user.password, function(err, response) {
           if (err) {
-            return res.status(400).json({
+            return res.status(500).json({
               response: 3,
               content: {
                 error: err,
@@ -486,5 +486,19 @@ app.get("/paginateQuery", function(req, res) {
         }
       );
     });
+});
+
+
+
+app.get("/saveToken",function(req,res){
+  let idStudent = req.query.idStudent;
+  let token = req.query.token;
+  res.status(200).json({
+    response: 2,
+    content: {
+      idStudent,
+      token
+    }
+  });
 });
 module.exports = app;
