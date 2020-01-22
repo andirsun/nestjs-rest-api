@@ -453,7 +453,7 @@ app.put("/cancelOrderBarber",function(req,res){
   let body = req.body;
   let idOrder = parseInt(body.idOrder) || 0;
   let idUser = body.idUser || 0
-  temporalOrder.findOneAndUpdate({id:idOrder},{idBarber:0},{new: true,runValidators: true},function(err,response){
+  temporalOrder.findOneAndUpdate({id:idOrder},{idBarber:0,nameBarber:"sin asignar"},{new: true,runValidators: true},function(err,response){
     if (err) {
       return res.status(500).json({
         response: 1,
