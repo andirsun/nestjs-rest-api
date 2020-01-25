@@ -56,8 +56,8 @@ app.get("/getHistoryOrders",function(req,res){
   //
 });
 app.get("/getAddressesUser",function(req,res){
-  let idUser = req.query.idUser;
-  User.findOne({id:idUser},function(err,response){
+  let phone = req.query.phone;
+  User.findOne({phone:phone},function(err,response){
     if (err) {
       return res.status(500).json({
         response: 3,
@@ -142,10 +142,11 @@ app.put("/addPhoneTokenUser",function(req,res){
 })
 app.put("/addAddressUser",function(req,res){
   let body = req.body;
-  let id = body.idUser;
+  let phone = body.phone || 0;
+  console.log(phone);
   let city = body.city || "none";
   let address = body.address || "none";
-  User.findOneAndUpdate({id:id},{
+  User.findOneAndUpdate({phone:phone},{
     $push : {
        addresses :  {
                 "city":city ,
