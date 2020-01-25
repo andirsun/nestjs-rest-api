@@ -273,7 +273,8 @@ app.post("/loginUser",function(req,res){
         }
         if(response){
           //if the user is already register, then we need to add other logic here
-          let code = Math.floor(100000 + Math.random() * 900000).toString(); //a number between 100.000 and 999.999
+          //let code = Math.floor(100000 + Math.random() * 900000).toString(); //a number between 100.000 and 999.999
+          let code = 123456;
           response["registrationCode"] = code;
           response.save((err,response)=>{
             if (err) {
