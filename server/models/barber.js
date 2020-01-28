@@ -13,6 +13,11 @@ let barber = new Schema({
     require: [true, "EL id es necesario"],
     default: 0
   },
+  updated: { 
+    type: Date,
+    required:false,
+    default: Date.now 
+  },
   name: {
     type: String,
     required: [true, "El nombre es necesario"]
@@ -66,6 +71,10 @@ let barber = new Schema({
   address: {
     type: String,
     required: [true, "La direccion es necesaria"]
+  },
+  city:{
+    type: String,
+    required: [true, "la ciudad es necesaria"]
   },
   urlImg:{
     type: String,

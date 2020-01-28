@@ -1,3 +1,5 @@
 node_modules/
 server/data/data.json
 .env
+package-lock.json
+

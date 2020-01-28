@@ -13,6 +13,11 @@ let orderHistory = new Schema({
     require: [true, "EL id es necesario"],
     default: 0
   },
+  updated: { 
+    type: Date,
+    required:false,
+    default: Date.now 
+  },
   nameClient:{
     type: String,
     required:[true,"EL nombre del cliente es necesario"]
@@ -35,12 +40,16 @@ let orderHistory = new Schema({
     type: String,
     required: [true, "la direccion es necesaria"]
   },
+  city:{
+    type: String,
+    required: [true, "la ciudad es necesaria"]
+  },
   dateBeginOrder: {
-    type: Date,
+    type: String,
     required: [true, "La fecha de inicio del pedido es necesaria"]
   },
   dateFinishOrder: {
-    type: Date,
+    type: String,
     required: [false]
   },
   duration: {

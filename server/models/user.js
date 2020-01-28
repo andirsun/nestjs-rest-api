@@ -13,36 +13,43 @@ let usuarioSchema = new Schema({
     require: [true, "EL id es necesario"],
     default: 0
   },
+  phoneToken:{
+    type:String,
+    default:"none"
+  },
+  updated: { 
+    type: Date,
+    required:false,
+    default: Date.now 
+  },
   name: {
     type: String,
-    required: [true, "El nombre es necesario"]
+    required: false
+  },
+  registrationCode :{
+    type : String,
+    require: [true,"Es necesario el mismo"]
   },
   phone: {
     type: Number,
     unique: true,
     required: [true, "Es necesario el numero de celular"]
   },
-  lastName: {
-    type: String,
-    required: [true, "Los apellidos son necesarios"]
-  },
   birth: {
     type: Date,
-    required: [true, "La edad es necesaria"]
+    required: false
   },
   email: {
     type: String,
-    unique: true,
-    required: [true, "Este correo ya esta registrado"]
+    required: false
   },
-  password: {
-    type: String,
-    required: [true, "La contraseña es obligatoria"]
-  },
-  address: {
-    type: String,
-    required: [true, "La direccion es necesaria"]
-  },
+  addresses : [{
+    city : String,
+    address : String,
+    favorite : Boolean,
+    lat : String,
+    lng : String,
+  }],
   img: {
     type: String,
     required: false
@@ -54,7 +61,7 @@ let usuarioSchema = new Schema({
   },
   numServices:{
     type : Number,
-    required:[false],
+    required:false,
     default:0
   },
   points: {
