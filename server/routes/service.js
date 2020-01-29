@@ -97,7 +97,7 @@ app.post("/createAditionalService", function (req, res) {
 app.get("/getAditionalServices",function(req,res){
     let service = req.query.service ||0;
 
-    Service.find(function(err,response){
+    AditionalService.find(function(err,response){
         if (err) {
             return res.status(500).json({
                 response: 3,
@@ -112,7 +112,7 @@ app.get("/getAditionalServices",function(req,res){
             }
             if(service==1){
                 array.push(cejas);
-                array.push(response[1]);//temporal fix , here im only adding the eye brown service
+                array.push(response[0]);//temporal fix , here im only adding the eye brown service
             }
             if(service==2){
                 array.push(cejas);
