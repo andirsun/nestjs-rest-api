@@ -58,18 +58,17 @@ let temporalOrder = new Schema({
     type: String,
     required: [false]
   },
-  typeService: {
-    type: Number,
-    required: [true, "El tipo de servicio es necesario"]
-  },
+  services :[{
+    idService : Number,
+    nameService :String,
+    typeService : String,
+    price: Number,
+    quantity:Number
+  }],
   status: {
     type: Boolean,
     default: true,
     required: [false]
-  },
-  quantity:{
-    type: Number,
-    default:1,
   },
   price:{
     type: Number,
