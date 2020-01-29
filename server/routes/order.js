@@ -119,6 +119,52 @@ app.get("/getInfoCurrentOrder",function(req,res){
     }
   });
 });
+app.get("/getInfoTemporalOrder",function(req,res){
+  let idOrder = req.query.idOrder || 0 ;
+  let phone = req.query.phone || 0;
+  temporalOrder.findOne({id:idOrder},function(err,response){
+    if (err) {
+      return res.status(500).json({
+        response: 3,
+        content: err
+      });
+    }
+    if(response){
+      let order = response.toJSON();
+      let idBarber = order.idBarber;
+      console.log(idBarber);
+      barber.findOne({id:idBarber},function(err,response){
+        if(response){
+          //if barber exists in the database 
+          barberInfo =response.toJSON();
+        }else{
+          //if no exists in the database
+          barberInfo={
+            id:0,
+            stairs:0.0,
+            numberServices:0,
+            urlImg: "https://i.pinimg.com/736x/a4/93/25/a493253f2b9b3be6ef48886bbf92af58.jpg",
+            name: "Sin",
+            lastName : "Asignar",
+            phone : "000-000-0000"
+          }
+        }
+      });
+      console.log(barberInfo);
+
+
+    }else{
+      res.status(200).json({
+        response: 1,
+        content:{
+          message: "N hemos encontrado ninguna orden con ese id"
+        }
+      });
+    }
+  });
+
+
+});
 app.post("/getCurrentOrder",function(req,res){
   let body = req.body;
   let idClient = parseInt(body.id);
