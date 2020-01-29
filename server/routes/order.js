@@ -487,7 +487,7 @@ app.put("/cancelOrderBarber",function(req,res){
             content: response
           });
         }else{
-          return res.status(400).json({
+          return res.status(200).json({
             response: 1,
             content: "No se pudo notificar al cliente"
           });
@@ -495,7 +495,7 @@ app.put("/cancelOrderBarber",function(req,res){
       });
       
     }else{
-      return res.status(400).json({
+      return res.status(200).json({
         response: 1,
         content: "Orden no encontrada"
       });
