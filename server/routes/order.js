@@ -148,8 +148,8 @@ app.get("/getInfoTemporalOrder",function(req,res){
             lastName : "Asignar",
             phone : "000-000-0000"
           }
-          console.log(barberInfo);
         }
+
       });
 
 
@@ -236,16 +236,24 @@ app.post("/createOrder", function (req, res) {
       });
     }
     //Assing all parameters to create the order
+    let price = 0;
+    let services = body.services;
+    services = JSON.parse(services);
+    console.log(typeof services);
+    services.forEach(element => {
+      price = price + (element.price*element.quantity);
+    });
+    //console.log("precio total de la orden "+totalPrice);
     let id = temporalOrderDB.length + 1; //Autoincremental id
     let idClient = body.idClient;
     let idBarber = body.idBarber || 0;
     let address = body.address;
     let dateBeginOrder = moment().format("YYYY-MM-DD");
     let hourStart = moment().format("HH:mm");
-    let typeService = body.typeService;
     let city = body.city;
     let status = body.status;
-    ////////////////////////////////////////
+    //////////////////////////////////////
+    
     temporalOrder.findOne({idClient:idClient,status:true},function(err,orden){
       //THIS query is to know is the user has a current order in progress
       if (err) {//Handlinf error in the query 
@@ -258,7 +266,7 @@ app.post("/createOrder", function (req, res) {
         res.status(200).json({
           response: 1,
           content: {
-            message: "Upss, Aun tienes una orden en progreso o pendiente por calificar. Terminala para poder pedir otra orden."
+            message: "Upss, Aun tienes una orden en progreso. Terminala para poder pedir otra orden."
           }
         });
       }else{
@@ -271,90 +279,75 @@ app.post("/createOrder", function (req, res) {
               content: err
             });
           }
-          console.log(clientDB);
           if(clientDB){
-            let client = clientDB.toJSON();//neccesary to handle and access to parameters os the client(object)
-            service.findOne({id:typeService},function(err,response){
-              if (err) {//Handling error in qeury 
+            let client = clientDB.toJSON();//neccesary to handle and access to parameters os the client(object)      
+            let order = new temporalOrder({//creating the order to save in database
+              id,
+              idClient,
+              idBarber,
+              nameClient: client.name,
+              address,
+              dateBeginOrder,
+              hourStart,
+              city,
+              status,
+              services,
+              price:price,
+            });
+            order.save((err, response) => {
+              if (err) {//handling the query error 
                 return res.status(500).json({
-                  response: 3,
-                  content: err
+                  response: 1,
+                  content:{
+                    err,
+                    message:"Error al guardar la orden, contacta con el administrador"
+                  } 
                 });
               }
-              if(response){
-                let serviceGet = response.toJSON();
-                let order = new temporalOrder({//creating the order to save in database
-                  id,
-                  idClient,
-                  idBarber,
-                  nameClient: client.name,
-                  address,
-                  dateBeginOrder,
-                  typeService,
-                  hourStart,
-                  city,
-                  status,
-                  price:serviceGet.price,
+              if (response) {
+                //////////////////////////////Sending information of the order by whatsAPP with twillio
+                let orderWs = response.toJSON();
+                orderWs.nombreCliente = client.name+" "+client.lastName; //CLient name who take the order
+                orderWs.telefonoCliente = client.phone;
+                orderWs.Direccion=client.address;
+                orderWs.Servicio= "Corte de Cabello";
+                delete orderWs._id;
+                delete orderWs.address;
+                delete orderWs.dateBeginOrder;
+                delete orderWs.typeService;
+                delete orderWs.__v;
+                delete orderWs.hourStart;
+                delete orderWs.status;
+
+                let orderMessage = "Detalle: id:"+orderWs.id
+                                    +",nombre: "+orderWs.nombreCliente
+                                    +",celular: "+orderWs.telefonoCliente
+                                    +",dir: "+orderWs.Direccion
+                                    +","+orderWs.Servicio;
+                
+                
+                //sendSMS("3162452663",orderMessage);
+                //sendSMS("3106838163",orderMessage);
+                ////////////////////////////////////////////////////////////////////////////////////////
+                /*Sending Response of petition if the order was created correctly */
+                res.status(200).json({
+                  response: 2,
+                  content: {
+                    orderDB:response,
+                    message: "Genial, Se creo la orden Correctamente, un barbero te contactara pronto."
+                  }
                 });
-                order.save((err, response) => {
-                  if (err) {//handling the query error 
-                    return res.status(500).json({
-                      response: 1,
-                      content:{
-                        err,
-                        message:"Error al guardar la orden, contacta con el administrador"
-                      } 
-                    });
-                  }
-                  if (response) {
-                    //////////////////////////////Sending information of the order by whatsAPP with twillio
-                    let orderWs = response.toJSON();
-                    orderWs.nombreCliente = client.name+" "+client.lastName; //CLient name who take the order
-                    orderWs.telefonoCliente = client.phone;
-                    orderWs.Direccion=client.address;
-                    orderWs.Servicio= "Corte de Cabello";
-                    delete orderWs._id;
-                    delete orderWs.address;
-                    delete orderWs.dateBeginOrder;
-                    delete orderWs.typeService;
-                    delete orderWs.__v;
-                    delete orderWs.hourStart;
-                    delete orderWs.status;
-      
-                    let orderMessage = "Detalle: id:"+orderWs.id
-                                        +",nombre: "+orderWs.nombreCliente
-                                        +",celular: "+orderWs.telefonoCliente
-                                        +",dir: "+orderWs.Direccion
-                                        +","+orderWs.Servicio;
-                    
-                    
-                    //sendSMS("3162452663",orderMessage);
-                    //sendSMS("3106838163",orderMessage);
-                    ////////////////////////////////////////////////////////////////////////////////////////
-                    /*Sending Response of petition if the order was created correctly */
-                    res.status(200).json({
-                      response: 2,
-                      content: {
-                        orderDB:response,
-                        message: "Genial, Se creo la orden Correctamente, un barbero te contactara pronto."
-                      }
-                    });
-                  }else{
-                    res.status(200).json({
-                      response: 1,
-                      content: {
-                        message: "Upss, No se guardardo la orden, contacta con el administrador."
-                      }
-                    });
-                  }
-                });   
               }else{
                 res.status(200).json({
                   response: 1,
-                  content: "Ups, no hemos podido encontrar un servicio con ese typeService"
+                  content: {
+                    message: "Upss, No se guardardo la orden, contacta con el administrador."
+                  }
                 });
               }
-            });
+            });   
+              
+            
           }else{
             res.status(200).json({
               response: 1,
