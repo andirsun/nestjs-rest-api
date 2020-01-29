@@ -132,7 +132,7 @@ app.get("/getInfoTemporalOrder",function(req,res){
     if(response){
       let order = response.toJSON();
       let idBarber = order.idBarber;
-      console.log(idBarber);
+      let barberInfo ={}
       barber.findOne({id:idBarber},function(err,response){
         if(response){
           //if barber exists in the database 
@@ -148,9 +148,9 @@ app.get("/getInfoTemporalOrder",function(req,res){
             lastName : "Asignar",
             phone : "000-000-0000"
           }
+          console.log(barberInfo);
         }
       });
-      console.log(barberInfo);
 
 
     }else{
@@ -271,6 +271,7 @@ app.post("/createOrder", function (req, res) {
               content: err
             });
           }
+          console.log(clientDB);
           if(clientDB){
             let client = clientDB.toJSON();//neccesary to handle and access to parameters os the client(object)
             service.findOne({id:typeService},function(err,response){
@@ -350,14 +351,14 @@ app.post("/createOrder", function (req, res) {
               }else{
                 res.status(200).json({
                   response: 1,
-                  content: "Ups, no hemos podido encontrar ese cliente para crear la orden"
+                  content: "Ups, no hemos podido encontrar un servicio con ese typeService"
                 });
               }
             });
           }else{
             res.status(200).json({
               response: 1,
-              content: "Ups, no hemos podido encontrar un servicio con ese typeService"
+              content: "Ups, no hemos podido encontrar ese cliente para crear la orden"
             });
           }
         });
