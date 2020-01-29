@@ -25,8 +25,6 @@ function sendSMS(numberDestiny,message){
     body : message
   }).then(message => console.log(message.sid));
 }
-
-
 app.get("/messageChrismas",function(req,res){
   User.find(function(err,resp){
     //let res = resp.toJSON();
