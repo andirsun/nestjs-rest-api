@@ -119,9 +119,11 @@ app.get("/getAditionalServices",function(req,res){
                 });    
             }
             if(service==2){
+                let arrayService =[]
+                arrayService.push(aditionalServices[1]);
                 return res.status(200).json({
                     response: 2,
-                    content: aditionalServices[1]//temporal fix
+                    content: arrayService//temporal fix
                 });
             }
             res.status(200).json({
