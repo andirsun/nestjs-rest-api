@@ -105,22 +105,29 @@ app.get("/getAditionalServices",function(req,res){
             });
         }
         if(response){
+            let aditionalServices = JSON.stringify(response);
+            aditionalServices = JSON.parse(aditionalServices)
             let array = [];
             let cejas = {
                 name:"cejas",
                 price:"0"
             }
             if(service==1){
-                array.push(cejas);
-                array.push(response[0]);//temporal fix , here im only adding the eye brown service
+                return res.status(200).json({
+                    response: 2,
+                    content: response
+                });    
             }
             if(service==2){
-                array.push(cejas);
+                return res.status(200).json({
+                    response: 2,
+                    content: aditionalServices[1]//temporal fix
+                });
             }
             res.status(200).json({
-                response: 2,
-                content: array
-            });    
+                response: 1,
+                content: "No se encontraron servicios adicionales para ese servicio"
+            });
         }else{
             res.status(400).json({
                 response: 1,
@@ -128,8 +135,6 @@ app.get("/getAditionalServices",function(req,res){
             });
         }
     });
-    
-    
 });
 app.get("/getServices",function(req,res){
     Service.find(function(err,serviceDB){
