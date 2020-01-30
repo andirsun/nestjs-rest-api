@@ -57,8 +57,7 @@ app.get("/sendPushNotification",function(req,res){
 });
 app.get("/getInfoTemporalOrder",function(req,res){
   let idOrder = req.query.idOrder || 0 ;
-  let phone = req.query.phone || 0;
-  temporalOrder.findOne({id:idOrder},function(err,response){
+  temporalOrder.findOne({id:idOrder,status:true},function(err,response){
     if (err) {
       return res.status(500).json({
         response: 3,
@@ -67,7 +66,7 @@ app.get("/getInfoTemporalOrder",function(req,res){
     }
     if(response){
       let order = response.toJSON();
-      let idBarber = order.idBarber;
+      let idBarber = order.idBarber;  
       let barberInfo ={}
       barber.findOne({id:idBarber},function(err,response){
         if(response){
@@ -85,20 +84,40 @@ app.get("/getInfoTemporalOrder",function(req,res){
             phone : "000-000-0000"
           }
         }
-        return res.status(200).json({
-          response: 2,
-          content:{
-            barber: barberInfo,
-            order:order
+        user.findOne({id:order.idClient},function(err,response){
+          if(err){
+            return res.status(500).json({
+              response: 3,
+              content: err
+            });
+          }
+          if(response){
+            let client = response.toJSON();
+            order.phoneClient = client.phone;
+            return res.status(200).json({
+              response: 2,
+              content:{
+                barber: barberInfo,
+                order:order
+              }
+            });
+          }else{
+            return res.status(200).json({
+              response: 1,
+              content:{
+                message: "No hemos encontrado ningun cliente con ese id"
+              }
+            });  
           }
         });
+        
 
       });
     }else{
       res.status(200).json({
         response: 1,
         content:{
-          message: "No hemos encontrado ninguna orden con ese id"
+          message: "No hemos encontrado ninguna orden con ese id o la orden puede estar inactiva"
         }
       });
     }
