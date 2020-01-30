@@ -55,70 +55,6 @@ function sendPushMessage(token,title,message){
 app.get("/sendPushNotification",function(req,res){
   sendPushMessage("eGow2nKxrr4:APA91bH3hYRK3Qe8fWwAPuvAKLCJS3JvWqfU0VVh7uDSiHjrVlzjQVAaSF8ePwnP-qSW-dDaSrsLXthLQ6dpgyX_kM5yah9tNGgUGEvl4zRRzJIlr1Riy4n63eVd3gefEiDS_iJAino3","Hola","HOla a la verga del mic");
 });
-function findBarber(idBarber){ // NOt working
-  barber.findOne({id:idBarber},function(err,barberDb){
-    let response;
-    if (err) {
-      response = {
-        response: 1,
-        content: err
-      }
-      return response;
-    }
-    if(barberDb){
-      return barberDb
-    }else{
-      console.log("NO lo encontre");
-      response ={
-        response: 1,
-        content: "nose encontro el barbero"
-      } 
-    }
-    return response;
-  });
-}
-app.get("/getInfoCurrentOrder",function(req,res){
-  let idOrder = req.query.idOrder;
-  temporalOrder.findOne({id:idOrder},function(err,response){
-    if(err){
-      return res.status(500).json({
-        response: 3,
-        content : err,
-      });
-    }
-    if(response){
-      let order = response.toJSON();
-      let idClient = order["idClient"];
-      user.findOne({id:idClient},function(err,resp){
-        if(err){
-          return res.status(500).json({
-            response: 3,
-            content : err,
-          });
-        }
-        if(resp){
-          let user = resp.toJSON();//handling parameters 
-          let phoneUser= user.phone;
-          order["phoneClient"]= phoneUser;
-          res.status(200).json({
-            response: 2,
-            content :order,
-          });
-        }else{
-          res.status(400).json({
-            response: 1,
-            content :"no encontramos el cliente con ese id",
-          });
-        }  
-      });
-    }else{
-      res.status(400).json({
-        response: 1,
-        content : "Orden no encontrada con ese id",
-      });
-    }
-  });
-});
 app.get("/getInfoTemporalOrder",function(req,res){
   let idOrder = req.query.idOrder || 0 ;
   let phone = req.query.phone || 0;
@@ -149,21 +85,24 @@ app.get("/getInfoTemporalOrder",function(req,res){
             phone : "000-000-0000"
           }
         }
+        return res.status(200).json({
+          response: 2,
+          content:{
+            barber: barberInfo,
+            order:order
+          }
+        });
 
       });
-
-
     }else{
       res.status(200).json({
         response: 1,
         content:{
-          message: "N hemos encontrado ninguna orden con ese id"
+          message: "No hemos encontrado ninguna orden con ese id"
         }
       });
     }
   });
-
-
 });
 app.post("/getCurrentOrder",function(req,res){
   let body = req.body;
@@ -239,7 +178,6 @@ app.post("/createOrder", function (req, res) {
     let price = 0;
     let services = body.services;
     services = JSON.parse(services);
-    console.log(typeof services);
     services.forEach(element => {
       price = price + (element.price*element.quantity);
     });
@@ -253,7 +191,6 @@ app.post("/createOrder", function (req, res) {
     let city = body.city;
     let status = body.status;
     //////////////////////////////////////
-    
     temporalOrder.findOne({idClient:idClient,status:true},function(err,orden){
       //THIS query is to know is the user has a current order in progress
       if (err) {//Handlinf error in the query 
@@ -547,6 +484,35 @@ app.put("/cancelOrderBarber",function(req,res){
     }
   });
   
+});
+app.put("/editOrder",function(req,res){
+  let body = req.body;
+  let idOrder = body.idOrder;
+  let price = 0;
+  let services = body.services;
+  services = JSON.parse(services);
+  services.forEach(element => {
+    price = price + (element.price*element.quantity);
+  });
+  temporalOrder.findOneAndUpdate({id:idOrder,status:true},{price:price,services:services},{new: true,runValidators: true},function(err,response){
+    if (err) {
+      return res.status(500).json({
+        response: 1,
+        content: err
+      });
+    }
+    if(response){
+      res.status(200).json({
+        response: 2,
+        content:response
+      });
+    }else{
+      res.status(200).json({
+        response: 1,
+        content:"No se actualizo la orden"
+      });
+    }
+  });
 });
 app.put("/assignBarberToOrder",function(req,res){
   let body = req.body;
