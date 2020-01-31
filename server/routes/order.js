@@ -318,7 +318,6 @@ app.post("/createOrder", function (req, res) {
 app.post("/finishOrder",function(req,res){
   let body = req.body;
   let idOrder = parseInt(body.idOrder);
-  let nameBarber = body.nameBarber;
   let comment = body.comment || "Sin comentarios";
   let status = body.status;
   temporalOrder.findOneAndUpdate({id:idOrder},{status:false},function(err,temporalOrderDB){
@@ -330,7 +329,7 @@ app.post("/finishOrder",function(req,res){
     }
     if(temporalOrderDB){
       let tempOrder = temporalOrderDB.toJSON();
-      Barber.findOneAndUpdate({id:tempOrder.idBarber},{$inc:{points:50}},function(err,barberDb){//updating points to a barber
+      barber.findOneAndUpdate({id:tempOrder.idBarber},{$inc:{points:50}},function(err,barberDb){//updating points to a barber
         if (err) {
           return res.status(500).json({
             response: 3,
@@ -439,7 +438,7 @@ app.post("/finishOrder",function(req,res){
       res.status(200).json({
         response: 1,
         content:{
-          message: "Upss. No concontramos esa orden"
+          message: "Upss. No concontramos esa orden o esta desactivada"
         } 
       });
     }
