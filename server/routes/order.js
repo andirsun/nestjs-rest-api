@@ -210,8 +210,8 @@ app.post("/createOrder", function (req, res) {
     let idClient = body.idClient;
     let idBarber = body.idBarber || 0;
     let address = body.address;
-    let dateBeginOrder = moment().format("YYYY-MM-DD");
-    let hourStart = moment().format("HH:mm");
+    let dateBeginOrder = moment().tz('America/Bogota').format("YYYY-MM-DD");
+    let hourStart = moment().tz('America/Bogota').format("HH:mm");
     let city = body.city;
     let status = body.status;
     //////////////////////////////////////
