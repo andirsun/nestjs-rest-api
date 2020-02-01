@@ -187,7 +187,8 @@ app.post("/addBarber", function(req, res) {
       password: pass,
       city,
       document: document,
-      bio: bio
+      bio: bio,
+      updated: moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")
     });
 
     barberSave.save((err, barberDB) => {
