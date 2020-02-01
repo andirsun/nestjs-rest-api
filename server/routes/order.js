@@ -8,7 +8,7 @@ const user= require("../models/user");
 const jwt = require("jsonwebtoken");
 const service = require("../models/service");
 const app = express();
-const moment = require('moment');
+const moment = require('moment-timezone');
 require("dotenv").config();
 const wilioId = process.env.ACCOUNT_SID;
 const wilioToken = process.env.AUTH_TOKEN;
@@ -46,9 +46,9 @@ function sendPushMessage(token,title,message){
   };
   fcm.send(message, function(err, response){
       if (err) {
-          console.log("Error Sending Message!");
+        console.log("Error Sending Message!",err);
       } else {
-          console.log("Successfully sent with response: ", response);
+        console.log("Successfully sent with response: ");
       }
   });
 }
@@ -200,9 +200,13 @@ app.post("/createOrder", function (req, res) {
     services.forEach(element => {
       price = price + (element.price*element.quantity);
     });
-    console.log();
-    //console.log("precio total de la orden "+totalPrice);
-    let id = temporalOrderDB[temporalOrderDB.length-1].id + 1; //Autoincremental id
+    let id = 0 
+    if(temporalOrderDB.length == 0){
+      //if no exists any order
+      id=1
+    }else{
+      id=temporalOrderDB[temporalOrderDB.length-1].id + 1;
+    }
     let idClient = body.idClient;
     let idBarber = body.idBarber || 0;
     let address = body.address;
@@ -250,6 +254,7 @@ app.post("/createOrder", function (req, res) {
               status,
               services,
               price:price,
+              updated: moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")
             });
             order.save((err, response) => {
               if (err) {//handling the query error 
@@ -321,7 +326,7 @@ app.post("/finishOrder",function(req,res){
   let idOrder = parseInt(body.idOrder);
   let comment = body.comment || "Sin comentarios";
   let status = body.status;
-  temporalOrder.findOneAndUpdate({id:idOrder},{status:false},function(err,temporalOrderDB){
+  temporalOrder.findOneAndUpdate({id:idOrder,status:true},{status:false,updated: moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")},function(err,temporalOrderDB){
     if (err) {
       return res.status(500).json({
         response: 1,
@@ -363,69 +368,57 @@ app.post("/finishOrder",function(req,res){
             content: err
           });
         }
-        if(ordersDB){ 
-          
-          service.findOne({id:tempOrder.typeService},function(err,response){
+        if(ordersDB){
+          let id = 0 
+          if(ordersDB.length == 0){
+            //if no exists any order
+            id=1
+          }else{
+            id=ordersDB[ordersDB.length-1].id + 1;
+          }
+          let orderSave = new order({
+            id : id, //autoincremental id 
+            idClient : tempOrder.idClient,
+            idBarber: tempOrder.idBarber,
+            nameBarber : tempOrder.nameBarber,
+            nameClient : tempOrder.nameClient,
+            address: tempOrder.address,
+            dateBeginOrder : tempOrder.dateBeginOrder + " "+tempOrder.hourStart,
+            dateFinishOrder : moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm"),
+            duration : moment(moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")).diff(moment(tempOrder.dateBeginOrder + " "+tempOrder.hourStart), 'minutes'),
+            comments : comment,
+            price : tempOrder.price,
+            services: tempOrder.services,
+            status: status,
+            payMethod:"cash",
+            city: tempOrder.city,
+            bonusCode: "none",
+            card: "none",
+            updated: moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")
+          });
+          orderSave.save((err,orderDb)=>{
             if (err) {
               return res.status(500).json({
                 response: 1,
                 content: err
               });
             }
-            if(response){
-              let service = response.toJSON();
-
-              let orderSave = new order({
-                id : ordersDB[ordersDB.length-1].id + 1, //autoincremental id 
-                idClient : tempOrder.idClient,
-                idBarber: tempOrder.idBarber,
-                nameBarber : nameBarber,
-                nameClient : tempOrder.nameClient,
-                address: tempOrder.address,
-                dateBeginOrder : tempOrder.dateBeginOrder + " "+tempOrder.hourStart,
-                dateFinishOrder : moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm"),
-                duration : 0,
-                comments : comment,
-                price : service.price,
-                typeService : tempOrder.typeService,
-                status: status,
-                payMethod:"cash",
-                city: tempOrder.city,
-                bonusCode: "none",
-                card: "none"
-              });
-              orderSave.save((err,orderDb)=>{
-                if (err) {
-                  return res.status(500).json({
-                    response: 1,
-                    content: err
-                  });
-                }
-                if(orderDb){
-                  res.status(200).json({
-                    response: 2,
-                    content:{
-                      orderDb,
-                      message: "Se guardo la orden en el historial y se desactivo de las ordenes activas"
-                    } 
-                  });
-                }else{
-                  res.status(200).json({
-                    response: 1,
-                    content:{
-                      message: "UPss. NO pudimos enviar la orden al historial"
-                    } 
-                  });
-                }    
+            if(orderDb){
+              res.status(200).json({
+                response: 2,
+                content:{
+                  orderDb,
+                  message: "Se guardo la orden en el historial y se desactivo de las ordenes activas"
+                } 
               });
             }else{
               res.status(200).json({
                 response: 1,
                 content:{
-                  message: "No se pudo obtener el precio del servicio con el id dado"
+                  message: "Upss. N pudimos enviar la orden al historial"
                 } 
-              });    
-            }
+              });
+            }    
           });
         }else{
           res.status(200).json({
@@ -458,14 +451,15 @@ app.put("/cancelOrderBarber",function(req,res){
       });
     }
     if(clientDb){
-      console.log(clientDb);
       let client = clientDb.toJSON();
       if(client.phoneToken){
         let title = "El Barbero cancelo la orden :("
         let message = "No te preopues, estamos buscando otro barbero profesional";
         let tokenClient = client.phoneToken;
         sendPushMessage(tokenClient,title,message);//notify to the client about his barber assigned
-        temporalOrder.findOneAndUpdate({id:idOrder},{idBarber:0,nameBarber:"sin asignar"},{new: true,runValidators: true},function(err,response){
+        temporalOrder.findOneAndUpdate({id:idOrder},{idBarber:0,
+                                                      nameBarber:"sin asignar",
+                                                      updated: moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")},{new: true,runValidators: true},function(err,response){
           if (err) {
             return res.status(500).json({
               response: 1,
@@ -514,7 +508,10 @@ app.put("/editOrder",function(req,res){
   services.forEach(element => {
     price = price + (element.price*element.quantity);
   });
-  temporalOrder.findOneAndUpdate({id:idOrder,status:true},{price:price,services:services},{new: true,runValidators: true},function(err,response){
+  temporalOrder.findOneAndUpdate({id:idOrder,status:true},{price:price,
+                                                            services:services,
+                                                            updated: moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")
+                                                          },{new: true,runValidators: true},function(err,response){
     if (err) {
       return res.status(500).json({
         response: 1,
@@ -556,7 +553,10 @@ app.put("/assignBarberToOrder",function(req,res){
         }
         if(barberDB){
           let barbero = barberDB.toJSON();
-          temporalOrder.findOneAndUpdate({id:idOrder},{idBarber:barbero.id,nameBarber:barbero.name},function(err,orden){
+          temporalOrder.findOneAndUpdate({id:idOrder},{idBarber:barbero.id,
+                                                      nameBarber:barbero.name,
+                                                      updated: moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")
+                                                    },function(err,orden){
             if (err) {
               return res.status(500).json({
                 response: 3,
