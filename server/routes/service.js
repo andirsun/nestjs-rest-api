@@ -18,7 +18,7 @@ app.post("/createService", function (req, res) {
                 content: err
             });
         }
-        let id = serviceDB.length + 1; //Autoincremental id
+        let id = serviceDB[serviceDB.length-1].id + 1; //Autoincremental id
         let name = body.name;
         let price = body.price;
         let description = body.description;
@@ -61,7 +61,7 @@ app.post("/createAditionalService", function (req, res) {
                 content: err
             });
         }
-        let id = serviceDB.length + 1; //Autoincremental id
+        let id =serviceDB[serviceDB.length-1].id + 1; //Autoincremental id
         let name = body.name;
         let price = body.price;
         let description = body.description;

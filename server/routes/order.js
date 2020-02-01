@@ -200,8 +200,9 @@ app.post("/createOrder", function (req, res) {
     services.forEach(element => {
       price = price + (element.price*element.quantity);
     });
+    console.log();
     //console.log("precio total de la orden "+totalPrice);
-    let id = temporalOrderDB.length + 1; //Autoincremental id
+    let id = temporalOrderDB[temporalOrderDB.length-1].id + 1; //Autoincremental id
     let idClient = body.idClient;
     let idBarber = body.idBarber || 0;
     let address = body.address;
@@ -373,8 +374,9 @@ app.post("/finishOrder",function(req,res){
             }
             if(response){
               let service = response.toJSON();
+
               let orderSave = new order({
-                id : ordersDB.length + 1,
+                id : ordersDB[ordersDB.length-1].id + 1, //autoincremental id 
                 idClient : tempOrder.idClient,
                 idBarber: tempOrder.idBarber,
                 nameBarber : nameBarber,
@@ -382,7 +384,7 @@ app.post("/finishOrder",function(req,res){
                 address: tempOrder.address,
                 dateBeginOrder : tempOrder.dateBeginOrder + " "+tempOrder.hourStart,
                 dateFinishOrder : moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm"),
-                duration : 15,
+                duration : 0,
                 comments : comment,
                 price : service.price,
                 typeService : tempOrder.typeService,

@@ -380,7 +380,7 @@ app.post("/addUser", function(req, res) {
         content: err
       });
     }
-    let id = userDB.length + 1; //para que es id sea autoincrementable
+    let id = userDB[userDB.length-1].id + 1; //para que es id sea autoincrementable
     let name = body.name;
     let lastName = body.lastName;
     let address = body.address;

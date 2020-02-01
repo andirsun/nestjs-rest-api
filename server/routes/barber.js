@@ -165,7 +165,7 @@ app.post("/addBarber", function(req, res) {
         content: err
       });
     }
-    let id = barberDB.length + 1; //para que es id sea autoincrementable
+    let id = barberDB[barberDB.length-1].id + 1; //para que es id sea autoincrementable
     let name = body.name;
     let lastName = body.lastName;
     let address = body.address;
