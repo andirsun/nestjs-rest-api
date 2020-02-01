@@ -28,7 +28,8 @@ app.post("/createService", function (req, res) {
             name,
             price,
             description,
-            urlImg
+            urlImg,
+            updated: moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")
         });
 
         serviceSave.save((err, serviceSaveDB) => {
@@ -71,7 +72,8 @@ app.post("/createAditionalService", function (req, res) {
             name,
             price,
             description,
-            urlImg
+            urlImg,
+            updated: moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")
         });
 
         aditionalServiceSave.save((err, serviceSaveDB) => {

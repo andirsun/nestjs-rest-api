@@ -7,6 +7,7 @@ const app = express();
 require("dotenv").config();
 const wilioId = process.env.ACCOUNT_SID;
 const wilioToken = process.env.AUTH_TOKEN;
+const moment = require('moment-timezone');
 const client = require("twilio")(wilioId, wilioToken);
 /////////////////////////////////
 
@@ -138,7 +139,9 @@ app.put("/addPhoneTokenUser",function(req,res){
   let body = req.body;
   let phoneUser = body.phoneUser;
   let phoneToken = body.phoneToken;
-  User.findOneAndUpdate({phone:phoneUser},{$set : {phoneToken : phoneToken}},{new: true,runValidators: true},function(err,response){
+  User.findOneAndUpdate({phone:phoneUser},{$set : {phoneToken : phoneToken},
+                                          updated: moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")
+                                        },{new: true,runValidators: true},function(err,response){
     if (err) {
       return res.status(500).json({
         response: 3,
@@ -380,23 +383,25 @@ app.post("/addUser", function(req, res) {
         content: err
       });
     }
-    let id = userDB[userDB.length-1].id + 1; //para que es id sea autoincrementable
+    let id = 0 
+    if(userDB.length == 0){
+      //if no exists any order
+      id=1
+    }else{
+      id=userDB[userDB.length-1].id + 1;
+    }
     let name = body.name;
-    let lastName = body.lastName;
     let address = body.address;
     let email = body.email;
-    let birth = body.birth;
     let phone = body.phone;
-    let pass = bcrypt.hashSync(body.pass, 10);
+    //let pass = bcrypt.hashSync(body.pass, 10);
     let userSave = new User({
       id: id,
       name: name,
-      lastName: lastName,
       address: address,
       email: email,
-      birth: birth,
       phone: phone,
-      password: pass
+      updated: moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")
     });
     userSave.save((err, usuarioDB) => {
       //callback que trae error si no pudo grabar en la base de datos y usuarioDB si lo inserto
