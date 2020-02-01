@@ -14,9 +14,8 @@ let service = new Schema({
     default: 0
   },
   updated: { 
-    type: Date,
-    required:false,
-    default: Date.now 
+    type: String,
+    required:true, 
   },
   name: {
     type: String,

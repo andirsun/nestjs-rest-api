@@ -2,7 +2,11 @@ const mongoose = require("mongoose");
 const uniqueValidator = require("mongoose-unique-validator");
 
 let validMethodTypes = {
-  values: ["cash", "creditCard", "debitCard", "BonusCode"],
+  values: ["cash", "creditCard", "debitCard", "bonusCode"],
+  message: "{VALUE} no es un metodo de pago valido"
+};
+let validStatusTypes = {
+  values: ["Cancelled", "Finished"],
   message: "{VALUE} no es un metodo de pago valido"
 };
 let Schema = mongoose.Schema;
@@ -14,9 +18,8 @@ let orderHistory = new Schema({
     default: 0
   },
   updated: { 
-    type: Date,
-    required:false,
-    default: Date.now 
+    type: String,
+    required:true, 
   },
   nameClient:{
     type: String,
@@ -64,18 +67,21 @@ let orderHistory = new Schema({
     type: String,
     required: [true, "Los comentarios son obligatorios."]
   },
+  services :[{
+    idService : Number,
+    nameService :String,
+    typeService : String,
+    price: Number,
+    quantity:Number
+  }],
   price: {
     type: Number,
     required: [true, "El precio es necesario"]
   },
-  typeService: {
-    type: Number,
-    required: [true, "El tipo de servicio es necesario"]
-  },
   status: {
-    type: Number,
+    type: String,
     default: true,
-    required: [true, "El status del servicio es necesario"]
+    enum: validStatusTypes
   },
   payMethod: {
     type: String,
@@ -86,7 +92,6 @@ let orderHistory = new Schema({
     type: String,
     required: [false]
   },
-
   card: {
     type: String,
     default: 0,

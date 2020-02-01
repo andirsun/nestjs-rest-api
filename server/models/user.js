@@ -18,9 +18,8 @@ let usuarioSchema = new Schema({
     default:"none"
   },
   updated: { 
-    type: Date,
-    required:false,
-    default: Date.now 
+    type: String,
+    required:true, 
   },
   name: {
     type: String,
