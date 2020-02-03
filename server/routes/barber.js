@@ -39,6 +39,32 @@ app.get("/getBarbersTop",function(req,res){
     }
   });
 });
+app.get("/checkBarberOrder",function(req,res){
+  let idBarber = req.query.idBarber;
+  temporalOrder.findOne({idBarber:idBarber,status:true},function(err,response){
+    if (err) {
+      return res.status(500).json({
+        response: 3,
+        content: {
+          error: err,
+          message: "Error al buscar el barbero"
+        }
+      });
+    }
+    if(response){
+      res.status(200).json({
+        response: 2,
+        content:response
+      }); 
+    }else{
+      res.status(200).json({
+        response: 1,
+        content:"El barbero no tiene ordenes en curso"
+      }); 
+
+    }
+  });
+});
 app.get("/getBarberByPhone",function(req,res){
   let phone = req.query.phoneBarber || 0;
   phone = parseInt(phone);
