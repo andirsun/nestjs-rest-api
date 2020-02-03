@@ -24,7 +24,7 @@ app.use(express.static(publicPath)); //access to data like images or anything el
 
 app.use(morgan("dev"));
 // Brings security in the api rest petitions
-app.use(cors());
+app.use(cors({origin:true,credentials:true}));
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 
