@@ -335,32 +335,34 @@ app.post("/finishOrder",function(req,res){
     }
     if(temporalOrderDB){
       let tempOrder = temporalOrderDB.toJSON();
-      barber.findOneAndUpdate({id:tempOrder.idBarber},{$inc:{points:50}},function(err,barberDb){//updating points to a barber
-        if (err) {
-          return res.status(500).json({
-            response: 3,
-            content: err
-          });
-        }
-        if(barberDb){
-          console.log("se sumaron los puntos al barbero");
-        }else{
-          console.log("No se le sumaron los puntos al barbero");
-        }
-      });
-      user.findOneAndUpdate({id:tempOrder.idClient},{$inc:{points:50}},function(err,userDb){//updating points to a barber
-        if (err) {
-          return res.status(500).json({
-            response: 3,
-            content: err
-          });
-        }
-        if(userDb){
-          console.log("Se sumaron los punto al usuario");
-        }else{
-          console.log("No se le sumaron los puntos al usuario");
-        }
-      });
+      if(status =="Finished"){
+        barber.findOneAndUpdate({id:tempOrder.idBarber},{$inc:{points:50}},function(err,barberDb){//updating points to a barber
+          if (err) {
+            return res.status(500).json({
+              response: 3,
+              content: err
+            });
+          }
+          if(barberDb){
+            console.log("se sumaron los puntos al barbero");
+          }else{
+            console.log("No se le sumaron los puntos al barbero");
+          }
+        });
+        user.findOneAndUpdate({id:tempOrder.idClient},{$inc:{points:50}},function(err,userDb){//updating points to a barber
+          if (err) {
+            return res.status(500).json({
+              response: 3,
+              content: err
+            });
+          }
+          if(userDb){
+            console.log("Se sumaron los punto al usuario");
+          }else{
+            console.log("No se le sumaron los puntos al usuario");
+          }
+        });
+      }
       order.find(function(err,ordersDB){
         if (err) {
           return res.status(500).json({
