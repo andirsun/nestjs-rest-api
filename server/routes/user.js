@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const _ = require("underscore");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
+const temporalOrder = require("../models/temporalOrder");
 const app = express();
 require("dotenv").config();
 const wilioId = process.env.ACCOUNT_SID;
@@ -44,6 +45,33 @@ app.get("/messageChrismas",function(req,res){
       content:"Mandamos el mensaje correctamente"
     });
     
+  });
+});
+app.get("/checkUserOrder",function(req,res){
+  let idUser = req.query.idUser;
+  console.log(idUser);
+  temporalOrder.findOne({idClient:idUser,status:true},function(err,response){
+    if (err) {
+      return res.status(500).json({
+        response: 3,
+        content: {
+          error: err,
+          message: "Error al buscar la orden del cliente"
+        }
+      });
+    }
+    if(response){
+      res.status(200).json({
+        response: 2,
+        content:response
+      }); 
+    }else{
+      res.status(200).json({
+        response: 1,
+        content:"El cliente no tiene pedidos en curos"
+      }); 
+
+    }
   });
 });
 app.get("/getHistoryOrders",function(req,res){
@@ -576,9 +604,6 @@ app.get("/paginateQuery", function(req, res) {
       );
     });
 });
-
-
-
 app.get("/saveToken",function(req,res){
   let idStudent = req.query.idStudent;
   let token = req.query.token;
