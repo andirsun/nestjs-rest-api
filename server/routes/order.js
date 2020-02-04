@@ -584,19 +584,38 @@ app.put("/assignBarberToOrder",function(req,res){
                   });
                 }
                 if(clientDb){
-                  let client = clientDb.toJSON();
-                  let title = "Encontramos un Barbero !!"
-                  let message = orderJson.nameClient+"!"
-                                +", tu barbero "+orderJson.nameBarber
-                                +" esta en marcha a tu direccion.";
-                  let tokenClient = client.phoneToken;
-                  sendPushMessage(tokenClient,title,message);//notify to the client about his barber assigned
-                  res.status(200).json({
-                    response: 2,
-                    content:{
-                      message: "Genial, se asigno a "+barbero.name+" a la orden, tambien se notifico el mensaje al cliente "+orderJson.nameClient
-                    } 
+                  barber.findOne({id:idBarber},function(err,response){
+                    if (err) {
+                      return res.status(500).json({
+                        response: 3,
+                        content: err
+                      });
+                    }
+                    if(response){
+                      let barber = response.toJSON();
+                      let client = clientDb.toJSON();
+                      let title = "Encontramos un Barbero !!"
+                      let message = orderJson.nameClient+"!"
+                                    +", tu barbero "+barber.name
+                                    +" esta en marcha a tu direccion.";
+                      let tokenClient = client.phoneToken;
+                      sendPushMessage(tokenClient,title,message);//notify to the client about his barber assigned
+                      res.status(200).json({
+                        response: 2,
+                        content:{
+                          message: "Genial, se asigno a "+barbero.name+" a la orden, tambien se notifico el mensaje al cliente "+orderJson.nameClient
+                        } 
+                      });
+                    }else{
+                      res.status(200).json({
+                        response: 1,
+                        content:{
+                          message: "No encontramos un barbero con ese id"
+                        } 
+                      });
+                    }
                   });
+                  
                 }else{
                   res.status(200).json({
                     response: 1,
