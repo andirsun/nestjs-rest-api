@@ -171,7 +171,6 @@ app.put("/addPhoneTokenUser",function(req,res){
 app.put("/addAddressUser",function(req,res){
   let body = req.body;
   let phone = body.phone || 0;
-  console.log(phone);
   let city = body.city || "none";
   let address = body.address || "none";
   User.findOneAndUpdate({phone:phone},{
@@ -209,6 +208,64 @@ app.put("/addAddressUser",function(req,res){
         content:"no se agrego la direccion al usuario"
       });
     }
+  });
+});
+app.put("/deleteAddressUser",function(req,res){
+  let body = req.body;
+  let phone = body.phone || 0;
+  let address = body.address || "none";
+  User.findOne({phone:phone},function(err,response){
+    if (err) {
+      return res.status(500).json({
+        response: 3,
+        content:{
+          message: "Error al agregar la direccion del usuario",
+          err
+        } 
+      });
+    }
+    if(response){
+      let user = response;
+      let array = []
+      user.addresses.forEach(element => {
+        if(element.address != address){
+          array.push(element)
+        }
+      });
+      user.addresses = array;
+      user.save(function(err,response){
+        if (err) {
+          return res.status(500).json({
+            response: 3,
+            content:{
+              message: "Error al agregar la direccion del usuario",
+              err
+            } 
+          });
+        }
+        if(response){
+          res.status(200).json({
+            response: 2,
+            content:{
+              message:"la direcciones se actualizaron correctamente",
+              user
+            }
+          });
+        }else{
+          res.status(400).json({
+            response: 1,
+            content:"no se elimino la direccion del usuario"
+          });
+        }
+      });
+      
+    }else{
+      res.status(400).json({
+        response: 1,
+        content:"no se encontro ningun usurio con ese celular asociado"
+      });
+    }
+
   });
 });
 app.put("/editInfoUser",function(req,res){
