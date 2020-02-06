@@ -15,7 +15,7 @@ let barber = new Schema({
   },
   updated: { 
     type: String,
-    required:true, 
+    required:false, 
   },
   name: {
     type: String,

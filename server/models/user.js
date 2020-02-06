@@ -19,7 +19,7 @@ let usuarioSchema = new Schema({
   },
   updated: { 
     type: String,
-    required:true, 
+    required:false, 
   },
   name: {
     type: String,
