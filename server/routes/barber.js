@@ -167,8 +167,8 @@ app.put("/saveBarberDeviceInfo",function(req,res){
                 "operatingSystem":body.operatingSystem,
                 "osVersion":body.osVersion,
                 "platform" :body.platform,
-              } //inserted data is the object to be inserted 
-     }
+              }
+     },updated: moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")
   },{
     new: true,
     runValidators: true
@@ -193,7 +193,7 @@ app.put("/saveBarberDeviceInfo",function(req,res){
     }else{
       res.status(400).json({
         response: 1,
-        content:"no se agrego la info del dispositivo "
+        content:"no se encontro un barbero con ese celular"
       });
     }
   });
@@ -239,7 +239,13 @@ app.post("/addBarber", function(req, res) {
         content: err
       });
     }
-    let id = barberDB[barberDB.length-1].id + 1; //para que es id sea autoincrementable
+    let id = 0 
+    if(barberDB.length == 0){
+      //if no exists any order
+      id=1
+    }else{
+      id=barberDB[barberDB.length-1].id + 1;
+    }
     let name = body.name;
     let lastName = body.lastName;
     let address = body.address;
