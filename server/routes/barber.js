@@ -150,6 +150,54 @@ app.post("/loginBarber" ,function(req,res){
   );
 
 });
+app.put("/saveBarberDeviceInfo",function(req,res){
+  let body = req.body;
+  let phone = body.phone;
+  Barber.findOneAndUpdate({phone:phone},{
+    $push : {
+       deviceInfo :  {
+                "appBuild":body.appBuild ,
+                "appVersion":body.appVersion,
+                "diskFree":body.diskFree ,
+                "diskTotal":body.diskTotal,
+                "isVirtual":body.isVirtual ,
+                "manufacturer":body.manufacturer,
+                "memUsed" :body.memUsed,
+                "model":body.model,
+                "operatingSystem":body.operatingSystem,
+                "osVersion":body.osVersion,
+                "platform" :body.platform,
+              } //inserted data is the object to be inserted 
+     }
+  },{
+    new: true,
+    runValidators: true
+  },function(err,response){
+    if (err) {
+      return res.status(500).json({
+        response: 3,
+        content:{
+          message: "Error al agregar la info del dispositivo",
+          err
+        } 
+      });
+    }
+    if(response){
+      res.status(200).json({
+        response: 2,
+        content:{
+          message:"la info del dispositivo se agrego correctamente",
+          user : response
+        }
+      });
+    }else{
+      res.status(400).json({
+        response: 1,
+        content:"no se agrego la info del dispositivo "
+      });
+    }
+  });
+});
 app.get("/getAvailableOrdersByCity",function(req,res){
   let city = req.query.city || "none";
   console.log(city);
