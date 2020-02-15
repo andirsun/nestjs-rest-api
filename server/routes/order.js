@@ -52,9 +52,6 @@ function sendPushMessage(token,title,message){
       }
   });
 }
-app.get("/sendPushNotification",function(req,res){
-  sendPushMessage("eGow2nKxrr4:APA91bH3hYRK3Qe8fWwAPuvAKLCJS3JvWqfU0VVh7uDSiHjrVlzjQVAaSF8ePwnP-qSW-dDaSrsLXthLQ6dpgyX_kM5yah9tNGgUGEvl4zRRzJIlr1Riy4n63eVd3gefEiDS_iJAino3","Hola","HOla a la verga del mic");
-});
 app.get("/getInfoTemporalOrder",function(req,res){
   let idOrder = req.query.idOrder || 0 ;
   temporalOrder.findOne({id:idOrder,status:true},function(err,response){
@@ -458,6 +455,7 @@ app.put("/cancelOrderBarber",function(req,res){
         let title = "El Barbero cancelo la orden :("
         let message = "No te preopues, estamos buscando otro barbero profesional";
         let tokenClient = client.phoneToken;
+        console.log("Tken del cliente" + tokenClient);
         sendPushMessage(tokenClient,title,message);//notify to the client about his barber assigned
         temporalOrder.findOneAndUpdate({id:idOrder},{idBarber:0,
                                                       nameBarber:"sin asignar",
@@ -594,7 +592,7 @@ app.put("/assignBarberToOrder",function(req,res){
                     if(response){
                       let barber = response.toJSON();
                       let client = clientDb.toJSON();
-                      let title = "Encontramos un Barbero !!"
+                      let title = "Encontramos un Barbero!!"
                       let message = orderJson.nameClient+"!"
                                     +", tu barbero "+barber.name
                                     +" esta en marcha a tu direccion.";
