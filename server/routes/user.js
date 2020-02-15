@@ -165,8 +165,10 @@ app.get("/sendCode",function(req,res){
 });
 app.put("/addPhoneTokenUser",function(req,res){
   let body = req.body;
-  let phoneUser = body.phoneUser;
-  let phoneToken = body.phoneToken;
+  let phoneUser = body.phoneUser.toString();
+  let phoneToken = body.phoneToken.toString();
+  console.log("telefono del usuario: "+phoneUser);
+  console.log("token del user : "+phoneToken);
   User.findOneAndUpdate({phone:phoneUser},{$set : {phoneToken : phoneToken},
                                           updated: moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")
                                         },{new: true,runValidators: true},function(err,response){
