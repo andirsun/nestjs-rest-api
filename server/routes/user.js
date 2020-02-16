@@ -150,7 +150,7 @@ app.get("/sendCode",function(req,res){
       let user = response.toJSON();
       let code = user.registrationCode;
       let message = 'Your verification code is '+code.toString();
-      sendSMS(user.phone,message);
+      sendSMS2(user.phone,message);
       res.status(200).json({
         response: 2,
         content:"El mensaje se envio correctamente"
