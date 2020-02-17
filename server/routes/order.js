@@ -441,62 +441,78 @@ app.post("/finishOrder",function(req,res){
 app.put("/cancelOrderBarber",function(req,res){
   let body = req.body;
   let idOrder = parseInt(body.idOrder) || 0;
-  let idUser = body.idUser || 0
-  user.findOne({id:idUser},function(err,clientDb){
+  //let idUser = body.idUser || 0
+  temporalOrder.findOne({id:idOrder},function(err,response){
     if (err) {
       return res.status(500).json({
         response: 3,
         content: err
       });
     }
-    if(clientDb){
-      let client = clientDb.toJSON();
-      if(client.phoneToken){
-        let title = "El Barbero cancelo la orden :("
-        let message = "No te preopues, estamos buscando otro barbero profesional";
-        let tokenClient = client.phoneToken;
-        console.log("Tken del cliente" + tokenClient);
-        sendPushMessage(tokenClient,title,message);//notify to the client about his barber assigned
-        temporalOrder.findOneAndUpdate({id:idOrder},{idBarber:0,
-                                                      nameBarber:"sin asignar",
-                                                      updated: moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")},{new: true,runValidators: true},function(err,response){
-          if (err) {
-            return res.status(500).json({
-              response: 1,
-              content: err
-            });
-          }
-          if(response){
-            /*
-            
-            Here i need to send the free order to all barbers phone
-            
-            
-            */ 
-            return res.status(200).json({
-              response: 2,
-              content: response
+    if(response){
+      let order = response.toJSON();
+      let idUser = order.idClient;
+      user.findOne({id:idUser},function(err,clientDb){
+        if (err) {
+          return res.status(500).json({
+            response: 3,
+            content: err
+          });
+        }
+        if(clientDb){
+          let client = clientDb.toJSON();
+          console.log(client);
+          if(client.phoneToken){
+            let title = "El Barbero cancelo la orden :("
+            let message = "No te preopues, estamos buscando otro barbero profesional";
+            let tokenClient = client.phoneToken;
+            console.log("Tken del cliente" + tokenClient);
+            sendPushMessage(tokenClient,title,message);//notify to the client about his barber assigned
+            temporalOrder.findOneAndUpdate({id:idOrder},{idBarber:0,
+                                                          nameBarber:"sin asignar",
+                                                          updated: moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")},
+                                                          {new: true,runValidators: true},function(err,response){
+              if (err) {
+                return res.status(500).json({
+                  response: 1,
+                  content: err
+                });
+              }
+              if(response){
+                /*
+                
+                Here i need to send the free order to all barbers phone
+                
+                
+                */ 
+                return res.status(200).json({
+                  response: 2,
+                  content: response
+                });
+              }else{
+                return res.status(200).json({
+                  response: 1,
+                  content: "Orden no encontrada"
+                });
+              }
             });
           }else{
             return res.status(200).json({
               response: 1,
-              content: "Orden no encontrada"
+              content: "No se pudo notificar al cliente"
             });
           }
-        });
-      }else{
-        return res.status(200).json({
-          response: 1,
-          content: "No se pudo notificar al cliente"
-        });
-      }
-    }else{
-      return res.status(200).json({
-        response: 1,
-        content: "No se encontro al cliente con ese id"
+        }else{
+          return res.status(200).json({
+            response: 1,
+            content: "No se encontro al cliente con ese id"
+          });
+        }
       });
+
     }
   });
+  
   
 });
 app.put("/editOrder",function(req,res){
