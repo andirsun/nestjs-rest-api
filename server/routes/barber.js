@@ -14,7 +14,7 @@ const temporalOrder = require("../models/temporalOrder");
 /////////////////////////////////
 
 app.get("/getBarbersTop",function(req,res){
-  Barber.find(function(err,response){
+  Barber.find({status:true},function(err,response){
     if (err) {
       return res.status(500).json({
         response: 3,
