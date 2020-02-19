@@ -418,13 +418,22 @@ app.post("/loginUser",function(req,res){
             }
           });
         }else{
-          
-          let code = Math.floor(100000 + Math.random() * 900000).toString(); //a number between 100.000 and 999.999
+          //If the user isnt registered then we need to create his code of registration
+          let code = "";
+          if(phone == 1234567891){
+            //this is the only test for apple store review
+            code = "123456";
+            console.log("EL usuario es generico de apple");
+          }else{
+            console.log("Usuario nuevo, generando nuevo codigo");
+            code = Math.floor(100000 + Math.random() * 900000).toString(); //a number between 100.000 and 999.999
+          }
+
           let userSave = new User({
             id: records.length +1 ,            
             phone,
             registrationCode :code,
-            email:phone.toString()+"@timugo.com" //temporal fix
+            email:phone.toString()+"@timugo.com" //temporal email before the people provide us the right email
           });
           userSave.save((err,usuarioDB)=>{
             if(err){
