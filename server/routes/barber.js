@@ -253,7 +253,7 @@ app.post("/addBarber", function(req, res) {
     let birth = body.birth;
     let phone = body.phone;
     let city = body.city;
-    let pass = bcrypt.hashSync(body.pass, 10);
+    //let pass = bcrypt.hashSync(body.pass, 10);
     let document = body.document;
     let bio = body.bio || "";
     let barberSave = new Barber({
@@ -264,7 +264,6 @@ app.post("/addBarber", function(req, res) {
       email: email,
       birth: birth,
       phone: phone,
-      password: pass,
       city,
       document: document,
       bio: bio,
