@@ -461,7 +461,6 @@ app.put("/cancelOrderBarber",function(req,res){
         }
         if(clientDb){
           let client = clientDb.toJSON();
-          console.log(client);
           if(client.phoneToken){
             let title = "El Barbero cancelo la orden :("
             let message = "No te preopues, estamos buscando otro barbero profesional";

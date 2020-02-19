@@ -13,14 +13,14 @@ const client = require("twilio")(wilioId, wilioToken);
 /////////////////////////////////
 
 
-function sendSMS2(numberDestiny,message){
+function sendSMSMessage(numberDestiny,message){
   client.messages.create({
     from:'+14403974927',
     to: '+57'+numberDestiny,
     body : message
   }).then(message => console.log(message.sid));
 }
-function sendSMS(numberDestiny,message){
+function sendWhatsAppMessage(numberDestiny,message){
   client.messages.create({
     from:'whatsapp:+14155238886',
     to: 'whatsapp:+57'+numberDestiny,
@@ -35,7 +35,7 @@ app.get("/messageChrismas",function(req,res){
         let message = "JO, JO, JO.. Holaaa "+resp[i].name+", de parte del equipo de TIMUGO App de barberos a domicilio, te queremos desear una FALIZ NAVIDADDD!!!! :) ";
         console.log(message);
         console.log(resp[i].phone);
-        sendSMS2(resp[i].phone,message);
+        sendSMSMessage(resp[i].phone,message);
       }
       
       
@@ -150,7 +150,7 @@ app.get("/sendCode",function(req,res){
       let user = response.toJSON();
       let code = user.registrationCode;
       let message = 'Your verification code is '+code.toString();
-      sendSMS2(user.phone,message);
+      sendSMSMessage(user.phone,message);
       res.status(200).json({
         response: 2,
         content:"El mensaje se envio correctamente"
@@ -403,7 +403,7 @@ app.post("/loginUser",function(req,res){
             if(response){
               let updateUser = response.toJSON();
               let message = 'Your verification code is '+updateUser.registrationCode.toString();
-              sendSMS(updateUser.phone,message);
+              sendSMSMessage(updateUser.phone,message);
               
               
               res.status(200).json({
@@ -418,6 +418,7 @@ app.post("/loginUser",function(req,res){
             }
           });
         }else{
+          
           let code = Math.floor(100000 + Math.random() * 900000).toString(); //a number between 100.000 and 999.999
           let userSave = new User({
             id: records.length +1 ,            
@@ -438,7 +439,7 @@ app.post("/loginUser",function(req,res){
             if(usuarioDB){
               let user = usuarioDB.toJSON();
               let message = 'Your verification code is '+user.registrationCode.toString();
-              sendSMS(user.phone,message);
+              sendSMSMessage(user.phone,message);
               res.status(200).json({
                 response: 2,
                 content:"Usuario Creado Correctamente"
