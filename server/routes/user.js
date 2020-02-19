@@ -390,8 +390,15 @@ app.post("/loginUser",function(req,res){
         }
         if(response){
           //if the user is already register, then we need to add other logic here
-          let code = Math.floor(100000 + Math.random() * 900000).toString(); //a number between 100.000 and 999.999
-          //let code = 123456;
+          let code = "";
+          if(phone == 1234567891){
+            //this is the only test for apple store review
+            code = "123456";
+            console.log("EL usuario es generico de apple");
+          }else{
+            console.log("Usuario nuevo, generando nuevo codigo");
+            code = Math.floor(100000 + Math.random() * 900000).toString(); //a number between 100.000 and 999.999
+          }
           response["registrationCode"] = code;
           response.save((err,response)=>{
             if (err) {
