@@ -65,7 +65,7 @@ let barber = new Schema({
   },
   password: {
     type: String,
-    required: [true, "La contraseña es obligatoria"]
+    required: [false]
   },
   address: {
     type: String,
