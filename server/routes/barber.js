@@ -202,7 +202,7 @@ app.put("/addPhoneTokenBarber",function(req,res){
   let body = req.body;
   console.log("telefono del barbero: "+body.phoneUser);
   console.log("token del barbero : "+body.phoneToken);
-  let phoneBarber = body.phoneUser.toString();
+  let phoneBarber = body.phoneBarber.toString();
   let phoneToken = body.phoneToken.toString();
   
   Barber.findOneAndUpdate({phone:phoneBarber},{$set : {phoneToken : phoneToken},
