@@ -30,6 +30,10 @@ let barber = new Schema({
     unique: true,
     required: [true, "Es necesario el numero de celular"]
   },
+  phoneToken:{
+    type:String,
+    required:false
+  },
   bio: {
     type: String,
     required: [false]

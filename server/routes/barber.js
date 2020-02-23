@@ -198,6 +198,42 @@ app.put("/saveBarberDeviceInfo",function(req,res){
     }
   });
 });
+app.put("/addPhoneTokenBarber",function(req,res){
+  let body = req.body;
+  console.log("telefono del barbero: "+body.phoneUser);
+  console.log("token del barbero : "+body.phoneToken);
+  let phoneBarber = body.phoneUser.toString();
+  let phoneToken = body.phoneToken.toString();
+  
+  Barber.findOneAndUpdate({phone:phoneBarber},{$set : {phoneToken : phoneToken},
+                                          updated: moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")
+                                        },{new: true,runValidators: true},function(err,response){
+    if (err) {
+      return res.status(500).json({
+        response: 3,
+        content:{
+          message: "Error al buscar al barbero con ese celular.",
+          err
+        } 
+      });
+    }
+    if(response){
+      res.status(200).json({
+        response: 2,
+        content:{
+          message:"se agrego correctamente el token al barbero "+ response.name,
+          user : response
+        }
+      });
+    }else{
+      res.status(400).json({
+        response: 1,
+        content:"no se agrego el token al barbero"
+      });
+    }
+    
+  });
+})
 app.get("/getAvailableOrdersByCity",function(req,res){
   let city = req.query.city || "none";
   console.log(city);
