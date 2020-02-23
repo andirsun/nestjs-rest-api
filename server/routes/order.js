@@ -29,6 +29,13 @@ function sendSMS(numberDestiny,message){
     body : message
   }).then(message => console.log(message.sid));
 }
+function sendWhatsAppMessage(numberDestiny,message){
+  client.messages.create({
+    from:'whatsapp:+14155238886',
+    to: 'whatsapp:+57'+numberDestiny,
+    body : message
+  }).then(message => console.log(message.sid));
+}
 function sendPushMessage(token,title,message){
   var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
     to: token, 
@@ -285,8 +292,8 @@ app.post("/createOrder", function (req, res) {
                                     +","+orderWs.Servicio;
                 
                 
-                //sendSMS("3162452663",orderMessage);
-                sendSMS("3106838163",orderMessage);
+                sendWhatsAppMessage("3162452663",orderMessage);
+                sendWhatsAppMessage("3106838163",orderMessage);
                 ////////////////////////////////////////////////////////////////////////////////////////
                 /*Sending Response of petition if the order was created correctly */
                 res.status(200).json({
