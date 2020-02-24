@@ -494,7 +494,9 @@ app.post("/addUser", function(req, res) {
       //if no exists any order
       id=1
     }else{
-      id=userDB[userDB.length-1].id + 1;
+      console.log("El ultimo id del cliente es: "+userDB[userDB.length-1].id);
+      console.log("el siguiente es : "+ (userDB[userDB.length-1].id+1));
+      id=(userDB[userDB.length-1].id + 1);
     }
     let name = body.name;
     let address = body.address;
