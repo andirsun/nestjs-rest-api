@@ -292,8 +292,8 @@ app.post("/createOrder", function (req, res) {
                                     +","+orderWs.Servicio;
                 
                 
-                sendWhatsAppMessage("3162452663",orderMessage);
-                sendWhatsAppMessage("3106838163",orderMessage);
+                sendSMS("3162452663",orderMessage);
+                sendSMS("3106838163",orderMessage);
                 ////////////////////////////////////////////////////////////////////////////////////////
                 /*Sending Response of petition if the order was created correctly */
                 res.status(200).json({
