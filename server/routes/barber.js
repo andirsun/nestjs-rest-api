@@ -234,6 +234,48 @@ app.put("/addPhoneTokenBarber",function(req,res){
     
   });
 })
+app.put('/uploadImageBarber',function(req,res){
+  if (!req.files || Object.keys(req.files).length === 0) { //si ningun archivo es detectado en la peticion que se envio
+    return res.status(400).json({
+        response : 1,
+        error:{
+          message: "No se ha seleccionado ningun archivo"
+        }
+    });
+  }
+  let file = req.files.archivo;//el nombre del input en html debe ser para este caso "archivo"
+  let fileName = file.name.split('.');//para sacar la extencion del archivo 
+  let extention = fileName[fileName.length-1] ;
+
+  // Extenciones permitidas para cargar al servidor
+  let extenciones = ['png','jpg','gif','jpeg'];
+  // Validando extencion del archivo 
+  if (extenciones.indexOf(extention)<0){
+    return res.status(400).json({
+      response:1,
+      content:{
+        message: 'tu extencion de archivo es :'+extention+', pero las extenciones permitidas son : '+ extenciones.join(', ')
+      }
+    });
+  }
+  //Moving FIle
+  file.mv('public/assets/images/barbers/'+file.name, (err) => {
+    if (err)
+      return res.status(500).json({
+        response : 1,
+        content:{
+          message : "ocurrio un error mientras se movia el archivo al directorio" ,
+          error: err
+        }
+      });
+    res.json({
+      response : 2,
+      content: {
+        message: "la imagen se subio correctamente!!!"
+      }
+    });
+  });
+});
 app.get("/getAvailableOrdersByCity",function(req,res){
   let city = req.query.city || "none";
   console.log(city);
