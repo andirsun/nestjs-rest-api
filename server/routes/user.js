@@ -436,9 +436,19 @@ app.post("/loginUser",function(req,res){
             console.log("Usuario nuevo, generando nuevo codigo");
             code = Math.floor(100000 + Math.random() * 900000).toString(); //a number between 100.000 and 999.999
           }
-
+          let id = 0 
+          if(records.length == 0){
+            //if no exists any records in the collection
+            id=1
+          }else{
+            console.log("El ultimo id del cliente es: "+records[records.length-1].id);
+            console.log("el siguiente es : "+ (records[records.length-1].id+1));
+            //if exists records then I take the last id of the last record and increment the value in 1
+            id=(records[records.length-1].id + 1);
+          }
+          console.log("id que voy a insertar"+id);
           let userSave = new User({
-            id: records.length +1 ,            
+            id,
             phone,
             registrationCode :code,
             email:phone.toString()+"@timugo.com" //temporal email before the people provide us the right email
@@ -459,7 +469,7 @@ app.post("/loginUser",function(req,res){
               sendSMSMessage(user.phone,message);
               res.status(200).json({
                 response: 2,
-                content:"Usuario Creado Correctamente"
+                content: usuarioDB
               });
             }else{
               console.log("entre al else");
