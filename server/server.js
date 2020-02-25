@@ -4,6 +4,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const app = express();
 const bodyParser = require("body-parser");
+const fileUpload = require('express-fileupload');
 const morgan = require("morgan");
 const path = require("path");
 const cors = require("cors");
@@ -21,7 +22,9 @@ const wilioToken = process.env.AUTH_TOKEN;
 const client = require("twilio")(wilioId, wilioToken);
 ////////////////////////////////////
 app.use(express.static(publicPath)); //access to data like images or anything else
-
+// Using module express-fileupload to upload files to server
+app.use(fileUpload({ useTempFiles: true })); 
+// print in the server console the petitions like logs
 app.use(morgan("dev"));
 // Brings security in the api rest petitions
 app.use(cors({origin:true,credentials:true}));
