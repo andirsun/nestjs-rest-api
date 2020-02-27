@@ -1,7 +1,7 @@
 {
-  "name": "backend-timugo",
-  "version": "1.1.0",
-  "description": "timugo backend",
+  "name": "timugo-api",
+  "version": "1.1.1",
+  "description": "Timugo REST API with full documentation",
   "main": "index.js",
   "scripts": {
     "start": "nodemon server/server.js",
