@@ -329,9 +329,10 @@ app.put("/editInfoUser",function(req,res){
   let body = req.body;
   let phone = body.phone;
   let name = body.name || "none" ;
-  let email = body.email;
+  let email = body.email || "none";
+  let publicityMethod = body.publicityMethod ||"none";
   console.log(phone,name,email);
-  User.findOneAndUpdate({phone:phone},{name:name,email:email},{new: true,runValidators: true},function(err,response){
+  User.findOneAndUpdate({phone:phone},{name:name,email:email,publicityMethod:publicityMethod},{new: true,runValidators: true},function(err,response){
     if (err) {
       return res.status(500).json({
         response: 3,
