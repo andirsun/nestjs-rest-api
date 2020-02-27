@@ -5,6 +5,7 @@ const User = require("../models/user");
 const Feedback = require("../models/feedback");
 const jwt = require("jsonwebtoken");
 const temporalOrder = require("../models/temporalOrder");
+const publicityMethod = require("../models/publicityMethods");
 const app = express();
 require("dotenv").config();
 const wilioId = process.env.ACCOUNT_SID;
@@ -118,6 +119,30 @@ app.get("/getUser",function(req,res){
         response: 3,
         content:{
           message: "Error al tratar de encontrar al usuario con el numero",
+          err
+        } 
+      });
+    }
+    if(response){
+      res.status(200).json({
+        response: 2,
+        content:response
+      });
+    }else{
+      res.status(200).json({
+        response: 1,
+        content:"No se encontro ningun usuario con ese telefono"
+      });
+    }
+  });
+});
+app.get("/getPublicityMethods",function(req,res){
+  publicityMethod.find((err,response)=>{
+    if (err) {
+      return res.status(400).json({
+        response: 3,
+        content:{
+          message: "Error al tratar de encontrar los metodos de publicidad",
           err
         } 
       });
@@ -680,6 +705,56 @@ app.post('/giveFeedback',function(req,res){
     }
   });
    
+});
+app.post('/createPublicityMethod',function(req,res){
+  ///Add user to DB the data is read by body of the petition
+  let body = req.body;
+  publicityMethod.find(function(err, records) {
+    if (err) {
+      return res.status(400).json({
+        response: 3,
+        content: err
+      });
+    }
+    let id = 0 
+    if(records.length == 0){
+      //if no exists any order
+      id=1
+    }else{
+      id=(records[records.length-1].id + 1);
+    }
+    let methodSave = new publicityMethod({
+      id: id,
+      name: body.name,
+      updated: moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")
+    });
+    methodSave.save((err, method) => {
+      //callback que trae error si no pudo grabar en la base de datos y usuarioDB si lo inserto
+      if (err) {
+        return res.status(400).json({
+          response: 1,
+          content: err
+        });
+      }
+      if(method){
+        res.status(200).json({
+          response: 2,
+          content: {
+            user: publicityMethod,
+            message: "Method Saved"
+          }
+        });
+      }else{
+        res.status(200).json({
+          response: 1,
+          content: {
+            message: "No se inserto el metodo"
+          }
+        });
+      }
+      
+    });
+  });
 });
 app.get("/paginateQuery", function(req, res) {
   let desde = req.query.desde || 0;
