@@ -292,27 +292,20 @@ app.post("/createOrder", function (req, res) {
               }
               if (response) {
                 //////////////////////////////Sending information of the order by whatsAPP with twillio
-                let orderWs = response.toJSON();
-                orderWs.nombreCliente = client.name+" "+client.lastName; //CLient name who take the order
-                orderWs.telefonoCliente = client.phone;
-                orderWs.Direccion=client.address;
-                orderWs.Servicio= "Corte de Cabello";
-                delete orderWs._id;
-                delete orderWs.address;
-                delete orderWs.dateBeginOrder;
-                delete orderWs.typeService;
-                delete orderWs.__v;
-                delete orderWs.hourStart;
-                delete orderWs.status;
+                console.log("order Details : "+response);
+                let message2 = "Detalle: id:"+response.id
+                                +",nombre: "+response.nameClient
+                                +",celular: "+client.phone
+                                +",dir: "+response.address
+                                + ", Valor: " + response.price ;
+ 
+                let wm = "Your appointment is coming up on "+"NUEVA ORDEN"+" at "+ message2
+                                
+                sendWhatsAppMessage(3162452663,wm);                
+                sendWhatsAppMessage(3106838163,wm);
 
-                let orderMessage = "Detalle: id:"+orderWs.id
-                                    +",nombre: "+orderWs.nombreCliente
-                                    +",celular: "+orderWs.telefonoCliente
-                                    +",dir: "+orderWs.Direccion
-                                    +","+orderWs.Servicio;
-                
-                
-                sendSMS("3162452663",orderMessage);
+                console.log("Nueva Orden: " + wm);
+                //sendSMS("3162452663",orderMessage);
                 sendSMS("3106838163",orderMessage);
                 ////////////////////////////////////////////////////////////////////////////////////////
                 /*Sending Response of petition if the order was created correctly */
