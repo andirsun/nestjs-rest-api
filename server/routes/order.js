@@ -303,10 +303,9 @@ app.post("/createOrder", function (req, res) {
                                 
                 sendWhatsAppMessage(3162452663,finalMessage);                
                 sendWhatsAppMessage(3106838163,finalMessage);
-
                 console.log("Nueva Orden: " + finalMessage);
                 //sendSMS("3162452663",orderMessage);
-                sendSMS("3106838163",finalMessage);
+                //sendSMS("3106838163",finalMessage);
                 
                 //Sending New Order to all Barbers
                 barber.find(function(err,resp){
