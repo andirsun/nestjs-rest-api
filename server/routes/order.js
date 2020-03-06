@@ -15,8 +15,8 @@ const wilioToken = process.env.AUTH_TOKEN;
 const client = require("twilio")(wilioId, wilioToken);
 //const request = require('request')
 var FCM = require('fcm-node');
-var serverKey = process.env.FCM_TOKEN; //put your server key here
-var fcm = new FCM(serverKey);
+var serverKeyBarbers = process.env.FCM_TOKEN_BARBERS; //put your server key here
+var fcmBarbers = new FCM(serverKeyBarbers);
 
 
 //const timezone = require('moment-timezone');
@@ -36,7 +36,7 @@ function sendWhatsAppMessage(numberDestiny,message){
     body : message
   }).then(message => console.log(message.sid));
 }
-function sendPushMessage(token,title,message){
+function sendPushMessageBarber(token,title,message){
   var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
     to: token, 
     collapse_key: 'your_collapse_key',
@@ -51,7 +51,7 @@ function sendPushMessage(token,title,message){
         my_another_key: 'my another value'
     }
   };
-  fcm.send(message, function(err, response){
+  fcmBarbers.send(message, function(err, response){
       if (err) {
         console.log("Error Sending Message!",err);
       } else {
@@ -125,6 +125,26 @@ app.get("/getInfoTemporalOrder",function(req,res){
         }
       });
     }
+  });
+});
+app.get("/messageChrismas",function(req,res){
+  User.find(function(err,resp){
+    //let res = resp.toJSON();
+    for(i=0;i<resp.length;i++){
+      if(resp[i].name){
+        let message = "JO, JO, JO.. Holaaa "+resp[i].name+", de parte del equipo de TIMUGO App de barberos a domicilio, te queremos desear una FALIZ NAVIDADDD!!!! :) ";
+        console.log(message);
+        console.log(resp[i].phone);
+        sendSMSMessage(resp[i].phone,message);
+      }
+      
+      
+    }
+    res.status(200).json({
+      response: 2,
+      content:"Mandamos el mensaje correctamente"
+    });
+    
   });
 });
 app.post("/getCurrentOrder",function(req,res){
@@ -272,37 +292,41 @@ app.post("/createOrder", function (req, res) {
               }
               if (response) {
                 //////////////////////////////Sending information of the order by whatsAPP with twillio
-                let orderWs = response.toJSON();
-                orderWs.nombreCliente = client.name+" "+client.lastName; //CLient name who take the order
-                orderWs.telefonoCliente = client.phone;
-                orderWs.Direccion=client.address;
-                orderWs.Servicio= "Corte de Cabello";
-                delete orderWs._id;
-                delete orderWs.address;
-                delete orderWs.dateBeginOrder;
-                delete orderWs.typeService;
-                delete orderWs.__v;
-                delete orderWs.hourStart;
-                delete orderWs.status;
-
-                let orderMessage = "Detalle: id:"+orderWs.id
-                                    +",nombre: "+orderWs.nombreCliente
-                                    +",celular: "+orderWs.telefonoCliente
-                                    +",dir: "+orderWs.Direccion
-                                    +","+orderWs.Servicio;
-                
-                
+                //console.log("order Details : "+response);
+                let orderMessage = "Detalle: id:"+response.id
+                                +",nombre: "+response.nameClient
+                                +",celular: "+client.phone
+                                +",dir: "+response.address
+                                + ", Valor: " + response.price ;
+ 
+                let finalMessage = "Your appointment is coming up on "+"NUEVA ORDEN"+" at "+ orderMessage;
+                                
+                sendWhatsAppMessage(3162452663,finalMessage);                
+                sendWhatsAppMessage(3106838163,finalMessage);
+                console.log("Nueva Orden: " + finalMessage);
                 //sendSMS("3162452663",orderMessage);
-                //sendSMS("3106838163",orderMessage);
-                ////////////////////////////////////////////////////////////////////////////////////////
-                /*Sending Response of petition if the order was created correctly */
-                res.status(200).json({
-                  response: 2,
-                  content: {
-                    orderDB:response,
-                    message: "Genial, Se creo la orden Correctamente, un barbero te contactara pronto."
+                //sendSMS("3106838163",finalMessage);
+                
+                //Sending New Order to all Barbers
+                barber.find(function(err,resp){
+                  console.log(resp);
+                  for(i=0;i<resp.length;i++){
+                    if(resp[i].phoneToken){
+                      sendPushMessageBarber(resp[i].phoneToken,"NUEVA ORDEN ",resp[i].name + "! Tenemos una nueva orden para ti!!");
+                    }
                   }
+                  ////////////////////////////////////////////////////////////////////////////////////////
+                  /*Sending Response of petition if the order was created correctly */
+                  return res.status(200).json({
+                    response: 2,
+                    content: {
+                      orderDB:response,
+                      message: "Genial, Se creo la orden Correctamente, un barbero te contactara pronto."
+                    }
+                  });
                 });
+                
+                
               }else{
                 res.status(200).json({
                   response: 1,

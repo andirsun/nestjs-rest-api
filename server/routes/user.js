@@ -76,6 +76,39 @@ app.get("/checkUserOrder",function(req,res){
     }
   });
 });
+app.get("/checkTokenUser",function(req,res){
+  let phoneUser = req.query.phoneUser;
+  User.find({phone:phoneUser},function(err,user){
+    if (err) {
+      return res.status(400).json({
+        response: 3,
+        content:{
+          message: "Error al buscar al usuario",
+          err
+        } 
+      });
+    }
+    if(user){
+      let data = user[0].toJSON();
+      if(data.phoneToken == "none"){
+        return res.status(400).json({
+          response: 1,
+          content:"no tiene id"
+        });
+      }else{
+        return res.status(200).json({
+          response: 2,
+          content:data
+        });
+      }
+    }else{
+      return res.status(400).json({
+        response: 1,
+        content:"no se encontro al usuario"
+      });
+    }
+  })
+});
 app.get("/getHistoryOrders",function(req,res){
   let id = req.params.id;
   //
