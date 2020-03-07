@@ -278,31 +278,69 @@ app.put('/uploadImageBarber',function(req,res){
 });
 app.get("/getAvailableOrdersByCity",function(req,res){
   let city = req.query.city || "none";
-  console.log(city);
-  temporalOrder.find({city:city,status:true},function(err,response){
+  let phoneBarber = req.query.phoneBarber || 123;
+  console.log("Buscando Ordenes de la ciudad : "+ city);
+  Barber.find({phone:phoneBarber},function(err,Barber){
     if (err) {
       return res.status(400).json({
         response: 3,
         content: err
       });
     }
-    if(response.length!=0){
-      response = response.filter(function(item){return item.idBarber == 0;}); //delete the orders with a associated barber
-      if(response.length==0){
-        res.status(200).json({
-          response: 1,
-          content: "Ups, no hay ordenes disponibles en esa ciudad"
-        });  
+    let barber = Barber[0].toJSON();
+    //barber need to hacve connected property
+    if("connected" in barber){
+      //barber need to be connected to recieve new orders
+      if(barber.connected ==true){
+        //barber need to has a enable account
+        if(barber.status ==true){
+          //search a available orders by city
+          temporalOrder.find({city:city,status:true},function(err,response){
+            if (err) {
+              return res.status(400).json({
+                response: 3,
+                content: err
+              });
+            }
+            if(response.length!=0){
+              //delete the orders with a associated barber
+              response = response.filter(function(item){return item.idBarber == 0;});
+              if(response.length==0){
+                res.status(200).json({
+                  response: 1,
+                  content: "Ups, no hay ordenes disponibles en esa ciudad"
+                });  
+              }else{
+                res.status(200).json({
+                  response: 2,
+                  content:response
+                });
+              }
+            }else{
+              return res.status(200).json({
+                response: 1,
+                content: "Ups, no hay ordenes disponibles en esa ciudad"
+              });
+            }
+          });
+        }else{
+          //barber account is disable 
+          return res.status(200).json({
+            response: 1,
+            content: "Tu cuenta esta desactivada, debes contactar con el Administrador de tu ciudad"
+          });  
+        }
       }else{
-        res.status(200).json({
-          response: 2,
-          content:response
+        //barber isn connected
+        return res.status(200).json({
+          response: 1,
+          content: "Debes estar conectado para recibir ordenes"
         });
       }
     }else{
-      res.status(200).json({
+      return res.status(200).json({
         response: 1,
-        content: "Ups, no hay ordenes disponibles en esa ciudad"
+        content: "Ups, no hay propiedad de conectado"
       });
     }
   });
