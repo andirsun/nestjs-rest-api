@@ -304,7 +304,6 @@ app.post("/createOrder", function (req, res) {
                   });
                 }
                 if (response) {
-                  //////////////////////////////Sending information of the order by whatsAPP with twillio
                   //console.log("order Details : "+response);
                   let orderMessage = "Detalle: id:"+response.id
                                   +",nombre: "+response.nameClient
@@ -313,19 +312,18 @@ app.post("/createOrder", function (req, res) {
                                   + ", Valor: " + response.price ;
    
                   let finalMessage = "Your appointment is coming up on "+"NUEVA ORDEN"+" at "+ orderMessage;
-                                  
                   //sendWhatsAppMessage(3162452663,finalMessage);                
                   //sendWhatsAppMessage(3106838163,finalMessage);
                   console.log("Nueva Orden: " + finalMessage);
-                  //sendSMS("3162452663",orderMessage);
-                  //sendSMS("3106838163",finalMessage);
-                  
                   //Sending New Order to all Barbers
                   barber.find(function(err,resp){
-                    console.log(resp);
                     for(i=0;i<resp.length;i++){
-                      if(resp[i].phoneToken){
-                        sendPushMessageBarber(resp[i].phoneToken,"NUEVA ORDEN ",resp[i].name + "! Tenemos una nueva orden para ti!!");
+                      //The barber needs to have a phoneToken Registered and need to be connected
+                      if(resp[i].phoneToken && resp[i].connected){
+                        //need to be connected to recieve the notification of the new order
+                        if(resp[i].connected == true){
+                          sendPushMessageBarber(resp[i].phoneToken,"NUEVA ORDEN ",resp[i].name + "! Tenemos una nueva orden para ti!!");
+                        }
                       }
                     }
                     ////////////////////////////////////////////////////////////////////////////////////////
@@ -338,9 +336,8 @@ app.post("/createOrder", function (req, res) {
                       }
                     });
                   });
-                  
-                  
                 }else{
+                  //If the order doesnt save return the error
                   res.status(200).json({
                     response: 1,
                     content: {
@@ -350,9 +347,6 @@ app.post("/createOrder", function (req, res) {
                 }
               });  
             }
-            
-              
-            
           }else{
             res.status(200).json({
               response: 1,
