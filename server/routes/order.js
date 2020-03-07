@@ -319,7 +319,7 @@ app.post("/createOrder", function (req, res) {
                   barber.find(function(err,resp){
                     for(i=0;i<resp.length;i++){
                       //The barber needs to have a phoneToken Registered and need to be connected
-                      if(resp[i].phoneToken && resp[i].connected){
+                      if("phoneToken" in resp[i] &&  "connected" in resp[i]){
                         //need to be connected to recieve the notification of the new order
                         if(resp[i].connected == true){
                           sendPushMessageBarber(resp[i].phoneToken,"NUEVA ORDEN ",resp[i].name + "! Tenemos una nueva orden para ti!!");
