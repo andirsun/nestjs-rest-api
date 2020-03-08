@@ -614,7 +614,7 @@ app.put("/editOrder",function(req,res){
 app.put("/assignBarberToOrder",function(req,res){
   let body = req.body;
   let idOrder = parseInt(body.idOrder);
-  let idBarber = parseInt(body.idBarber);
+  let phoneBarber = parseInt(body.phoneBarber);
   temporalOrder.findOne({id:idOrder, idBarber:0},function(err,temporalOrderDB){
     if (err) {
       return res.status(500).json({
@@ -623,8 +623,8 @@ app.put("/assignBarberToOrder",function(req,res){
       });
     }
     if(temporalOrderDB){
-      let order = temporalOrderDB.toJSON();
-      barber.findOne({id:idBarber},function(err,barberDB){
+      //let order = temporalOrderDB.toJSON();
+      barber.findOne({phone:phoneBarber},function(err,barberDB){
         if (err) {
           return res.status(500).json({
             response: 3,
@@ -661,7 +661,7 @@ app.put("/assignBarberToOrder",function(req,res){
                           });
                         }
                         if(clientDb){
-                          barber.findOne({id:idBarber},function(err,response){
+                          barber.findOne({phone:phoneBarber},function(err,response){
                             if (err) {
                               return res.status(500).json({
                                 response: 3,
