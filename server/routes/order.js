@@ -16,7 +16,9 @@ const client = require("twilio")(wilioId, wilioToken);
 //const request = require('request')
 var FCM = require('fcm-node');
 var serverKeyBarbers = process.env.FCM_TOKEN_BARBERS; //put your server key here
+var serverKeyCustomer = process.env.FCM_TOKEN; //put your server key here
 var fcmBarbers = new FCM(serverKeyBarbers);
+var fcmCutomer = new FCM(serverKeyCustomer);
 
 
 //const timezone = require('moment-timezone');
@@ -52,6 +54,29 @@ function sendPushMessageBarber(token,title,message){
     }
   };
   fcmBarbers.send(message, function(err, response){
+      if (err) {
+        console.log("Error Sending Message!",err);
+      } else {
+        console.log("Successfully sent with response: ");
+      }
+  });
+}
+function sendPushMessageClient(token,title,message){
+  var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
+    to: token, 
+    collapse_key: 'your_collapse_key',
+    
+    notification: {
+        title: title, 
+        body: message 
+    },
+    
+    data: {  //you can send only notification or only data(or include both)
+        my_key: 'my value',
+        my_another_key: 'my another value'
+    }
+  };
+  fcmCutomer.send(message, function(err, response){
       if (err) {
         console.log("Error Sending Message!",err);
       } else {
@@ -608,87 +633,110 @@ app.put("/assignBarberToOrder",function(req,res){
         }
         if(barberDB){
           let barbero = barberDB.toJSON();
-          temporalOrder.findOneAndUpdate({id:idOrder},{idBarber:barbero.id,
-                                                      nameBarber:barbero.name,
-                                                      updated: moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")
-                                                    },function(err,orden){
-            if (err) {
-              return res.status(500).json({
-                response: 3,
-                content:{
-                  err,
-                  message: "No se puedo asignar el barbero a la orden"
-                } 
-              });
-            }   
-            if(orden){
-              let orderJson = orden.toJSON();
-              // let messageToBarber = "Hola "+barbero.name
-              //                       +", Aqui esta el detalle de tu orden asignada: "
-              //                       +", Nombre Cliente: "+orderJson.nameClient
-              //                       +", Direccion:" +orderJson.address
-              //                       +", Celular: "+ orderJson.phone
-              //                       +", Servicio: Solo corte de cabello";
-              user.findOne({id:orderJson.idClient},function(err,clientDb){
-                if (err) {
-                  return res.status(500).json({
-                    response: 3,
-                    content: err
-                  });
-                }
-                if(clientDb){
-                  barber.findOne({id:idBarber},function(err,response){
+          //barber needs to has an enable account
+          if(barbero.status ==true){
+            //barber needs to be coonected
+            if("connected" in barbero){
+              if(barbero.connected == true){
+                  temporalOrder.findOneAndUpdate({id:idOrder},{idBarber:barbero.id,
+                                        nameBarber:barbero.name,
+                                        updated: moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")
+                                      },function(err,orden){
                     if (err) {
                       return res.status(500).json({
                         response: 3,
-                        content: err
-                      });
-                    }
-                    if(response){
-                      let barber = response.toJSON();
-                      let client = clientDb.toJSON();
-                      let title = "Encontramos un Barbero!!"
-                      let message = orderJson.nameClient+"!"
-                                    +", tu barbero "+barber.name
-                                    +" esta en marcha a tu direccion.";
-                      let tokenClient = client.phoneToken;
-                      sendPushMessage(tokenClient,title,message);//notify to the client about his barber assigned
-                      res.status(200).json({
-                        response: 2,
                         content:{
-                          message: "Genial, se asigno a "+barbero.name+" a la orden, tambien se notifico el mensaje al cliente "+orderJson.nameClient
+                          err,
+                          message: "No se puedo asignar el barbero a la orden"
                         } 
+                      });
+                    }   
+                    if(orden){
+                      let orderJson = orden.toJSON();
+                      user.findOne({id:orderJson.idClient},function(err,clientDb){
+                        if (err) {
+                          return res.status(500).json({
+                            response: 3,
+                            content: err
+                          });
+                        }
+                        if(clientDb){
+                          barber.findOne({id:idBarber},function(err,response){
+                            if (err) {
+                              return res.status(500).json({
+                                response: 3,
+                                content: err
+                              });
+                            }
+                            if(response){
+                              let barber = response.toJSON();
+                              let client = clientDb.toJSON();
+                              let title = "Encontramos un Barbero!!"
+                              let message = orderJson.nameClient+"!"
+                                            +", tu barbero "+barber.name
+                                            +" esta en marcha a tu direccion.";
+                              let tokenClient = client.phoneToken;
+                              sendPushMessageClient(tokenClient,title,message);//notify to the client about his barber assigned
+                              return res.status(200).json({
+                                response: 2,
+                                content:{
+                                  message: "Genial, se asigno a "+barbero.name+" a la orden, tambien se notifico el mensaje al cliente "+orderJson.nameClient
+                                } 
+                              });
+                            }else{
+                              return res.status(200).json({
+                                response: 1,
+                                content:{
+                                  message: "No encontramos un barbero con ese id"
+                                } 
+                              });
+                            }
+                          });
+                          
+                        }else{
+                          res.status(200).json({
+                            response: 1,
+                            content:{
+                              message: "Ups, no se pudo consultar al cliente de la orden"
+                            } 
+                          });    
+                        }       
                       });
                     }else{
                       res.status(200).json({
                         response: 1,
                         content:{
-                          message: "No encontramos un barbero con ese id"
+                          message: "Paso alguna monda rara"
                         } 
                       });
                     }
                   });
-                  
-                }else{
-                  res.status(200).json({
-                    response: 1,
-                    content:{
-                      message: "Ups, no se pudo consultar al cliente de la orden"
-                    } 
-                  });    
-                }       
-              });
+              }else{
+                return res.status(200).json({
+                  response: 1,
+                  content:{
+                    message: "Debes estar conectado para poder asignarte a esta orden"
+                  } 
+                });
+              }
             }else{
-              res.status(200).json({
+              return res.status(200).json({
                 response: 1,
                 content:{
-                  message: "Paso alguna monda rara"
+                  message: "No se encontro la propiedad connected"
                 } 
               });
             }
-          });
+          }else{
+            return res.status(200).json({
+              response: 1,
+              content:{
+                message: "Tu cuenta esta desactivada, acude al manager de tu ciudad"
+              } 
+            });
+          }
         }else{
-          res.status(200).json({
+          return res.status(200).json({
             response: 1,
             content: {
               message: "Upssss. No encontramos a un barbero con ese id"
@@ -697,7 +745,7 @@ app.put("/assignBarberToOrder",function(req,res){
         }
       });
     }else{
-      res.status(200).json({
+      return res.status(200).json({
         response: 1,
         content: {
           message: "Upssss. No pudimos encontrar esa orden o ya fue tomada por otro barbero"
