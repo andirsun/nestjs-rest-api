@@ -5,7 +5,7 @@ const Barber = require("../models/barber");
 const jwt = require("jsonwebtoken");
 const app = express();
 const user = require("../models/user");
-const order = require("../models/orderHistory");
+const Order = require("../models/orderHistory");
 //const moment = require('moment');
 const moment = require('moment-timezone');
 const service = require("../models/service")
@@ -41,10 +41,10 @@ app.get("/getBarbersTop",function(req,res){
   });
 });
 app.get("/checkBarberOrder",function(req,res){
-  let idBarber = req.query.idBarber;
-  temporalOrder.findOne({idBarber:idBarber,status:true},function(err,response){
+  let phoneBarber = req.query.phoneBarber;
+  Barber.find({phone:phoneBarber},function(err,Barber){
     if (err) {
-      return res.status(500).json({
+      return res.status(400).json({
         response: 3,
         content: {
           error: err,
@@ -52,19 +52,40 @@ app.get("/checkBarberOrder",function(req,res){
         }
       });
     }
-    if(response){
-      res.status(200).json({
-        response: 2,
-        content:response
-      }); 
+    if(Barber){
+      let barber = Barber[0].toJSON();
+      console.log("id del barbero" + barber.id);
+      //need to check if this barber is enrrolled in an order 
+      temporalOrder.findOne({idBarber:barber.id,status:true},function(err,response){
+        if (err) {
+          return res.status(500).json({
+            response: 3,
+            content: {
+              error: err,
+              message: "Error al buscar la orden temporal"
+            }
+          });
+        }
+        if(response){
+          return res.status(200).json({
+            response: 2,
+            content:response
+          }); 
+        }else{
+          return res.status(200).json({
+            response: 1,
+            content:"El barbero no tiene ordenes en curso"
+          }); 
+        }
+      });
     }else{
-      res.status(200).json({
+      return res.status(200).json({
         response: 1,
-        content:"El barbero no tiene ordenes en curso"
+        content:"No se encontro a un barbero con ese telefono"
       }); 
-
     }
-  });
+  })
+  
 });
 app.get("/getBarberByPhone",function(req,res){
   let phone = req.query.phoneBarber || 0;
@@ -93,63 +114,114 @@ app.get("/getBarberByPhone",function(req,res){
     }
   });
 });
-app.post("/loginBarber" ,function(req,res){
-  
-  let body = _.pick(req.body, ["phone"]);
-  //let body = req.query;
-  Barber.findOne({phone: body.phone},function(err, user) {
-      if (err) {
-        return res.status(500).json({
-          response: 3,
-          content: {
-            error: err,
-            message: "Error al buscar el barbero"
-          }
-        });
-      }
-      if (user) {
-        //in case that the barber exists in de data base
-        let barber = user.toJSON(); //handling theresponse
-        temporalOrder.findOne({idBarber:barber.id,status:true},function(err,response){
-          if (err) {
-            return res.status(500).json({
-              response: 3,
-              content: {
-                error: err,
-                message: "Error al buscar si un barbero tiene un pedido en curso"
-              }
-            });
-          }
-          if(response){
-            res.status(200).json({
-              response: 2,
-              content:{
-                message:"Barbero logeado, pero con pedido en curso",
-                order:response
-              }
-                
-            });    
-          }else{
-            res.status(200).json({
-              response: 2,
-              content:{
-                message:"Barbero logeado correctamente",
-                barber
-              }
-            });
-          }
-        });
-       
-      } else {
-        res.json({
-          response: 1,
-          content:
-            "Ups, no encontramos ningun barbero con ese Celular"
-        });
-      }
+app.get("/getTotalOrdersBarber",function(req,res){
+  let phoneBarber = req.query.phoneBarber;
+  Barber.find({phone:phoneBarber},function(err,Barber){
+    if (err) {
+      return res.status(400).json({
+        response: 3,
+        content: err
+      });
     }
-  );
-
+    if(Barber){
+      let barber = Barber[0].toJSON();
+      Order.find({idBarber:barber.id,status:"Finished"},function(err,response){
+        if (err) {
+          return res.status(400).json({
+            response: 3,
+            content: err
+          });
+        }
+        if(response){
+          return res.status(200).json({
+            response: 2,
+            content: response.length
+          });
+        }else{
+          return res.status(200).json({
+            response: 1,
+            content: "No encontramos ordenes finalizadas de ese barbero"
+          });
+        }
+      });
+    }else{
+      return res.status(200).json({
+        response: 1,
+        content: "No encontramos a un barbero con ese telefono"
+      });
+    }
+    
+  });
+})
+app.get("/getAvailableOrdersByCity",function(req,res){
+  let city = req.query.city || "none";
+  let phoneBarber = req.query.phoneBarber || 123;
+  console.log("Buscando Ordenes de la ciudad : "+ city + "y el numero" + phoneBarber);
+  Barber.find({phone:phoneBarber},function(err,Barber){
+    if (err) {
+      return res.status(400).json({
+        response: 3,
+        content: err
+      });
+    }
+    console.log(Barber);
+    let barber = Barber[0].toJSON();
+    //barber need to hacve connected property
+    if("connected" in barber){
+      //barber need to be connected to recieve new orders
+      if(barber.connected ==true){
+        //barber need to has a enable account
+        if(barber.status ==true){
+          //search a available orders by city
+          temporalOrder.find({city:city,status:true},function(err,response){
+            if (err) {
+              return res.status(400).json({
+                response: 3,
+                content: err
+              });
+            }
+            if(response.length!=0){
+              //delete the orders with a associated barber
+              response = response.filter(function(item){return item.idBarber == 0;});
+              if(response.length==0){
+                res.status(200).json({
+                  response: 1,
+                  content: "Ups, no hay ordenes disponibles en esa ciudad"
+                });  
+              }else{
+                res.status(200).json({
+                  response: 2,
+                  content:response
+                });
+              }
+            }else{
+              return res.status(200).json({
+                response: 1,
+                content: "Ups, no hay ordenes disponibles en esa ciudad"
+              });
+            }
+          });
+        }else{
+          //barber account is disable 
+          return res.status(200).json({
+            response: 1,
+            content: "Tu cuenta esta desactivada, debes contactar con el Administrador de tu ciudad"
+          });  
+        }
+      }else{
+        //barber isn connected
+        return res.status(200).json({
+          response: 1,
+          content: "Debes estar conectado para recibir ordenes"
+        });
+      }
+    }else{
+      return res.status(200).json({
+        response: 1,
+        content: "Ups, no hay propiedad de conectado"
+      });
+    }
+  });
 });
 app.put("/saveBarberDeviceInfo",function(req,res){
   let body = req.body;
@@ -277,6 +349,64 @@ app.put('/uploadProfileImageBarber',function(req,res){
     });
   });
 });
+app.post("/loginBarber" ,function(req,res){
+  
+  let body = _.pick(req.body, ["phone"]);
+  //let body = req.query;
+  Barber.findOne({phone: body.phone},function(err, user) {
+      if (err) {
+        return res.status(500).json({
+          response: 3,
+          content: {
+            error: err,
+            message: "Error al buscar el barbero"
+          }
+        });
+      }
+      if (user) {
+        //in case that the barber exists in de data base
+        let barber = user.toJSON(); //handling theresponse
+        temporalOrder.findOne({idBarber:barber.id,status:true},function(err,response){
+          if (err) {
+            return res.status(500).json({
+              response: 3,
+              content: {
+                error: err,
+                message: "Error al buscar si un barbero tiene un pedido en curso"
+              }
+            });
+          }
+          if(response){
+            res.status(200).json({
+              response: 2,
+              content:{
+                message:"Barbero logeado, pero con pedido en curso",
+                order:response
+              }
+                
+            });    
+          }else{
+            res.status(200).json({
+              response: 2,
+              content:{
+                message:"Barbero logeado correctamente",
+                barber
+              }
+            });
+          }
+        });
+       
+      } else {
+        res.json({
+          response: 1,
+          content:
+            "Ups, no encontramos ningun barbero con ese Celular"
+        });
+      }
+    }
+  );
+
+});
 app.post('/uploadImageToBarber',function(req,res){
   if (!req.files || Object.keys(req.files).length === 0) { //si ningun archivo es detectado en la peticion que se envio
     return res.status(400).json({
@@ -348,76 +478,6 @@ app.post('/uploadImageToBarber',function(req,res){
     }
   });
   
-});
-app.get("/getAvailableOrdersByCity",function(req,res){
-  let city = req.query.city || "none";
-  let phoneBarber = req.query.phoneBarber || 123;
-  console.log("Buscando Ordenes de la ciudad : "+ city + "y el numero" + phoneBarber);
-  Barber.find({phone:phoneBarber},function(err,Barber){
-    if (err) {
-      return res.status(400).json({
-        response: 3,
-        content: err
-      });
-    }
-    console.log(Barber);
-    let barber = Barber[0].toJSON();
-    //barber need to hacve connected property
-    if("connected" in barber){
-      //barber need to be connected to recieve new orders
-      if(barber.connected ==true){
-        //barber need to has a enable account
-        if(barber.status ==true){
-          //search a available orders by city
-          temporalOrder.find({city:city,status:true},function(err,response){
-            if (err) {
-              return res.status(400).json({
-                response: 3,
-                content: err
-              });
-            }
-            if(response.length!=0){
-              //delete the orders with a associated barber
-              response = response.filter(function(item){return item.idBarber == 0;});
-              if(response.length==0){
-                res.status(200).json({
-                  response: 1,
-                  content: "Ups, no hay ordenes disponibles en esa ciudad"
-                });  
-              }else{
-                res.status(200).json({
-                  response: 2,
-                  content:response
-                });
-              }
-            }else{
-              return res.status(200).json({
-                response: 1,
-                content: "Ups, no hay ordenes disponibles en esa ciudad"
-              });
-            }
-          });
-        }else{
-          //barber account is disable 
-          return res.status(200).json({
-            response: 1,
-            content: "Tu cuenta esta desactivada, debes contactar con el Administrador de tu ciudad"
-          });  
-        }
-      }else{
-        //barber isn connected
-        return res.status(200).json({
-          response: 1,
-          content: "Debes estar conectado para recibir ordenes"
-        });
-      }
-    }else{
-      return res.status(200).json({
-        response: 1,
-        content: "Ups, no hay propiedad de conectado"
-      });
-    }
-  });
 });
 app.post("/addBarber", function(req, res) {
   ///Add user to DB the data is read by body of the petition
