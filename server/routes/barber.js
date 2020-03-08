@@ -10,6 +10,7 @@ const order = require("../models/orderHistory");
 const moment = require('moment-timezone');
 const service = require("../models/service")
 const temporalOrder = require("../models/temporalOrder");
+const fs = require('fs');
 
 /////////////////////////////////
 
@@ -234,7 +235,7 @@ app.put("/addPhoneTokenBarber",function(req,res){
     
   });
 })
-app.put('/uploadImageBarber',function(req,res){
+app.put('/uploadProfileImageBarber',function(req,res){
   if (!req.files || Object.keys(req.files).length === 0) { //si ningun archivo es detectado en la peticion que se envio
     return res.status(400).json({
         response : 1,
@@ -275,6 +276,78 @@ app.put('/uploadImageBarber',function(req,res){
       }
     });
   });
+});
+app.post('/uploadImageToBarber',function(req,res){
+  if (!req.files || Object.keys(req.files).length === 0) { //si ningun archivo es detectado en la peticion que se envio
+    return res.status(400).json({
+        response : 1,
+        error:{
+          message: "No se ha seleccionado ningun archivo"
+        }
+    });
+  }
+  let body = req.body;
+  let phoneBarber  = body.phoneBarber;
+  let file = req.files.archivo;//el nombre del input en html debe ser para este caso "archivo"
+  let fileName = file.name.split('.');//para sacar la extencion del archivo 
+  let extention = fileName[fileName.length-1] ;
+
+  // Extenciones permitidas para cargar al servidor
+  let extenciones = ['png','jpg','gif','jpeg'];
+  // Validando extencion del archivo 
+  if (extenciones.indexOf(extention)<0){
+    return res.status(400).json({
+      response:1,
+      content:{
+        message: 'tu extencion de archivo es :'+extention+', pero las extenciones permitidas son : '+ extenciones.join(', ')
+      }
+    });
+  }
+  Barber.find({phone:phoneBarber},function(err,response){
+    if(err){
+      return res.status(400).json({
+        response : 1,
+        content:{
+          error: err
+        }
+      });
+    }
+    if(response){
+      let barber  = response[0].toJSON();
+      let documentBarber = barber.document;if (!fs.existsSync(dir)){
+        fs.mkdirSync(dir);
+    }
+      let dir
+      if (!fs.existsSync(dir)){
+        fs.mkdirSync(dir);
+      }
+      //Moving FIle
+      file.mv('public/assets/images/barbersAssets/'+file.name, (err) => {
+        if (err)
+          return res.status(400).json({
+            response : 1,
+            content:{
+              message : "ocurrio un error mientras se movia el archivo al directorio" ,
+              error: err
+            }
+          });
+        return res.json({
+          response : 2,
+          content: {
+            message: "la imagen se subio correctamente!!!"
+          }
+        });
+      });    
+    }else{
+      return res.json({
+        response : 1,
+        content: {
+          message: "No se encontro a ningun barbero con ese telefono"
+        }
+      });
+    }
+  });
+  
 });
 app.get("/getAvailableOrdersByCity",function(req,res){
   let city = req.query.city || "none";
