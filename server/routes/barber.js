@@ -352,7 +352,7 @@ app.post('/uploadImageToBarber',function(req,res){
 app.get("/getAvailableOrdersByCity",function(req,res){
   let city = req.query.city || "none";
   let phoneBarber = req.query.phoneBarber || 123;
-  console.log("Buscando Ordenes de la ciudad : "+ city);
+  console.log("Buscando Ordenes de la ciudad : "+ city + "y el numero" + phoneBarber);
   Barber.find({phone:phoneBarber},function(err,Barber){
     if (err) {
       return res.status(400).json({
@@ -360,6 +360,7 @@ app.get("/getAvailableOrdersByCity",function(req,res){
         content: err
       });
     }
+    console.log(Barber);
     let barber = Barber[0].toJSON();
     //barber need to hacve connected property
     if("connected" in barber){
