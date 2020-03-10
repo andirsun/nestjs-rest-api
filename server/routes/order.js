@@ -280,62 +280,77 @@ app.post("/createOrder", function (req, res) {
               price:price,
               updated: moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")
             });
-            order.save((err, response) => {
-              if (err) {//handling the query error 
-                return res.status(500).json({
-                  response: 1,
-                  content:{
-                    err,
-                    message:"Error al guardar la orden, contacta con el administrador"
-                  } 
-                });
-              }
-              if (response) {
-                //////////////////////////////Sending information of the order by whatsAPP with twillio
-                //console.log("order Details : "+response);
-                let orderMessage = "Detalle: id:"+response.id
-                                +",nombre: "+response.nameClient
-                                +",celular: "+client.phone
-                                +",dir: "+response.address
-                                + ", Valor: " + response.price ;
- 
-                let finalMessage = "Your appointment is coming up on "+"NUEVA ORDEN"+" at "+ orderMessage;
-                                
-                sendWhatsAppMessage(3162452663,finalMessage);                
-                sendWhatsAppMessage(3106838163,finalMessage);
-                console.log("Nueva Orden: " + finalMessage);
-                //sendSMS("3162452663",orderMessage);
-                //sendSMS("3106838163",finalMessage);
-                
-                //Sending New Order to all Barbers
-                barber.find(function(err,resp){
-                  console.log(resp);
-                  for(i=0;i<resp.length;i++){
-                    if(resp[i].phoneToken){
-                      sendPushMessageBarber(resp[i].phoneToken,"NUEVA ORDEN ",resp[i].name + "! Tenemos una nueva orden para ti!!");
+            let currentHour = moment().tz('America/Bogota').format("HH")
+            console.log("current hour" + currentHour);
+            if(parseInt(currentHour) >=19 || parseInt(currentHour) <= 07){
+              //reject the order -out of service-
+              console.log("Fuera de servicio");
+              return res.status(200).json({
+                response: 1,
+                content: {
+                  code : 1,
+                  message: "Recuerda que nuestro horario es de 8 am - 7 pm (proximamente extenderemos este horario)"
+                }
+              });
+            }else{
+              order.save((err, response) => {
+                if (err) {//handling the query error 
+                  return res.status(500).json({
+                    response: 1,
+                    content:{
+                      err,
+                      message:"Error al guardar la orden, contacta con el administrador"
+                    } 
+                  });
+                }
+                if (response) {
+                  //////////////////////////////Sending information of the order by whatsAPP with twillio
+                  //console.log("order Details : "+response);
+                  let orderMessage = "Detalle: id:"+response.id
+                                  +",nombre: "+response.nameClient
+                                  +",celular: "+client.phone
+                                  +",dir: "+response.address
+                                  + ", Valor: " + response.price ;
+   
+                  let finalMessage = "Your appointment is coming up on "+"NUEVA ORDEN"+" at "+ orderMessage;
+                                  
+                  sendWhatsAppMessage(3162452663,finalMessage);                
+                  sendWhatsAppMessage(3106838163,finalMessage);
+                  console.log("Nueva Orden: " + finalMessage);
+                  //sendSMS("3162452663",orderMessage);
+                  //sendSMS("3106838163",finalMessage);
+                  
+                  //Sending New Order to all Barbers
+                  barber.find(function(err,resp){
+                    console.log(resp);
+                    for(i=0;i<resp.length;i++){
+                      if(resp[i].phoneToken){
+                        sendPushMessageBarber(resp[i].phoneToken,"NUEVA ORDEN ",resp[i].name + "! Tenemos una nueva orden para ti!!");
+                      }
                     }
-                  }
-                  ////////////////////////////////////////////////////////////////////////////////////////
-                  /*Sending Response of petition if the order was created correctly */
-                  return res.status(200).json({
-                    response: 2,
+                    ////////////////////////////////////////////////////////////////////////////////////////
+                    /*Sending Response of petition if the order was created correctly */
+                    return res.status(200).json({
+                      response: 2,
+                      content: {
+                        orderDB:response,
+                        message: "Genial, Se creo la orden Correctamente, un barbero te contactara pronto."
+                      }
+                    });
+                  });
+                  
+                  
+                }else{
+                  res.status(200).json({
+                    response: 1,
                     content: {
-                      orderDB:response,
-                      message: "Genial, Se creo la orden Correctamente, un barbero te contactara pronto."
+                      message: "Upss, No se guardardo la orden, contacta con el administrador."
                     }
                   });
-                });
-                
-                
-              }else{
-                res.status(200).json({
-                  response: 1,
-                  content: {
-                    message: "Upss, No se guardardo la orden, contacta con el administrador."
-                  }
-                });
-              }
-            });   
+                }
+              });   
+            }
+           
               
             
           }else{
