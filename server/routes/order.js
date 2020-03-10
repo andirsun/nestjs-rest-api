@@ -16,7 +16,9 @@ const client = require("twilio")(wilioId, wilioToken);
 const request = require('request')
 var FCM = require('fcm-node');
 var serverKeyBarbers = process.env.FCM_TOKEN_BARBERS; //put your server key here
+var serverKeyCustomer = process.env.FCM_TOKEN; //put your server key here
 var fcmBarbers = new FCM(serverKeyBarbers);
+var fcmCutomer = new FCM(serverKeyCustomer);
 
 
 //const timezone = require('moment-timezone');
@@ -52,6 +54,29 @@ function sendPushMessageBarber(token,title,message){
     }
   };
   fcmBarbers.send(message, function(err, response){
+      if (err) {
+        console.log("Error Sending Message!",err);
+      } else {
+        console.log("Successfully sent with response: ");
+      }
+  });
+}
+function sendPushMessageClient(token,title,message){
+  var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
+    to: token, 
+    collapse_key: 'your_collapse_key',
+    
+    notification: {
+        title: title, 
+        body: message 
+    },
+    
+    data: {  //you can send only notification or only data(or include both)
+        my_key: 'my value',
+        my_another_key: 'my another value'
+    }
+  };
+  fcmCutomer.send(message, function(err, response){
       if (err) {
         console.log("Error Sending Message!",err);
       } else {
@@ -658,7 +683,7 @@ app.put("/assignBarberToOrder",function(req,res){
                                     +", tu barbero "+barber.name
                                     +" esta en marcha a tu direccion.";
                       let tokenClient = client.phoneToken;
-                      sendPushMessage(tokenClient,title,message);//notify to the client about his barber assigned
+                      sendPushMessageClient(tokenClient,title,message);//notify to the client about his barber assigned
                       res.status(200).json({
                         response: 2,
                         content:{
