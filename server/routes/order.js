@@ -286,7 +286,7 @@ app.post("/createOrder", function (req, res) {
               //reject the order -out of service-
               console.log("Fuera de servicio");
               return res.status(200).json({
-                response: 1,
+                response: 2,
                 content: {
                   code : 1,
                   message: "Recuerda que nuestro horario es de 8 am - 7 pm (proximamente extenderemos este horario)"
