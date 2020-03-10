@@ -366,7 +366,7 @@ app.post("/loginBarber" ,function(req,res){
       if (user) {
         //in case that the barber exists in de data base
         let barber = user.toJSON(); //handling theresponse
-        temporalOrder.findOne({idBarber:barber.id,status:true},function(err,response){
+        /*temporalOrder.findOne({idBarber:barber.id,status:true},function(err,response){
           if (err) {
             return res.status(500).json({
               response: 3,
@@ -394,10 +394,16 @@ app.post("/loginBarber" ,function(req,res){
               }
             });
           }
+        });*/
+        return res.status(200).json({
+          response: 2,
+          content:{
+            message:"Barbero logeado correctamente",
+            barber
+          }
         });
-       
       } else {
-        res.json({
+        return res.json({
           response: 1,
           content:
             "Ups, no encontramos ningun barbero con ese Celular"
