@@ -62,18 +62,58 @@ app.get("/adminMetrics",function(req,res){
                     }
                     totalOrders++;
                 }
-              }
-            return res.status(200).json({
-                response: 2,
-                content:{
-                    totalOrders,
-                    finishedOrders,
-                    cancelledOrders,
-                    hairCuts,
-                    shaves,
-                    revenue
+            }
+            user.find((err,users)=>{
+                if (err) {
+                    return res.status(400).json({
+                        response: 3,
+                        content: {
+                            error: err,
+                            message: "Error al comparar las fechas"
+                        }
+                    });
                 }
-            });
+                if(users){
+                    var usersDownloads = 0;
+                    var usersRegisterd = 0;
+                    for(i=0;i<users.length;i++){
+                        if("update" in users[i] ||  "dateRegister" in users[i]){
+                            
+                            let dateRegister= moment(users[i].update, "YYYY-MM-DD HH:mm");
+                            if(dateRegister >= initialDate && dateRegister <= finalDate){
+                                console.log(users[i]);
+                                if("name" in users[i]){
+                                    usersRegisterd++;
+                                    usersDownloads++;
+                                }else{
+                                    usersDownloads++;
+                                }
+                            }
+                        }else{
+                            usersDownloads++;
+                        }
+                    }
+                    return res.status(200).json({
+                        response: 2,
+                        content:{
+                            totalOrders,
+                            finishedOrders,
+                            cancelledOrders,
+                            hairCuts,
+                            shaves,
+                            revenue,
+                            usersDownloads,
+                            usersRegisterd,
+                        }
+                    });
+                }else{
+                    return res.status(200).json({
+                        response: 1,
+                        content:  "No hay usuarios registrados entre esas fechas"
+                    });
+                } 
+            })
+            
         }else{
             return res.status(200).json({
                 response: 1,
