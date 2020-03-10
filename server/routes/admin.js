@@ -48,7 +48,9 @@ app.get("/adminMetrics",function(req,res){
                             if(response[i].services[j].nameService == "Corte de Cabello"){
                                 hairCuts++;
                             }else{
-                                shaves++;       
+                                if(response[i].services[j].nameService == "Perfilación de Barba"){
+                                    shaves++;       
+                                }
                             }
                         }
                     }else{
