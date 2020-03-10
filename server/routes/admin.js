@@ -40,7 +40,8 @@ app.get("/adminMetrics",function(req,res){
             for(i=0;i<response.length;i++){
                 let orderDate = moment(response[i].dateBeginOrder, "YYYY-MM-DD HH:mm");
                 if(orderDate >= initialDate && orderDate <= finalDate){
-                    if(response[i].status = "Finished"){
+                    console.log(response[i]);
+                    if(response[i].status == "Finished"){
                         //increase number of orders
                         finishedOrders++;
                         for(j=0;j < response[i].services.length; j++){
