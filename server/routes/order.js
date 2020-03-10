@@ -307,7 +307,7 @@ app.post("/createOrder", function (req, res) {
             });
             let currentHour  = moment().tz('America/Bogota').format("HH");
             //Only accept orders in the hours : 8 am to 9 pm 
-            if(parseInt(currentHour) > 21 || parseInt(currentHour) < 8){
+            if(parseInt(currentHour) > 21 /*|| parseInt(currentHour) < 8*/){
               //out of service
               return res.status(400).json({
                 response: 1,
@@ -531,7 +531,7 @@ app.put("/cancelOrderBarber",function(req,res){
             let message = "No te preopues, estamos buscando otro barbero profesional";
             let tokenClient = client.phoneToken;
             console.log("Tken del cliente" + tokenClient);
-            sendPushMessage(tokenClient,title,message);//notify to the client about his barber assigned
+            sendPushMessageClient(tokenClient,title,message);//notify to the client about his barber assigned
             temporalOrder.findOneAndUpdate({id:idOrder},{idBarber:0,
                                                           nameBarber:"sin asignar",
                                                           updated: moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")},
