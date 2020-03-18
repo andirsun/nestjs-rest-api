@@ -389,13 +389,52 @@ app.put("/editInfoUser",function(req,res){
   });
 
 });
+app.post("/saveNewCard",function(req,res){
+  let body = req.body;
+  let phoneUser = body.phoneUser;
+  let typeCard = body.type;
+  let nameCard = body.name;
+  let lastNameCard = body.lastName;
+  let month = body.month;
+  let year = body.year;
+  let cvc = body.cvc;
+  let franchise = body.franchise; 
+  User.findOne({phone:phoneUser},function(err,response){
+    if (err) {
+      return res.status(400).json({
+        response: 3,
+        content:{
+          message: "Error al tratar de encontrar al usuario con ese numero",
+          err
+        } 
+      });
+    }
+    if(response){
+      let user = response.toJSON();
+      let card = {
+        typeCard,
+        nameCard,
+        lastNameCard,
+        month,
+        year,
+        cvc,
+        franchise
+      }
+    }else{
+
+    }
+  });
+  
+
+
+});
 app.post("/verificationCode",function(req,res){
   let body = req.body;
   let phone = body.phone;
   let code = body.code.toString();
   User.findOne({phone:phone,registrationCode:code},function(err,response){
     if (err) {
-      return res.status(500).json({
+      return res.status(400).json({
         response: 3,
         content:{
           message: "Error al tratar de encontrar al usuario con un codigo",

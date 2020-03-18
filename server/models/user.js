@@ -76,16 +76,16 @@ let usuarioSchema = new Schema({
   },
   cards : [{
     id:Number,
+    favorite : Boolean,
     type: String,
     nameCard : String,
     lastName : String,
-    favorite : Boolean,
     cardNumber : String,
     monthExpiraton : String,
     yearExpiration : String,
     last4Numbers : String,
-    cvc:String
-
+    cvc:String,
+    franchise:String
   }],
   publicityMethod:{
     type: String,
