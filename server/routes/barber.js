@@ -4,7 +4,6 @@ const _ = require("underscore");
 const Barber = require("../models/barber");
 const jwt = require("jsonwebtoken");
 const app = express();
-const user = require("../models/user");
 const Order = require("../models/orderHistory");
 //const moment = require('moment');
 const moment = require('moment-timezone');
@@ -223,6 +222,55 @@ app.get("/getAvailableOrdersByCity",function(req,res){
     }
   });
 });
+app.get("/checkIfBarberConnect",function(req,res){
+  let phoneBarber = req.query.phoneBarber;
+  Barber.find({phone:phoneBarber},function(err,response){ 
+    if (err) {
+      return res.status(400).json({
+        response: 3,
+        content:{
+          message: "Error al agregar la info del dispositivo",
+          err
+        } 
+      });
+    }
+    if(response){
+      let barber = response[0].toJSON();
+      if("connected" in barber){
+        if(barber.connected){
+          return res.status(200).json({
+            response: 2,
+            content:{
+              message:"El barbero esta conectado"
+            }
+          });
+        }else{
+          return res.status(200).json({
+            response: 1,
+            content:{
+              message:"el barbero no esta conectado"
+            }
+          });
+        }
+      }else{
+        return res.status(200).json({
+          response: 1,
+          content:{
+            message:"no encontramos la variable de conexion"
+          }
+        });  
+      }
+    }else{
+      return res.status(200).json({
+        response: 1,
+        content:{
+          message:"No encontramos a un barbero con ese numero"
+        }
+      });
+    }
+
+  });
+});
 app.put("/saveBarberDeviceInfo",function(req,res){
   let body = req.body;
   let phone = body.phone;
@@ -247,7 +295,7 @@ app.put("/saveBarberDeviceInfo",function(req,res){
     runValidators: true
   },function(err,response){
     if (err) {
-      return res.status(500).json({
+      return res.status(400).json({
         response: 3,
         content:{
           message: "Error al agregar la info del dispositivo",
@@ -256,7 +304,7 @@ app.put("/saveBarberDeviceInfo",function(req,res){
       });
     }
     if(response){
-      res.status(200).json({
+      return res.status(200).json({
         response: 2,
         content:{
           message:"la info del dispositivo se agrego correctamente",
@@ -264,12 +312,72 @@ app.put("/saveBarberDeviceInfo",function(req,res){
         }
       });
     }else{
-      res.status(400).json({
+      return res.status(400).json({
         response: 1,
         content:"no se encontro un barbero con ese celular"
       });
     }
   });
+});
+app.put("/connectBarber",function(req,res){
+  let body = req.body;
+  let phoneBarber = body.phoneBarber;
+  Barber.findByIdAndUpdate({phone:phoneBarber},{connected:true},(err,response)=>{
+    if(err){
+      return res.status(400).json({
+        response: 3,
+        content:{
+          message: "Error al buscar al barbero con ese celular.",
+          err
+        } 
+      });
+    }
+    if(response){
+      res.status(200).json({
+        response: 2,
+        content:{
+          message:"Se conecto al barbero "+ response.name,
+          user : response
+        }
+      });
+    }else{
+      res.status(200).json({
+        response: 1,
+        content:"no se pudo conectar el barbero"
+      });
+    }
+  })
+  
+});
+app.put("/disconnectBarber",function(req,res){
+  let body = req.body;
+  let phoneBarber = body.phoneBarber;
+  Barber.findByIdAndUpdate({phone:phoneBarber},{connected:false},(err,response)=>{
+    if(err){
+      return res.status(400).json({
+        response: 3,
+        content:{
+          message: "Error al buscar al barbero con ese celular.",
+          err
+        } 
+      });
+    }
+    if(response){
+      res.status(200).json({
+        response: 2,
+        content:{
+          message:"Se desconecto al barbero "+ response.name,
+          user : response
+        }
+      });
+    }else{
+      res.status(200).json({
+        response: 1,
+        content:"no se pudo desconectar el barbero"
+      });
+    }
+  })
+  
 });
 app.put("/addPhoneTokenBarber",function(req,res){
   let body = req.body;
@@ -282,7 +390,7 @@ app.put("/addPhoneTokenBarber",function(req,res){
                                           updated: moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")
                                         },{new: true,runValidators: true},function(err,response){
     if (err) {
-      return res.status(500).json({
+      return res.status(400).json({
         response: 3,
         content:{
           message: "Error al buscar al barbero con ese celular.",
@@ -291,7 +399,7 @@ app.put("/addPhoneTokenBarber",function(req,res){
       });
     }
     if(response){
-      res.status(200).json({
+      return res.status(200).json({
         response: 2,
         content:{
           message:"se agrego correctamente el token al barbero "+ response.name,
@@ -299,7 +407,7 @@ app.put("/addPhoneTokenBarber",function(req,res){
         }
       });
     }else{
-      res.status(400).json({
+      return res.status(200).json({
         response: 1,
         content:"no se agrego el token al barbero"
       });
