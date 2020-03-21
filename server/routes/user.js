@@ -389,13 +389,106 @@ app.put("/editInfoUser",function(req,res){
   });
 
 });
+app.post("/saveNewCard",function(req,res){
+  let body = req.body;
+  let phoneUser = body.phoneUser;
+  let typeCard = body.type;
+  let nameCard = body.name;
+  let cardNumber = body.cardNumber;
+  let lastNameCard = body.lastName;
+  let month = body.month;
+  let year = body.year;
+  let cvc = body.cvc;
+  let franchise = body.franchise; 
+  User.findOne({phone:phoneUser},function(err,user){
+    if (err) {
+      return res.status(400).json({
+        response: 3,
+        content:{
+          message: "Error al tratar de encontrar al usuario con ese numero",
+          err
+        } 
+      });
+    }
+    if(user){
+      //handling the response like a json object to manipulate it
+      //let user = response.toJSON();
+      //the card object to save
+      let card = {
+        "id":0,
+        "favorite":false,
+        "type":typeCard,
+        "nameCard":nameCard,
+        "cardNumber":cardNumber,
+        "lastName":lastNameCard,
+        "monthExpiration" : month,
+        "yearExpiration":year,
+        "last4umbers":"1234",
+        "cvc":cvc,
+        "franchise":franchise,
+      }
+      //user.cards is the array of cards that the user has
+      let cardsArray = user.cards;
+      //if the user doesnt has any card
+      if(cardsArray.length == 0){
+        //the card that im inserting will be 1
+        card["id"] = 1;
+      }else{
+        //if the user has already card then the id of the new card is autoincremental to the last one
+        card["id"] = cardsArray[cardsArray.length-1].id + 1;
+      }
+      //inserting the new card
+      
+      console.log(card); 
+      
+      User.findOneAndUpdate({phone:phoneUser},{
+                                                $push : { cards:card},
+                                                updated: moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")
+                                              },{
+                                                new: true,
+                                                runValidators: true
+                                              },function(err,response){
+        if (err) {
+          return res.status(400).json({
+            response: 3,
+            content:{
+              message: "Error al guardar el usuario",
+              err
+            } 
+          });
+        }
+        if(response){
+          return res.status(200).json({
+            response:2 ,
+            content: user
+          });
+        }else{
+          return res.status(200).json({
+            response:1 ,
+            content:"No se pudo guardar el usuario" 
+          });
+        }
+        console.log(response);
+      });
+      
+    }else{
+      return res.status(200).json({
+        response:1 ,
+        content:"No se encontro a ningun usuario con ese celular" 
+      });
+    }
+  });
+  
+
+
+});
 app.post("/verificationCode",function(req,res){
   let body = req.body;
   let phone = body.phone;
   let code = body.code.toString();
   User.findOne({phone:phone,registrationCode:code},function(err,response){
     if (err) {
-      return res.status(500).json({
+      return res.status(400).json({
         response: 3,
         content:{
           message: "Error al tratar de encontrar al usuario con un codigo",
@@ -406,7 +499,7 @@ app.post("/verificationCode",function(req,res){
     if(response){
       let user = response.toJSON();
       if(!user.name){
-        res.status(200).json({
+        return res.status(200).json({
           response: 2,
           content:{
             code :1,
@@ -414,7 +507,7 @@ app.post("/verificationCode",function(req,res){
           } //1 its because user isnt registered and need to continious with the registration
         });
       }else{
-        res.status(200).json({
+        return res.status(200).json({
           response: 2,
           content:{
             code : 0,
