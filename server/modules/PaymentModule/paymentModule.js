@@ -8,13 +8,10 @@ module.exports = {
         var axios = require('axios');
         axios.post(payUrl, payUVO)
         .then((response) => {
-            return res.status(200).json({
+            res.status(200).json({
                 response : 2,
-                content : {
-                    response
-                }
-            }
-            );
+                content : response.data
+            });
         }, (error) => {
             return res.status(500).json({
                 response : 3,

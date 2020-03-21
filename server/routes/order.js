@@ -20,10 +20,11 @@ var serverKeyCustomer = process.env.FCM_TOKEN; //put your server key here
 var fcmBarbers = new FCM(serverKeyBarbers);
 var fcmCutomer = new FCM(serverKeyCustomer);
 
+console.log("GLOBAL VARIABLE : "+global.GlobalString);
 
 //const timezone = require('moment-timezone');
 /**********************************************/
-// Functions to support api 
+// Functions to support api
 function sendSMS(numberDestiny,message){
   client.messages.create({
     from:'+14403974927',
@@ -40,14 +41,14 @@ function sendWhatsAppMessage(numberDestiny,message){
 }
 function sendPushMessageBarber(token,title,message){
   var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
-    to: token, 
+    to: token,
     collapse_key: 'your_collapse_key',
-    
+
     notification: {
-        title: title, 
-        body: message 
+        title: title,
+        body: message
     },
-    
+
     data: {  //you can send only notification or only data(or include both)
         my_key: 'my value',
         my_another_key: 'my another value'
@@ -63,14 +64,14 @@ function sendPushMessageBarber(token,title,message){
 }
 function sendPushMessageClient(token,title,message){
   var message = { //this may vary according to the message type (single recipient, multicast, topic, et cetera)
-    to: token, 
+    to: token,
     collapse_key: 'your_collapse_key',
-    
+
     notification: {
-        title: title, 
-        body: message 
+        title: title,
+        body: message
     },
-    
+
     data: {  //you can send only notification or only data(or include both)
         my_key: 'my value',
         my_another_key: 'my another value'
@@ -95,11 +96,11 @@ app.get("/getInfoTemporalOrder",function(req,res){
     }
     if(response){
       let order = response.toJSON();
-      let idBarber = order.idBarber;  
+      let idBarber = order.idBarber;
       let barberInfo ={}
       barber.findOne({id:idBarber},function(err,response){
         if(response){
-          //if barber exists in the database 
+          //if barber exists in the database
           barberInfo =response.toJSON();
         }else{
           //if no exists in the database
@@ -136,10 +137,10 @@ app.get("/getInfoTemporalOrder",function(req,res){
               content:{
                 message: "No hemos encontrado ningun cliente con ese id"
               }
-            });  
+            });
           }
         });
-        
+
 
       });
     }else{
@@ -162,20 +163,20 @@ app.get("/messageChrismas",function(req,res){
         console.log(resp[i].phone);
         sendSMSMessage(resp[i].phone,message);
       }
-      
-      
+
+
     }
     res.status(200).json({
       response: 2,
       content:"Mandamos el mensaje correctamente"
     });
-    
+
   });
 });
 app.post("/getCurrentOrder",function(req,res){
   let body = req.body;
   let idClient = parseInt(body.id);
-  
+
   temporalOrder.findOne({idClient:idClient,status:true},function(err,temporalOrderDB){
     if (err) {
       return res.status(500).json({
@@ -197,7 +198,7 @@ app.post("/getCurrentOrder",function(req,res){
           if(barberDB){
             let temporalBarber = barberDB.toJSON();
             temporal.nameBarber = temporalBarber.name;
-            temporal.urlImgBarber = temporalBarber.urlImg;  
+            temporal.urlImgBarber = temporalBarber.urlImg;
             res.status(200).json({
               response: 2,
               content: {
@@ -211,7 +212,7 @@ app.post("/getCurrentOrder",function(req,res){
                 message: "NO hemos encontrado ningun barbero con ese id asociado a la orden"
               }
             });
-          }  
+          }
         });
       }else{
         temporal.nameBarber = "Sin asignar";
@@ -235,7 +236,7 @@ app.post("/getCurrentOrder",function(req,res){
 });
 app.post("/createOrder", function (req, res) {
   let body = req.body;
-  temporalOrder.find(function (err, temporalOrderDB) {//this query is to know the number of documents 
+  temporalOrder.find(function (err, temporalOrderDB) {//this query is to know the number of documents
     if (err) {
       return res.status(500).json({
         response: 3,
@@ -249,7 +250,7 @@ app.post("/createOrder", function (req, res) {
     services.forEach(element => {
       price = price + (element.price*element.quantity);
     });
-    let id = 0 
+    let id = 0
     if(temporalOrderDB.length == 0){
       //if no exists any order
       id=1
@@ -266,7 +267,7 @@ app.post("/createOrder", function (req, res) {
     //////////////////////////////////////
     temporalOrder.findOne({idClient:idClient,status:true},function(err,orden){
       //THIS query is to know is the user has a current order in progress
-      if (err) {//Handlinf error in the query 
+      if (err) {//Handlinf error in the query
         return res.status(500).json({
           response: 3,
           content: err
@@ -282,15 +283,15 @@ app.post("/createOrder", function (req, res) {
       }else{
         //If the user dont have a order in progress we need to create and save the temporal order
         user.findOne({id:idClient},function(err,clientDB){
-          //searching the user to have his name 
-          if (err) {//Handling error in qeury 
+          //searching the user to have his name
+          if (err) {//Handling error in qeury
             return res.status(500).json({
               response: 3,
               content: err
             });
           }
           if(clientDB){
-            let client = clientDB.toJSON();//neccesary to handle and access to parameters os the client(object)      
+            let client = clientDB.toJSON();//neccesary to handle and access to parameters os the client(object)
             let order = new temporalOrder({//creating the order to save in database
               id,
               idClient,
@@ -306,7 +307,7 @@ app.post("/createOrder", function (req, res) {
               updated: moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")
             });
             let currentHour  = moment().tz('America/Bogota').format("HH");
-            //Only accept orders in the hours : 8 am to 9 pm 
+            //Only accept orders in the hours : 8 am to 9 pm
             if(parseInt(currentHour) > 21 /*|| parseInt(currentHour) < 8*/){
               //out of service
               return res.status(400).json({
@@ -314,18 +315,18 @@ app.post("/createOrder", function (req, res) {
                 content:{
                   message: "Ups, Recuerda nuestro horario de servicio es de 8:00 am - 9:00 pm",
                   code:1
-                } 
+                }
               });
             }else{
               //in service
               order.save((err, response) => {
-                if (err) {//handling the query error 
+                if (err) {//handling the query error
                   return res.status(400).json({
                     response: 1,
                     content:{
                       err,
                       message:"Error al guardar la orden, contacta con el administrador"
-                    } 
+                    }
                   });
                 }
                 if (response) {
@@ -335,9 +336,9 @@ app.post("/createOrder", function (req, res) {
                                   +",celular: "+client.phone
                                   +",dir: "+response.address
                                   + ", Valor: " + response.price ;
-   
+
                   let finalMessage = "Your appointment is coming up on "+"NUEVA ORDEN"+" at "+ orderMessage;
-                  //sendWhatsAppMessage(3162452663,finalMessage);                
+                  //sendWhatsAppMessage(3162452663,finalMessage);
                   //sendWhatsAppMessage(3106838163,finalMessage);
                   console.log("Nueva Orden: " + finalMessage);
                   //Sending New Order to all Barbers
@@ -353,6 +354,8 @@ app.post("/createOrder", function (req, res) {
                     }
                     ////////////////////////////////////////////////////////////////////////////////////////
                     /*Sending Response of petition if the order was created correctly */
+
+                    //Here goes the emit function ***
                     return res.status(200).json({
                       response: 2,
                       content: {
@@ -370,7 +373,7 @@ app.post("/createOrder", function (req, res) {
                     }
                   });
                 }
-              });  
+              });
             }
           }else{
             res.status(200).json({
@@ -433,7 +436,7 @@ app.post("/finishOrder",function(req,res){
           });
         }
         if(ordersDB){
-          let id = 0 
+          let id = 0
           if(ordersDB.length == 0){
             //if no exists any order
             id=1
@@ -441,7 +444,7 @@ app.post("/finishOrder",function(req,res){
             id=ordersDB[ordersDB.length-1].id + 1;
           }
           let orderSave = new order({
-            id : id, //autoincremental id 
+            id : id, //autoincremental id
             idClient : tempOrder.idClient,
             idBarber: tempOrder.idBarber,
             nameBarber : tempOrder.nameBarber,
@@ -473,23 +476,23 @@ app.post("/finishOrder",function(req,res){
                 content:{
                   orderDb,
                   message: "Se guardo la orden en el historial y se desactivo de las ordenes activas"
-                } 
+                }
               });
             }else{
               res.status(200).json({
                 response: 1,
                 content:{
                   message: "Upss. N pudimos enviar la orden al historial"
-                } 
+                }
               });
-            }    
+            }
           });
         }else{
           res.status(200).json({
             response: 1,
             content:{
               message: "NO SE PUDIERON ENCONTRAR LAS ORDENES"
-            } 
+            }
           });
         }
       });
@@ -498,7 +501,7 @@ app.post("/finishOrder",function(req,res){
         response: 1,
         content:{
           message: "Upss. No concontramos esa orden o esta desactivada"
-        } 
+        }
       });
     }
   });
@@ -544,11 +547,11 @@ app.put("/cancelOrderBarber",function(req,res){
               }
               if(response){
                 /*
-                
+
                 Here i need to send the free order to all barbers phone
-                
-                
-                */ 
+
+
+                */
                 return res.status(200).json({
                   response: 2,
                   content: response
@@ -576,8 +579,8 @@ app.put("/cancelOrderBarber",function(req,res){
 
     }
   });
-  
-  
+
+
 });
 app.put("/editOrder",function(req,res){
   let body = req.body;
@@ -648,9 +651,9 @@ app.put("/assignBarberToOrder",function(req,res){
                         content:{
                           err,
                           message: "No se puedo asignar el barbero a la orden"
-                        } 
+                        }
                       });
-                    }   
+                    }
                     if(orden){
                       let orderJson = orden.toJSON();
                       user.findOne({id:orderJson.idClient},function(err,clientDb){
@@ -681,33 +684,33 @@ app.put("/assignBarberToOrder",function(req,res){
                                 response: 2,
                                 content:{
                                   message: "Genial, se asigno a "+barbero.name+" a la orden, tambien se notifico el mensaje al cliente "+orderJson.nameClient
-                                } 
+                                }
                               });
                             }else{
                               return res.status(200).json({
                                 response: 1,
                                 content:{
                                   message: "No encontramos un barbero con ese id"
-                                } 
+                                }
                               });
                             }
                           });
-                          
+
                         }else{
                           res.status(200).json({
                             response: 1,
                             content:{
                               message: "Ups, no se pudo consultar al cliente de la orden"
-                            } 
-                          });    
-                        }       
+                            }
+                          });
+                        }
                       });
                     }else{
                       res.status(200).json({
                         response: 1,
                         content:{
                           message: "Paso alguna monda rara"
-                        } 
+                        }
                       });
                     }
                   });
@@ -716,7 +719,7 @@ app.put("/assignBarberToOrder",function(req,res){
                   response: 1,
                   content:{
                     message: "Debes estar conectado para poder asignarte a esta orden"
-                  } 
+                  }
                 });
               }
             }else{
@@ -724,7 +727,7 @@ app.put("/assignBarberToOrder",function(req,res){
                 response: 1,
                 content:{
                   message: "No se encontro la propiedad connected"
-                } 
+                }
               });
             }
           }else{
@@ -732,7 +735,7 @@ app.put("/assignBarberToOrder",function(req,res){
               response: 1,
               content:{
                 message: "Tu cuenta esta desactivada, acude al manager de tu ciudad"
-              } 
+              }
             });
           }
         }else{
@@ -741,7 +744,7 @@ app.put("/assignBarberToOrder",function(req,res){
             content: {
               message: "Upssss. No encontramos a un barbero con ese id"
             }
-          });    
+          });
         }
       });
     }else{
@@ -757,5 +760,9 @@ app.put("/assignBarberToOrder",function(req,res){
 
 //14403974927 NUmero para envio de mensajes de texto
 //whatsapp:+14155238886   envio de whatsapp
+
+setTimeout(() => {
+  global.socketServer.emit('newOrder', {});
+}, 15000);
 
 module.exports = app;

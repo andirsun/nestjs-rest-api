@@ -112,7 +112,7 @@ module.exports = {
             number : '4896350050851805', //Number of the creditcard
             securityCode : '627', //Number of security code
             expirationDate : '2024/08', //Expiration Data of the creditcard [YYYY/MM] format
-            name : 'REJECTED' 
+            name : 'APPROVED' 
         }
         return creditCard;
     }
