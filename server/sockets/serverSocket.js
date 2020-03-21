@@ -1,6 +1,9 @@
 require('dotenv').config({path:'.env'});
-const io = require('socket.io');
-const server = io.listen(process.env.SOCKET_PORT || 8000);
+const app = express();
+const io = require('socket.io')(app);
+const server = io;//.listen(process.env.SOCKET_PORT || 8000);
+
+app.listen(process.env.SOCKET_PORT || 8000);
 
 let clientsConnected = new Map();
 //The barber could be or not using the app, so the socket could'nt exist
@@ -87,4 +90,8 @@ setInterval(() =>{
   checkClientsNotifications();
 }, 1000);
 
+
+function startServer(app){
+
+}
 module.exports = server;

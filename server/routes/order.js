@@ -356,6 +356,8 @@ app.post("/createOrder", function (req, res) {
                     /*Sending Response of petition if the order was created correctly */
 
                     //Here goes the emit function ***
+                    global.socketServer.emit('newOrder', {});
+
                     return res.status(200).json({
                       response: 2,
                       content: {
