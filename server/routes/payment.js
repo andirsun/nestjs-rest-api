@@ -12,7 +12,6 @@ app.post("/payment/payU", function(req, res){
         payInfo.buyerId, payInfo.productValue, payInfo.currency, payInfo.paymentMethod,
         payInfo.paymentReference, payInfo.payDescription, res);
     console.log(req.body);
-    //payResult);
 });
 
 module.exports = app;
