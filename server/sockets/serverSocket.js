@@ -7,9 +7,23 @@ const socketIo = require('socket.io');
 
 var fs = require('fs');
 
-var key = fs.readFileSync('/etc/letsencrypt/live/timugotest.xyz/privkey.pem');
-var cert = fs.readFileSync('/etc/letsencrypt/live/timugotest.xyz/cert.pem');
-var ca = fs.readFileSync('/etc/letsencrypt/live/timugotest.xyz/chain.pem');
+var key = ""
+var cert = ""
+var ca = ""
+
+if (process.env.ENVIROMENT === 'dev') {
+  console.log("Development Socket mode");
+  key = fs.readFileSync('/etc/letsencrypt/live/timugotest.xyz/privkey.pem');
+  cert = fs.readFileSync('/etc/letsencrypt/live/timugotest.xyz/cert.pem');
+  ca = fs.readFileSync('/etc/letsencrypt/live/timugotest.xyz/chain.pem');
+} else if ( process.env.ENVIROMENT === 'local') { 
+  console.log("Local Socket Mode");
+} else if ( process.env.ENVIROMENT === 'prod') {
+  console.log("Production Socket Mode");
+  key = fs.readFileSync('/etc/letsencrypt/live/timugo.tk/privkey.pem');
+  cert = fs.readFileSync('/etc/letsencrypt/live/timugo.tk/cert.pem');
+  ca = fs.readFileSync('/etc/letsencrypt/live/timugo.tk/chain.pem');
+}
 
 var credentials = {key, cert, ca, requestCert : false, rejectUnauthorized: false};
 
