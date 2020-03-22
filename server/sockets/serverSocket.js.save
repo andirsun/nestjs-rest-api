@@ -2,18 +2,14 @@ require('dotenv').config({path:'.env'});
 
 const express = require('express');
 const app = express();
-const https = require('https');
+const https = require('http');
 const socketIo = require('socket.io');
 
 var fs = require('fs');
 
-var key = fs.readFileSync('/etc/letsencrypt/live/timugotest.xyz/privkey.pem');
-var cert = fs.readFileSync('/etc/letsencrypt/live/timugotest.xyz/cert.pem');
-var ca = fs.readFileSync('/etc/letsencrypt/live/timugotest.xyz/chain.pem');
+var key = fs.readFileSync(', secure : true
 
-var credentials = {key, cert, ca, requestCert : false, rejectUnauthorized: false};
-
-const httpServer = https.createServer(credentials, app);
+const httpServer = https.Server(app);
 httpServer.listen(8000);
 const server = socketIo(httpServer);
 
