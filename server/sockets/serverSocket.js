@@ -4,6 +4,7 @@ const express = require('express');
 const app = express();
 const https = require('https');
 const socketIo = require('socket.io');
+const cors = require('cors');
 
 var fs = require('fs');
 
@@ -16,7 +17,7 @@ if (process.env.ENVIROMENT === 'dev') {
   key = fs.readFileSync('/etc/letsencrypt/live/timugotest.xyz/privkey.pem');
   cert = fs.readFileSync('/etc/letsencrypt/live/timugotest.xyz/cert.pem');
   ca = fs.readFileSync('/etc/letsencrypt/live/timugotest.xyz/chain.pem');
-} else if ( process.env.ENVIROMENT === 'local') { 
+} else if ( process.env.ENVIROMENT === 'local') {
   console.log("Local Socket Mode");
 } else if ( process.env.ENVIROMENT === 'prod') {
   console.log("Production Socket Mode");
@@ -31,8 +32,9 @@ const httpServer = https.createServer(credentials, app);
 httpServer.listen(8000);
 const server = socketIo(httpServer);
 
+app.use(cors({origin:true,credentials:true}));
 app.get('/test', (req, res) => {
-	res.send('Socket server working');
+	res.send('Socket server working with CORS');
 });
 
 let clientsConnected = new Map();
