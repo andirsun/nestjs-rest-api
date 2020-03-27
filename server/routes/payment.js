@@ -25,7 +25,7 @@ app.post("/payment/nequi/newSubscription", function(req, res){
   var name = body.name || process.env.NEQUI_NAME;
   var messageID = new Date().getTime().toString();
   if(!body.messageID){
-    messageID = messageID.substring(messageId.length-9);
+    messageID = messageID.substring(messageID.length-9);
   } else{
     messageID = body.messageID;
   }
@@ -57,7 +57,7 @@ app.post('/payment/nequi/automaticPayment', function(res, req){
   var value = body.value;
   var messageID = new Date().getTime().toString();
   if(!body.messageID){
-    messageID = messageID.substring(messageId.length-9);
+    messageID = messageID.substring(messageID.length-9);
   } else{
     messageID = body.messageID;
   }
@@ -79,7 +79,7 @@ app.post('/payment/nequi/automaticPayment', function(res, req){
     var value = body.value;
     var messageID = new Date().getTime().toString();
     if(!body.messageID){
-      messageID = messageID.substring(messageId.length-9);
+      messageID = messageID.substring(messageID.length-9);
     } else{
       messageID = body.messageID;
     }
@@ -97,7 +97,7 @@ app.post('/payment/nequi/automaticPayment', function(res, req){
       var codeQR = body.codeQR;
       var messageID = new Date();
       if (!body.messageID){
-        messageID = messageID.substring(messageId.length-9);
+        messageID = messageID.substring(messageID.length-9);
       } else{
         messageID = body.messageID;
       }
