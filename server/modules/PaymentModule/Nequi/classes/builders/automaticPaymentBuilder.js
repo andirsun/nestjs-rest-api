@@ -8,7 +8,7 @@ module.exports = {
     };
     return requestMessage;
   },
-  getBaseRequestHeader : function (){
+  getBaseRequestHeader : function(){
     var dt = new Date();
     var requestHeader = {
       Channel: "PDA05-C001",

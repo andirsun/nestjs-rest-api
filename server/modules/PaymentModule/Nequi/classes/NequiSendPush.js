@@ -1,6 +1,6 @@
-class NequiAutomaticPayment{
+class NequiSendPush {
   constructor(){
-    const builder = require('./builders/automaticPaymentBuilder');
+    const builder = require('./builders/sendPushBuilder');
     this._Request = builder.getBaseRequestMessage();
   }
   setTimestamp(){
@@ -20,26 +20,23 @@ class NequiAutomaticPayment{
   setClientID(clientID){
     this._Request.RequestMessage.RequestHeader.ClientID = clientID;
   }
-  //Phone number of the client
   setPhoneNumber(phoneNumber){
-    this._Request.RequestMessage.RequestBody.any.automaticPaymentRQ.phoneNumber = phoneNumber;
+    this._Request.RequestMessage.RequestBody.any.unregisteredPaymentRQ.phoneNumber = phoneNumber;
   }
-  //The token created in new-subscription proccess
-  setToken(token){
-    this._Request.RequestMessage.RequestBody.any.automaticPaymentRQ.token = token;
-  }
-  //A fielt to do a short description of the transaction e.g. Corte de pelo y barba
-  setReference1(reference){
-    this._Request.RequestMessage.RequestBody.any.automaticPaymentRQ.reference1 = reference;
-  }
-  setReference2(reference){
-    this._Request.RequestMessage.RequestBody.any.automaticPaymentRQ.reference2 = reference;
-  }
-  setReference3(reference){
-    this._Request.RequestMessage.RequestBody.any.automaticPaymentRQ.reference3 = reference;
+  setCode(code){
+    this._Request.RequestMessage.RequestBody.any.unregisteredPaymentRQ.code = code;
   }
   setValue(value){
-    this._Request.RequestMessage.RequestBody.any.automaticPaymentRQ.value = value;
+    this._Request.RequestMessage.RequestBody.any.unregisteredPaymentRQ.value = value;
+  }
+  setReference1(reference){
+    this._Request.RequestMessage.RequestBody.any.unregisteredPaymentRQ.reference1 = reference;
+  }
+  setReference2(reference){
+    this._Request.RequestMessage.RequestBody.any.unregisteredPaymentRQ.reference2 = reference;
+  }
+  setReference3(reference){
+    this._Request.RequestMessage.RequestBody.any.unregisteredPaymentRQ.reference3 = reference;
   }
   getRequest(){
     return this._Request;
@@ -49,4 +46,4 @@ class NequiAutomaticPayment{
   }
 }
 
-module.exports = NequiAutomaticPayment;
+module.exports = NequiSendPush;
