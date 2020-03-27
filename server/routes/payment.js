@@ -67,7 +67,7 @@ app.post('/payment/nequi/automaticPayment', function(res, req){
   paymentModule.nequiAutomaticPayment(phoneNumber, token, value,
       messageID, clientID, references, res);
 });
-  app.post('/payment/nequi/pushPayment', function(res, req) => {
+  app.post('/payment/nequi/pushPayment', function(res, req) {
     /* Body must be like
       {phoneNumber : '3116021602', messageID : '123456789', clientID : '1234567890',
         references : ['Corte de pelo', 'Corte de baraba 50% off', 'Cejas']
@@ -88,7 +88,7 @@ app.post('/payment/nequi/automaticPayment', function(res, req){
 
     paymentModule.nequiPushPayment(phoneNumber, value, messageID, clientID, references, res);
   });
-    app.post('./payment/nequi/checkPushPayment', function(req, res) =>{
+    app.post('./payment/nequi/checkPushPayment', function(req, res){
       /*Body must be like
         {codeQR : 'transactionId', messageID : 'messageID', clientID : 'clientID'}
         messageID and clientID are optional
