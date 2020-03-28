@@ -53,25 +53,21 @@ module.exports = {
           let description="";
           let message = "REJECTED";
           var responseCode = 2;
+          var token;
           if(resp.ResponseMessage){
             status = resp.ResponseMessage.ResponseHeader.Status.StatusCode;
             description = resp.ResponseMessage.ResponseHeader.Status.StatusDesc;
+            if (status == "0"){
+              message = "ACCEPTED";
+              description = "Subscripción enviada exitosamente, confirmala en Nequi";
+              token = resp.ResponseMessage.ResponseBody.any.newSubscriptionRS.token;
+            }
           } else{
             message = "NEQUI_ERROR";
             responseCode = 3;
             description = "Un error ha ocurrido, intenta más tarde";
           }
-          var token;
-          if (status == "0"){
-            message = "ACCEPTED";
-            description = "Subscripción enviada exitosamente, confirmala en Nequi";
-            token = resp.ResponseMessage.ResponseBody.any.newSubscriptionRS.token;
-          }
-          if (status = "-1"){
-            message = "NEQUI_ERROR";
-            responseCode = 3;
-            description = "Un error ha ocurrido, intenta más tarde";
-          }
+
           var response = {
             response : responseCode,
             content : {
@@ -81,7 +77,7 @@ module.exports = {
             }
           }
           //res.status(200).json(response);
-          console.log(response)
+          res.send(200).json(response);
         },
         (err) => {
           //Do somenthing with the error response
@@ -92,6 +88,7 @@ module.exports = {
               description : "Hemos tenido un inconveniente, ¡Intentalo de nuevo!",
             }
           }
+          res.send(200).json(response);
         });
     },
     nequiGetSubscription : function(phoneNumber, token, res){
@@ -112,20 +109,21 @@ module.exports = {
           if(resp.ResponseMessage){
             status = resp.ResponseMessage.ResponseHeader.Status.StatusCode;
             description = resp.ResponseMessage.ResponseHeader.Status.StatusDesc;
+            if (status=="0"){
+              message="PENDING";
+              description="Subscripción no confirmada";
+              status = resp.ResponseMessage.ResponseBody.any.getSubscriptionRS.subscription.status;
+              if(status=="1"){
+                message="ACCEPTED";
+                description="Subscripción activa actualmente";
+              }
+            }
           } else{
             message = "NEQUI_ERROR";
             responseCode = 3;
             description = "Un error ha ocurrido, intenta más tarde";
           }
-          if (status=="0"){
-            message="PENDING";
-            description="Subscripción no confirmada";
-            status = resp.ResponseMessage.ResponseBody.any.getSubscriptionRS.subscription.status;
-            if(status=="1"){
-              message="ACCEPTED";
-              description="Subscripción activa actualmente";
-            }
-          }
+
 
           var response = {
             response : responseCode,
@@ -134,7 +132,7 @@ module.exports = {
               description : description
             }
           }
-          console.log(response);
+          res.send(200).json(response);
         },
         (err) => {
           //Do somenthing with the error response
@@ -145,6 +143,7 @@ module.exports = {
               description : "Hemos tenido un inconveniente, ¡Intentalo de nuevo!",
             }
           }
+          res.send(200).json(response);
         });
     },
     nequiAutomaticPayment : function(phoneNumber, token, value, messageID, clientID, references, res){
@@ -167,15 +166,14 @@ module.exports = {
           if(resp.ResponseMessage){
             status = resp.ResponseMessage.ResponseHeader.Status.StatusCode;
             description = resp.ResponseMessage.ResponseHeader.Status.StatusDesc;
+            if(status=="0"){
+              message="ACCEPTED";
+              description="Pago realizado con exito";
+            }
           } else{
             message = "NEQUI_ERROR";
             responseCode = 3;
             description = "Un error ha ocurrido, intenta más tarde";
-          }
-
-          if(status=="0"){
-            message="ACCEPTED";
-            description="Pago realizado con exito";
           }
           var response = {
             response : responseCode,
@@ -184,7 +182,7 @@ module.exports = {
               description : description
             }
           }
-          console.log(response);
+          res.send(200).json(response);
           //*/console.log(JSON.stringify(resp));
         },
         (err) => {
@@ -196,6 +194,7 @@ module.exports = {
               description : "Hemos tenido un inconveniente, ¡Intentalo de nuevo!",
             }
           }
+          res.send(200).json(response);
       });
     },
     nequiPushPayment : function(phoneNumber, value, messageID, clientID, references, res){
@@ -208,8 +207,30 @@ module.exports = {
       signer.makeSignedRequest(NEQUI_PUSH_HOST, NEQUI_PUSH_SEND_PATH,
         'POST', headers, body,
         (statusCode, resp) => {
-          //Do somenthing with the response
-          console.log(JSON.stringify(resp).toString());
+          let status="-1";
+          let description="";
+          let message = "REJECTED";
+          var responseCode = 2;
+          if(resp.ResponseMessage){
+            status = resp.ResponseMessage.ResponseHeader.Status.StatusCode;
+            description = resp.ResponseMessage.ResponseHeader.Status.StatusDesc;
+            if(status=="0"){
+              message="ACCEPTED";
+              description="Ya enviamos tu pago, confirmalo en Nequi";
+            }
+          } else{
+            message = "NEQUI_ERROR";
+            responseCode = 3;
+            description = "Un error ha ocurrido, intenta más tarde";
+          }
+          var response = {
+            reponse : responseCode,
+            content : {
+              message : message,
+              description : description
+            }
+          }
+          res.send(200).json(response);
         },
         (err) => {
           //Do somenthing with the error response
@@ -220,6 +241,7 @@ module.exports = {
               description : "Hemos tenido un inconveniente, ¡Intentalo de nuevo!",
             }
           }
+          res.send(200).json(response);
       });
     },
     nequiCheckPushPayment : function(codeQR, messageID, clientID, res){
@@ -233,7 +255,30 @@ module.exports = {
         'POST', headers, body,
         (statusCode, resp) => {
           //Do somenthing with the response
-          console.log(JSON.stringify(resp).toString());
+          let status="-1";
+          let description="";
+          let message = "REJECTED";
+          var responseCode = 2;
+          if(resp.ResponseMessage){
+            status = resp.ResponseMessage.ResponseHeader.Status.StatusCode;
+            description = resp.ResponseMessage.ResponseHeader.Status.StatusDesc;
+            if(status=="0"){
+              message="ACCEPTED";
+              description="Pago realizado correctamente";
+            }
+          } else{
+            message = "NEQUI_ERROR";
+            responseCode = 3;
+            description = "Un error ha ocurrido, intenta más tarde";
+          }
+          var response = {
+            reponse : responseCode,
+            content : {
+              message : message,
+              description : description
+            }
+          }
+          res.send(200).json(response);
         },
         (err) => {
           //Do somenthing with the error response
@@ -244,6 +289,7 @@ module.exports = {
               description : "Hemos tenido un inconveniente, ¡Intentalo de nuevo!",
             }
           }
+          res.send(200).json(response);
       });
     }
 }
