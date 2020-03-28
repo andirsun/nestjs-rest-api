@@ -77,7 +77,7 @@ module.exports = {
             }
           }
           //res.status(200).json(response);
-          res.send(200).json(response);
+          res.status(200).json(response);
         },
         (err) => {
           //Do somenthing with the error response
@@ -88,7 +88,7 @@ module.exports = {
               description : "Hemos tenido un inconveniente, ¡Intentalo de nuevo!",
             }
           }
-          res.send(200).json(response);
+          res.status(200).json(response);
         });
     },
     nequiGetSubscription : function(phoneNumber, token, res){
@@ -132,7 +132,7 @@ module.exports = {
               description : description
             }
           }
-          res.send(200).json(response);
+          res.status(200).json(response);
         },
         (err) => {
           //Do somenthing with the error response
@@ -143,7 +143,7 @@ module.exports = {
               description : "Hemos tenido un inconveniente, ¡Intentalo de nuevo!",
             }
           }
-          res.send(200).json(response);
+          res.status(200).json(response);
         });
     },
     nequiAutomaticPayment : function(phoneNumber, token, value, messageID, clientID, references, res){
@@ -182,7 +182,7 @@ module.exports = {
               description : description
             }
           }
-          res.send(200).json(response);
+          res.status(200).json(response);
           //*/console.log(JSON.stringify(resp));
         },
         (err) => {
@@ -194,7 +194,7 @@ module.exports = {
               description : "Hemos tenido un inconveniente, ¡Intentalo de nuevo!",
             }
           }
-          res.send(200).json(response);
+          res.status(200).json(response);
       });
     },
     nequiPushPayment : function(phoneNumber, value, messageID, clientID, references, res){
@@ -230,7 +230,7 @@ module.exports = {
               description : description
             }
           }
-          res.send(200).json(response);
+          res.status(200).json(response);
         },
         (err) => {
           //Do somenthing with the error response
@@ -241,7 +241,7 @@ module.exports = {
               description : "Hemos tenido un inconveniente, ¡Intentalo de nuevo!",
             }
           }
-          res.send(200).json(response);
+          res.status(200).json(response);
       });
     },
     nequiCheckPushPayment : function(codeQR, messageID, clientID, res){
@@ -278,7 +278,7 @@ module.exports = {
               description : description
             }
           }
-          res.send(200).json(response);
+          res.status(200).json(response);
         },
         (err) => {
           //Do somenthing with the error response
@@ -289,7 +289,7 @@ module.exports = {
               description : "Hemos tenido un inconveniente, ¡Intentalo de nuevo!",
             }
           }
-          res.send(200).json(response);
+          res.status(200).json(response);
       });
     }
 }
