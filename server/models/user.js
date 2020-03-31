@@ -9,6 +9,20 @@ let rolesValidos = {
 };
 let Schema = mongoose.Schema;
 
+let card = new Schema({
+    id:Number,
+    favorite : Boolean,
+    type: String,
+    nameCard : String,
+    lastName : String,
+    cardNumber : String,
+    monthExpiraton : String,
+    yearExpiration : String,
+    last4Numbers : String,
+    cvc:String,
+    franchise:String
+  });
+
 let usuarioSchema = new Schema({
   id: {
     type: Number,
@@ -74,19 +88,7 @@ let usuarioSchema = new Schema({
     type: Boolean,
     default: true
   },
-  cards : [{
-    id:Number,
-    favorite : Boolean,
-    type: String,
-    nameCard : String,
-    lastName : String,
-    cardNumber : String,
-    monthExpiraton : String,
-    yearExpiration : String,
-    last4Numbers : String,
-    cvc:String,
-    franchise:String
-  }],
+  cards : [card],
   publicityMethod:{
     type: String,
     default: "none"
