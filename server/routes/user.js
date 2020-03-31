@@ -5,6 +5,7 @@ const User = require("../models/user");
 const Feedback = require("../models/feedback");
 const jwt = require("jsonwebtoken");
 const temporalOrder = require("../models/temporalOrder");
+const Order = require("../models/orderHistory");
 const publicityMethod = require("../models/publicityMethods");
 const app = express();
 require("dotenv").config();
@@ -111,13 +112,7 @@ app.get("/checkTokenUser",function(req,res){
 });
 app.get("/getHistoryOrders",function(req,res){
   let id = req.params.id;
-  //
-  //
-  //
-  //
-  //
-  //
-  //
+  Order
 });
 app.get("/getAddressesUser",function(req,res){
   let phone = req.query.phone;
