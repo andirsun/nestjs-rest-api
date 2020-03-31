@@ -308,22 +308,7 @@ app.put("/addAddressUser",function(req,res){
   let description = body.description || "none";
   let lat = body.lat;
   let lng = body.lng;
-  User.findOneAndUpdate({phone:phone},{
-    $push : {
-       addresses :  {
-                "city":city ,
-                "address":address,
-                "favorite" :false,
-                "favorite" :false,
-                "description":description,
-                "lat":lat,
-                "lng":lng
-              } //inserted data is the object to be inserted 
-     }
-  },{
-    new: true,
-    runValidators: true
-  },function(err,response){
+  User.findOne({phone:phone},function(err,user){
     if (err) {
       return res.status(400).json({
         response: 3,
@@ -333,18 +318,49 @@ app.put("/addAddressUser",function(req,res){
         } 
       });
     }
-    if(response){
-      res.status(200).json({
-        response: 2,
-        content:{
-          message:"la direccion se actualizo correctamente",
-          user : response
+    if(user){
+      user.addresses.forEach(element=>{
+        element.favorite = false;
+      });
+      console.log("aqui voy");
+      let newAddress = {
+        "city":city ,
+        "address":address,
+        "favorite" :true,
+        "description":description,
+        "lat":lat,
+        "lng":lng
+      };
+      user.addresses.push(newAddress);
+      user.save((err,response)=>{
+        if (err) {
+          return res.status(400).json({
+            response: 3,
+            content:{
+              message: "Error al agregar la direccion del usuario",
+              err
+            } 
+          });
+        }
+        if(response){
+          return res.status(200).json({
+            response: 2,
+            content:{
+              message:"la direccion se agrego correctamente",
+            }
+          });
+        }else{
+          res.status(200).json({
+            response: 1,
+            content:"no se agrego la direccion al usuario"
+          });
         }
       });
+      
     }else{
       res.status(200).json({
         response: 1,
-        content:"no se agrego la direccion al usuario"
+        content:"no se encontro al usuario con ese telefono"
       });
     }
   });
@@ -491,7 +507,7 @@ app.put("/setFavoriteAddress",function(req,res){
       });
     }
   });
-})
+});
 app.post("/saveNewCard",function(req,res){
   let body = req.body;
   let phoneUser = body.phoneUser;
