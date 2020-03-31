@@ -409,40 +409,43 @@ app.post("/saveNewCard",function(req,res){
       //handling the response like a json object to manipulate it
       //let user = response.toJSON();
       //the card object to save
-      let card = {
-        "id":0,
-        "favorite":false,
-        "type":typeCard,
-        "nameCard":nameCard,
-        "cardNumber":cardNumber,
-        "lastName":lastNameCard,
-        "monthExpiration" : month,
-        "yearExpiration":year,
-        "last4umbers":"1234",
-        "cvc":cvc,
-        "franchise":franchise,
-      }
-      //user.cards is the array of cards that the user has
       let cardsArray = user.cards;
+      //id of the new card
+      let id = 0;
+      let favorite = false;
       //if the user doesnt has any card
       if(cardsArray.length == 0){
-        //the card that im inserting will be 1
-        card["id"] = 1;
+        //the card id that I`m inserting will be 1
+        id = 1;
+        favorite = true;
       }else{
         //if the user has already card then the id of the new card is autoincremental to the last one
-        card["id"] = cardsArray[cardsArray.length-1].id + 1;
+        id = cardsArray[cardsArray.length-1].id + 1;
       }
       //inserting the new card
       
-      console.log(card); 
+      console.log(id); 
       
       User.findOneAndUpdate({phone:phoneUser},{
-                                                $push : { cards:card},
-                                                updated: moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")
-                                              },{
-                                                new: true,
-                                                runValidators: true
-                                              },function(err,response){
+                            $push : { 
+                              cards:{
+                                "id":id,
+                                "favorite":favorite,
+                                "type":typeCard,
+                                "nameCard":nameCard,
+                                "cardNumber":cardNumber,
+                                "lastName":lastNameCard,
+                                "monthExpiration" : month,
+                                "yearExpiration":year,
+                                "last4umbers":"1234",
+                                "cvc":cvc,
+                                "franchise":franchise,
+                              }
+                            }
+                          },{
+                            new: true,
+                            runValidators: true
+                          },function(err,response){
         if (err) {
           return res.status(400).json({
             response: 3,
@@ -463,7 +466,7 @@ app.post("/saveNewCard",function(req,res){
             content:"No se pudo guardar el usuario" 
           });
         }
-        console.log(response);
+        
       });
       
     }else{
