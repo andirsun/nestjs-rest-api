@@ -217,6 +217,53 @@ app.get("/sendCode",function(req,res){
     }
   });
 });
+app.get("/getPaymentCards",function(req,res){
+  //phone user 
+  let phoneUser = req.query.phoneUser;
+  //search user by phoneUser to get paymentCards
+  User.findOne({phone:phoneUser},function(err,response){
+    if (err) {
+      return res.status(400).json({
+        response: 3,
+        content:{
+          message: "Error al buscar al usuario con ese celular.",
+          err
+        } 
+      });
+    }
+    if(response){
+      let client = response.toJSON();
+      //array to save cards
+      let cardsArray = [];
+      //loop into cards
+      client.cards.forEach(element => {
+        //get last4 numbers of cards
+        let last4Numbers = element.cardNumber.slice(12,16);
+        let card= {
+          last4Numbers :last4Numbers,
+          franchise : element.franchise,
+          fullName : element.nameCard+" "+element.lastName,
+          favorite : element.favorite
+        }
+        //add card info to response array
+        cardsArray.push(card)
+      });
+      //return response array with cards info
+      return res.status(200).json({
+        response: 2,
+        content:cardsArray
+      });
+    }else{
+      //user not found
+      return res.status(200).json({
+        response: 1,
+        content:{
+          message:"no se encontro a un usuario con ese numero de telefono",
+        }
+      });
+    }
+  });
+});
 app.put("/addPhoneTokenUser",function(req,res){
   let body = req.body;
   console.log("telefono del usuario: "+body.phoneUser);
@@ -228,7 +275,7 @@ app.put("/addPhoneTokenUser",function(req,res){
                                           updated: moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")
                                         },{new: true,runValidators: true},function(err,response){
     if (err) {
-      return res.status(500).json({
+      return res.status(400).json({
         response: 3,
         content:{
           message: "Error al buscar al usuario con ese celular.",
@@ -245,25 +292,32 @@ app.put("/addPhoneTokenUser",function(req,res){
         }
       });
     }else{
-      res.status(400).json({
+      res.status(200).json({
         response: 1,
         content:"no se agrego el token al usuario"
       });
     }
     
   });
-})
+});
 app.put("/addAddressUser",function(req,res){
   let body = req.body;
   let phone = body.phone || 0;
   let city = body.city || "none";
   let address = body.address || "none";
+  let description = body.description || "none";
+  let lat = body.lat;
+  let lng = body.lng;
   User.findOneAndUpdate({phone:phone},{
     $push : {
        addresses :  {
                 "city":city ,
                 "address":address,
-                "favorite" :false
+                "favorite" :false,
+                "favorite" :false,
+                "description":description,
+                "lat":lat,
+                "lng":lng
               } //inserted data is the object to be inserted 
      }
   },{
@@ -271,7 +325,7 @@ app.put("/addAddressUser",function(req,res){
     runValidators: true
   },function(err,response){
     if (err) {
-      return res.status(500).json({
+      return res.status(400).json({
         response: 3,
         content:{
           message: "Error al agregar la direccion del usuario",
@@ -288,7 +342,7 @@ app.put("/addAddressUser",function(req,res){
         }
       });
     }else{
-      res.status(400).json({
+      res.status(200).json({
         response: 1,
         content:"no se agrego la direccion al usuario"
       });
