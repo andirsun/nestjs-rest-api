@@ -416,7 +416,7 @@ app.put("/editInfoUser",function(req,res){
   console.log(phone,name,email);
   User.findOneAndUpdate({phone:phone},{name:name,email:email,publicityMethod:publicityMethod},{new: true,runValidators: true},function(err,response){
     if (err) {
-      return res.status(500).json({
+      return res.status(400).json({
         response: 3,
         content:{
           message: "Error al actualizar la informacion del usuario",
@@ -425,19 +425,73 @@ app.put("/editInfoUser",function(req,res){
       });
     }
     if(response){
-      res.status(200).json({
+      return res.status(200).json({
         response: 2,
         content:"El usuario fue actualizado correctamente"
       });
     }else{
-      res.status(400).json({
+      return res.status(200).json({
         response: 1,
         content:"El usuario no se actualizo"
       });
     }
   });
-
 });
+app.put("/setFavoriteAddress",function(req,res){
+  let body = req.body;
+  let phoneUser = body.phoneUser;
+  let address = body.address || "none";
+  User.findOne({phone:phoneUser},function(err,user){
+    if (err) {
+      return res.status(400).json({
+        response: 3,
+        content:{
+          message: "Error al buscar al usuario en la base de datos",
+          err
+        } 
+      });
+    }
+    if(user){
+      //let client = response.toJSON();
+      user.addresses.forEach(element =>{
+        if(element.address == address){
+          element.favorite = true;
+        }else{
+          element.favorite = false;
+        }
+      });
+      //save user with the changes
+      user.save((err,response)=>{
+        if (err) {
+          return res.status(400).json({
+            response: 3,
+            content:{
+              message: "Error al guardar al usuario con los cambios",
+              err
+            } 
+          });
+        }
+        if(response){
+          return res.status(200).json({
+            response: 2,
+            content:response
+          });
+        }else{
+          return res.status(200).json({
+            response: 1,
+            content:"no se pudo guardar al usuario con los cambios"
+          });
+        }
+      });
+      
+    }else{
+      return res.status(200).json({
+        response: 1,
+        content:"NO se encontro ningun usuario con ese telefono"
+      });
+    }
+  });
+})
 app.post("/saveNewCard",function(req,res){
   let body = req.body;
   let phoneUser = body.phoneUser;
