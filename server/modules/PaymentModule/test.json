@@ -1,1 +1,0 @@
-{"RequestMessage":{"RequestHeader":{"Channel":"PDA05-C001","RequestDate":"2020-03-24T02:27:14.871Z","MessageID":"123456","ClientID":"123456","Destination":{"ServiceName":"SubscriptionPaymentService","ServiceOperation":"newSubscription","ServiceRegion":"C001","ServiceVersion":"1.0.0"}},"RequestBody":{"any":{"newSubscriptionRQ":{"phoneNumber":"3162452663"}}}}}
