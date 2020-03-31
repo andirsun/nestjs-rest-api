@@ -264,6 +264,73 @@ app.get("/getPaymentCards",function(req,res){
     }
   });
 });
+app.get("/getPendingRate",function(req,res){
+  let phoneUser = req.query.phoneUser;
+  User.findOne({phone:phoneUser},function(err,user){
+    if (err) {
+      return res.status(400).json({
+        response: 3,
+        content:{
+          message: "Error al buscar al usuario con ese celular.",
+          err
+        } 
+      });
+    }
+    if(user){
+      console.log(user.id);
+      Order.find({idClient:user.id},function(err,orders){
+        if (err) {
+          return res.status(400).json({
+            response: 3,
+            content:{
+              message: "Error al buscar las ordenes del usuario en la DB",
+              err
+            } 
+          });
+        }   
+        if(orders){
+          //let clientOrders = orders.toJSON();
+          let lastOrder = orders[orders.length -1];
+          if(!lastOrder.rate){
+            return res.status(200).json({
+              response: 2,
+              content:lastOrder
+            });    
+          }else{
+            //if the last order is rated ( 1 2 3 )
+            if(lastOrder.rate > 0){
+              return res.status(200).json({
+                response: 1,
+                content:{
+                  message:"no tiene ordenes pendientes por calificar",
+                }
+              });    
+            }else{
+              return res.status(200).json({
+                response: 2,
+                content:lastOrder
+              });   
+            }
+          }
+        }else{
+          return res.status(200).json({
+            response: 1,
+            content:{
+              message:"no se encontraron ordenes para ese usario",
+            }
+          });    
+        }
+      });
+    }else{
+      return res.status(200).json({
+        response: 1,
+        content:{
+          message:"no se encontro a un usuario con ese numero de telefono",
+        }
+      });
+    }
+  });
+});
 app.put("/addPhoneTokenUser",function(req,res){
   let body = req.body;
   console.log("telefono del usuario: "+body.phoneUser);
@@ -468,7 +535,6 @@ app.put("/setFavoriteAddress",function(req,res){
       });
     }
     if(user){
-      //let client = response.toJSON();
       user.addresses.forEach(element =>{
         if(element.address == address){
           element.favorite = true;
@@ -504,6 +570,41 @@ app.put("/setFavoriteAddress",function(req,res){
       return res.status(200).json({
         response: 1,
         content:"NO se encontro ningun usuario con ese telefono"
+      });
+    }
+  });
+});
+app.put("/rateOrder", function(req,res){
+  let body = req.body;
+  let idOrder = body.idOrder;
+  //let phoneUser = body.phoneUser;
+  let rate = body.rate;
+  let comment = body.comment;
+  Order.findOneAndUpdate({id:idOrder},{rate:rate,
+                                      comments:comment,
+                                      updated: moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")
+                                        },{new: true,runValidators: true},function(err,response){
+    if (err) {
+      return res.status(400).json({
+        response: 3,
+        content:{
+          message: "Error al buscar la orden con ese id en la db",
+          err
+        } 
+      });
+    }
+    if(response){
+      res.status(200).json({
+        response: 2,
+        content:{
+          message:"se califico correctamente la orden",
+          user : response
+        }
+      });
+    }else{
+      res.status(200).json({
+        response: 1,
+        content:"no se encontro una orden con ese id"
       });
     }
   });
