@@ -9,6 +9,15 @@ let rolesValidos = {
 };
 let Schema = mongoose.Schema;
 
+let address = new Schema({ 
+    city : String,
+    address : String,
+    favorite : Boolean,
+    description:String,
+    lat : String,
+    lng : String,
+});
+
 let usuarioSchema = new Schema({
   id: {
     type: Number,
@@ -44,13 +53,7 @@ let usuarioSchema = new Schema({
     type: String,
     required: false
   },
-  addresses : [{
-    city : String,
-    address : String,
-    favorite : Boolean,
-    lat : String,
-    lng : String,
-  }],
+  addresses : [address],
   img: {
     type: String,
     required: false

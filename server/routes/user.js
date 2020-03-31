@@ -263,12 +263,18 @@ app.put("/addAddressUser",function(req,res){
   let phone = body.phone || 0;
   let city = body.city || "none";
   let address = body.address || "none";
+  let description = body.description || "none";
+  let lat = body.lat;
+  let lng = body.lng;
   User.findOneAndUpdate({phone:phone},{
     $push : {
        addresses :  {
                 "city":city ,
                 "address":address,
-                "favorite" :false
+                "favorite" :false,
+                "description":description,
+                "lat":lat,
+                "lng":lng
               } //inserted data is the object to be inserted 
      }
   },{
@@ -276,7 +282,7 @@ app.put("/addAddressUser",function(req,res){
     runValidators: true
   },function(err,response){
     if (err) {
-      return res.status(500).json({
+      return res.status(400).json({
         response: 3,
         content:{
           message: "Error al agregar la direccion del usuario",
@@ -293,7 +299,7 @@ app.put("/addAddressUser",function(req,res){
         }
       });
     }else{
-      res.status(400).json({
+      res.status(200).json({
         response: 1,
         content:"no se agrego la direccion al usuario"
       });
