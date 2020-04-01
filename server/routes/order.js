@@ -20,7 +20,6 @@ var serverKeyCustomer = process.env.FCM_TOKEN; //put your server key here
 var fcmBarbers = new FCM(serverKeyBarbers);
 var fcmCutomer = new FCM(serverKeyCustomer);
 
-console.log("GLOBAL VARIABLE : "+global.GlobalString);
 
 //const timezone = require('moment-timezone');
 /**********************************************/
@@ -762,9 +761,5 @@ app.put("/assignBarberToOrder",function(req,res){
 
 //14403974927 NUmero para envio de mensajes de texto
 //whatsapp:+14155238886   envio de whatsapp
-
-setTimeout(() => {
-  global.socketServer.emit('newOrder', {});
-}, 15000);
 
 module.exports = app;
