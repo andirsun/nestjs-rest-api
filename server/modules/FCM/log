@@ -1,0 +1,3 @@
+{
+  Authorization: 'Bearer ya29.c.Kl7EByojYu0yFkS_BAQxmJeiP3bsVsKBIF4T5ElJ_HYTWZp1i4hTFYmBIknCK8F1fJQVOA_C3-EoqbgWIPpeW8bfcHxL2prdvF6VrdaFiJIYaePRvM89O_l_7lzbRdeW'
+} {"message":{"token":"ekukLNBPWkY:APA91bHDcpu4YF-3OeAKU-Acpa_mkJfQ7qvcjwSd09getpsRf-taSAANiiNRx26Mybg_OQJEbNr9b_XSPIPjYlRAeeh29FLu0NUPBcGf06LwaoOwlM0ice9el_C2C6YuneHnNtOwrL5b","notification":{"title":"Timugo Inc.","body":"Timugo espera que todos y cada uno de los Colombianos se encuentren sanos y salvos. ¡Saldremos de esta!"},"data":{"Ahora":"Necesito amigos","I am":"Driving me insane"},"android":{"priority":"normal","ttl":"72000s","notification":{"icon":"someIcon"}}}}
