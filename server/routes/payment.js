@@ -25,7 +25,7 @@ app.post("/payment/nequi/newSubscription", function(req, res){
   var name = body.name || process.env.NEQUI_NAME;
   var messageID = new Date().getTime().toString();
   if(!body.messageID){
-    messageID = messageId.substring(messageId.length-9);
+    messageID = messageID.substring(messageID.length-9);
   } else{
     messageID = body.messageID;
   }
@@ -43,11 +43,11 @@ app.post('/payment/nequi/getSubscription', function(req, res){
   return paymentModule.nequiGetSubscription(phoneNumber, token, res);
 });
 
-app.post('/payment/nequi/automaticPayment', function(res, req){
+app.post('/payment/nequi/automaticPayment', function(req, res){
   /* Body must be like
     {phoneNumber : '3116021602', messageID : '123456789', clientID : '1234567890',
       token : 'token', value : '14000'
-      references : ['Corte de pelo', 'Corte de baraba 50% off']
+      references : ['Corte de pelo', 'Corte de baraba 50% off', 'Cejas']
     }
     messageID, clientID and references (could be 0 but must be at max 3 references)
   */
@@ -57,7 +57,7 @@ app.post('/payment/nequi/automaticPayment', function(res, req){
   var value = body.value;
   var messageID = new Date().getTime().toString();
   if(!body.messageID){
-    messageID = messageId.substring(messageId.length-9);
+    messageID = messageID.substring(messageID.length-9);
   } else{
     messageID = body.messageID;
   }
@@ -67,5 +67,42 @@ app.post('/payment/nequi/automaticPayment', function(res, req){
   paymentModule.nequiAutomaticPayment(phoneNumber, token, value,
       messageID, clientID, references, res);
 });
+  app.post('/payment/nequi/pushPayment', function(req, res) {
+    /* Body must be like
+      {phoneNumber : '3116021602', messageID : '123456789', clientID : '1234567890',
+        references : ['Corte de pelo', 'Corte de baraba 50% off', 'Cejas']
+      }
+      messageID, clientID and references (could be 0 but must be at max 3 references)
+    */
+    let body = req.body;
+    var phoneNumber = body.phoneNumber;
+    var value = body.value;
+    var messageID = new Date().getTime().toString();
+    if(!body.messageID){
+      messageID = messageID.substring(messageID.length-9);
+    } else{
+      messageID = body.messageID;
+    }
+    var clientID = body.clientID || phoneNumber;
+    var references = body.references || ['Cargo sin refencia, Timugo'];
+
+    paymentModule.nequiPushPayment(phoneNumber, value, messageID, clientID, references, res);
+  });
+    app.post('./payment/nequi/checkPushPayment', function(req, res){
+      /*Body must be like
+        {codeQR : 'transactionId', messageID : 'messageID', clientID : 'clientID'}
+        messageID and clientID are optional
+      */
+      let body = req.body;
+      var codeQR = body.codeQR;
+      var messageID = new Date();
+      if (!body.messageID){
+        messageID = messageID.substring(messageID.length-9);
+      } else{
+        messageID = body.messageID;
+      }
+      var clientID = body.clientID || '3116021602';
+      paymentModule.nequiCheckPushPayment(codeQR, messageID, clientID, res);
+    });
 
 module.exports = app;
