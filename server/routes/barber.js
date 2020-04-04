@@ -271,6 +271,31 @@ app.get("/checkIfBarberConnect",function(req,res){
 
   });
 });
+app.get("/getBarberHistoryOrders",function(req,res){
+  let idBarber = req.query.idBarber;
+  Order.find({idBarber:idBarber},function(err,orders){
+    if (err) {
+      return res.status(400).json({
+        response: 3,
+        content:{
+          message: "Error al buscar las ordenes en la bd",
+          err
+        } 
+      });
+    }
+    if ( orders.length > 0 ) {
+      return res.status(200).json({
+        response : 2,
+        content : orders
+      });
+    } else {
+      return res.status(200).json({
+        response : 1,
+        content : "no se encontraron ordenes para ese barbero"
+      });
+    }
+  });
+});
 app.put("/saveBarberDeviceInfo",function(req,res){
   let body = req.body;
   let phone = body.phone;
