@@ -59,7 +59,7 @@ app.get("/checkUserOrder",function(req,res){
 });
 app.get("/checkTokenUser",function(req,res){
   let phoneUser = req.query.phoneUser;
-  User.find({phone:phoneUser},function(err,user){
+  User.findOne({phone:phoneUser},function(err,user){
     if (err) {
       return res.status(400).json({
         response: 3,
@@ -70,11 +70,11 @@ app.get("/checkTokenUser",function(req,res){
       });
     }
     if(user){
-      let data = user[0].toJSON();
+      let data = user.toJSON();
       if(data.phoneToken == "none"){
         return res.status(400).json({
           response: 1,
-          content:"no tiene id"
+          content:"no tiene token"
         });
       }else{
         return res.status(200).json({
@@ -90,29 +90,51 @@ app.get("/checkTokenUser",function(req,res){
     }
   })
 });
-app.get("/getHistoryOrders",function(req,res){
-  let id = req.params.id;
-  Order
+app.get("/getUserHistoryOrders",function(req,res){
+  let idUser = req.query.idUser;
+  Order.find({idClient:idUser},function(err,orders){
+    if (err) {
+      return res.status(400).json({
+        response: 3,
+        content:{
+          message: "Error al buscar las ordenes en la bd",
+          err
+        } 
+      });
+    }
+    if(orders.length > 0){
+      return res.status(200).json({
+        response : 2,
+        content : orders
+      });
+    }else{
+      return res.status(200).json({
+        response : 1,
+        content : "no se encontraron ordenes para ese usuario"
+      });
+    }
+  });
 });
 app.get("/getAddressesUser",function(req,res){
   let phone = req.query.phone;
   User.findOne({phone:phone},function(err,response){
     if (err) {
-      return res.status(500).json({
+      return res.status(400).json({
         response: 3,
         content:{
           message: "Error al buscar al usuario",
           err
         } 
       });
-    }if(response){
+    }
+    if(response){
       let user = response.toJSON();
       res.status(200).json({
         response: 2,
         content:user.addresses
       });
     }else{
-      res.status(400).json({
+      res.status(200).json({
         response: 1,
         content:"no encontramos un usuario con ese id "
       });
