@@ -295,6 +295,31 @@ app.get("/getBarberHistoryOrders",function(req,res){
     }
   });
 });
+app.get("/getBarberBalance",function(req,res){
+  let phoneBarber = req.query.phoneBarber;
+  Barber.findOne({phone:phoneBarber},function(err,barber){
+    if (err) {
+      return res.status(400).json({
+        response: 3,
+        content:{
+          message: "Error al buscar al barbero en la bd",
+          err
+        } 
+      });
+    }
+    if(barber){
+      return res.status(200).json({
+        response : 2,
+        content : barber.balance
+      });
+    }else{
+      return res.status(200).json({
+        response : 1,
+        content : "no se encontro el saldo de este barbero"
+      });
+    }
+  });
+});
 app.put("/saveBarberDeviceInfo",function(req,res){
   let body = req.body;
   let phone = body.phone;
