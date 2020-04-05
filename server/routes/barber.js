@@ -310,7 +310,10 @@ app.get("/getBarberBalance",function(req,res){
     if(barber){
       return res.status(200).json({
         response : 2,
-        content : barber.balance
+        content :{
+          balance : barber.balance,
+          points : barber.points
+        } 
       });
     }else{
       return res.status(200).json({
