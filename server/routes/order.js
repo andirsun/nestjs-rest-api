@@ -402,7 +402,10 @@ app.post("/finishOrder",function(req,res){
     if(temporalOrderDB){
       let tempOrder = temporalOrderDB.toJSON();
       if(status =="Finished"){
-        barber.findOneAndUpdate({id:tempOrder.idBarber},{$inc:{points:50}},function(err,barberDb){//updating points to a barber
+        let orderPrice = tempOrder.price;
+        // 30% of commission
+        let orderCommission = orderPrice * 0.30;
+        barber.findOneAndUpdate({id:tempOrder.idBarber},{$inc:{points:50},$inc:{balance:-orderCommission}},function(err,barberDb){//updating points to a barber
           if (err) {
             return res.status(500).json({
               response: 3,
@@ -462,6 +465,7 @@ app.post("/finishOrder",function(req,res){
             city: tempOrder.city,
             bonusCode: "none",
             card: "none",
+            commission : tempOrder.price * 0.30,
             updated: moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")
           });
           orderSave.save((err,orderDb)=>{
