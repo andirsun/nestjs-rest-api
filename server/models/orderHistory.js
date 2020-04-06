@@ -34,6 +34,10 @@ let orderHistory = new Schema({
     required: [false],
     default: 0
   },
+  commission:{
+    type : Number,
+    required : [true,"La comision es necesaria"]
+  },
   nameBarber:{
     type: String,
     required:[false],
@@ -59,7 +63,7 @@ let orderHistory = new Schema({
     type: Number,
     required: [false]
   },
-  stars: {
+  rate: {
     type: Number,
     required: [false]
   },
