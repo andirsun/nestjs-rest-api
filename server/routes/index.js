@@ -11,6 +11,7 @@ app.use(require('./barber'));
 app.use(require('./order'));
 app.use(require('./service'));
 app.use(require('./admin'));
+app.use(require('./city'));
 app.use(require('./payment'));
 
 
