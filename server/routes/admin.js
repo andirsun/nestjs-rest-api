@@ -40,80 +40,35 @@ app.get("/adminMetrics",function(req,res){
             for(i=0;i<response.length;i++){
                 let orderDate = moment(response[i].dateBeginOrder, "YYYY-MM-DD HH:mm");
                 if(orderDate >= initialDate && orderDate <= finalDate){
-                    if(response[i].status == "Finished"){
-                        console.log(response[i]);
+                    if(response[i].status = "Finished"){
                         //increase number of orders
                         finishedOrders++;
                         for(j=0;j < response[i].services.length; j++){
                             if(response[i].services[j].nameService == "Corte de Cabello"){
                                 hairCuts++;
                             }else{
-                                if(response[i].services[j].nameService == "Perfilación de Barba"){
-                                    shaves++;       
-                                }
+                                shaves++;       
                             }
-                            //Add the value of valid order
-                            revenue+=response[i].price;
                         }
                     }else{
-                        if(response[i].status == "Cancelled"){
-                            cancelledOrders++;
-                        }
+                        cancelledOrders++;
                     }
                     totalOrders++;
+                    revenue+=response[i].price;
                 }
-            }
-            user.find((err,users)=>{
-                if (err) {
-                    return res.status(400).json({
-                        response: 3,
-                        content: {
-                            error: err,
-                            message: "Error al comparar las fechas"
-                        }
-                    });
+              }
+            return res.status(200).json({
+                response: 2,
+                content:{
+                    totalOrders,
+                    finishedOrders,
+                    cancelledOrders,
+                    hairCuts,
+                    shaves,
+                    revenue
                 }
-                if(users){
-                    var usersDownloads = 0;
-                    var usersRegisterd = 0;
-                    for(i=0;i<users.length;i++){
-                        if("update" in users[i] ||  "dateRegister" in users[i]){
-                            
-                            let dateRegister= moment(users[i].update, "YYYY-MM-DD HH:mm");
-                            if(dateRegister >= initialDate && dateRegister <= finalDate){
-                                console.log(users[i]);
-                                if("name" in users[i]){
-                                    usersRegisterd++;
-                                    usersDownloads++;
-                                }else{
-                                    usersDownloads++;
-                                }
-                            }
-                        }else{
-                            usersDownloads++;
-                        }
-                    }
-                    return res.status(200).json({
-                        response: 2,
-                        content:{
-                            totalOrders,
-                            finishedOrders,
-                            cancelledOrders,
-                            hairCuts,
-                            shaves,
-                            revenue,
-                            usersDownloads,
-                            usersRegisterd,
-                        }
-                    });
-                }else{
-                    return res.status(200).json({
-                        response: 1,
-                        content:  "No hay usuarios registrados entre esas fechas"
-                    });
-                } 
-            })
-            
+            });
+
         }else{
             return res.status(200).json({
                 response: 1,

@@ -10,13 +10,27 @@ let rolesValidos = {
 let Schema = mongoose.Schema;
 
 let address = new Schema({ 
-    city : String,
-    address : String,
-    favorite : Boolean,
-    description:String,
-    lat : String,
-    lng : String,
+  city : String,
+  address : String,
+  favorite : Boolean,
+  description:String,
+  lat : String,
+  lng : String,
 });
+
+let card = new Schema({
+    id:Number,
+    favorite : Boolean,
+    type: String,
+    nameCard : String,
+    lastName : String,
+    cardNumber : String,
+    monthExpiraton : String,
+    yearExpiration : String,
+    last4Numbers : String,
+    cvc:String,
+    franchise:String
+  });
 
 let usuarioSchema = new Schema({
   id: {
@@ -77,23 +91,20 @@ let usuarioSchema = new Schema({
     type: Boolean,
     default: true
   },
+  cards : [card],
   publicityMethod:{
     type: String,
     default: "none"
-  },
-  google: {
-    type: Boolean,
-    default: false
   }
 });
 
-usuarioSchema.methods.toJSON = function() {
-  let user = this;
-  let userObject = user.toObject();
-  delete userObject.password;
+// usuarioSchema.methods.toJSON = function() {
+//   let user = this;
+//   let userObject = user.toObject();
+//   delete userObject.password;
 
-  return userObject;
-};
+//   return userObject;
+// };
 
 usuarioSchema.plugin(uniqueValidator, { message: "{PATH} debe de ser único" });
 //usuarioSchema.plugin(AutoIncrement, {inc_field: 'id'});

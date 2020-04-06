@@ -17,6 +17,14 @@ let barber = new Schema({
     type: String,
     required:false, 
   },
+  balance :{
+    type:Number,
+    default : 0,
+  },
+  connected:{
+    type : Boolean,
+    default : false
+  },
   name: {
     type: String,
     required: [true, "El nombre es necesario"]
