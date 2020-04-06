@@ -70,7 +70,6 @@ function sendPushMessageClient(token,title,message){
         title: title,
         body: message
     },
-
     data: {  //you can send only notification or only data(or include both)
         my_key: 'my value',
         my_another_key: 'my another value'
@@ -356,7 +355,7 @@ app.post("/createOrder", function (req, res) {
 
                     //Here goes the emit function ***
                     global.socketServer.emit('newOrder', {});
-
+                    
                     return res.status(200).json({
                       response: 2,
                       content: {
