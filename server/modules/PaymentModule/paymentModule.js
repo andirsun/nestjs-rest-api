@@ -45,8 +45,7 @@ module.exports = {
       var body = newSubscription.getRequest();
 
       //Request sended using the aws4 signer for Nequi
-      signer.makeSignedRequest(NEQUI_SUBS_HOST, NEQUI_SUBS_NEW_PATH,
-        'POST', headers, body,
+      signer.makeSignedRequest(NEQUI_SUBS_HOST, NEQUI_SUBS_NEW_PATH,'POST', headers, body,
         (statusCode, resp) => {
           //Do somenthing with the response
           let status="-1";
@@ -86,6 +85,7 @@ module.exports = {
             content : {
               message : "ERROR",
               description : "Hemos tenido un inconveniente, ¡Intentalo de nuevo!",
+              err
             }
           }
           res.status(200).json(response);
@@ -99,8 +99,7 @@ module.exports = {
       var headers = { 'content-type' : 'application/json' };
       var body = getSubscription.getRequest();
 
-      signer.makeSignedRequest(NEQUI_SUBS_HOST, NEQUI_SUBS_GET_PATH,
-        'POST', headers, body,
+      signer.makeSignedRequest(NEQUI_SUBS_HOST, NEQUI_SUBS_GET_PATH,'POST', headers, body,
         (statusCode, resp) => {
           let status="-1";
           let description="";
