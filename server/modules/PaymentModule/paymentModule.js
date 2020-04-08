@@ -210,24 +210,27 @@ module.exports = {
           let status="-1";
           let description="";
           let message = "REJECTED";
+          let codeQR = undefined;
           var responseCode = 2;
           if(resp.ResponseMessage){
             status = resp.ResponseMessage.ResponseHeader.Status.StatusCode;
             description = resp.ResponseMessage.ResponseHeader.Status.StatusDesc;
             if(status=="0"){
-              message="ACCEPTED";
-              description="Ya enviamos tu pago, confirmalo en Nequi";
+              message = "ACCEPTED";
+              description = "Ya enviamos tu pago, confirmalo en Nequi";
+              codeQR = resp.ResponseBody.any.unregisteredPaymentRS.transactionId;
             }
           } else{
             message = "NEQUI_ERROR";
             responseCode = 3;
-            description = "Un error ha ocurrido, intenta más tarde";
+            description = resp.message;
           }
           var response = {
             reponse : responseCode,
             content : {
               message : message,
-              description : description
+              description : description,
+              codeQR : codeQR
             }
           }
           res.status(200).json(response);

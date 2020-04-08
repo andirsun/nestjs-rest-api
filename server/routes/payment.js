@@ -2,6 +2,8 @@ const express = require('express');
 const paymentModule = require('../modules/PaymentModule/paymentModule');
 app = express();
 
+
+
 app.get("/payment/payU-test", function(req, res) {
     res.send('Testing nodemon');
 });
@@ -88,7 +90,7 @@ app.post('/payment/nequi/automaticPayment', function(req, res){
 
     paymentModule.nequiPushPayment(phoneNumber, value, messageID, clientID, references, res);
   });
-    app.post('./payment/nequi/checkPushPayment', function(req, res){
+  app.post('./payment/nequi/checkPushPayment', function(req, res){
       /*Body must be like
         {codeQR : 'transactionId', messageID : 'messageID', clientID : 'clientID'}
         messageID and clientID are optional
@@ -103,6 +105,82 @@ app.post('/payment/nequi/automaticPayment', function(req, res){
       }
       var clientID = body.clientID || '3116021602';
       paymentModule.nequiCheckPushPayment(codeQR, messageID, clientID, res);
+});
+app.post('/payment/Wompi/transaction', function(req, res){
+  const Wompi = require('../modules/PaymentModule/Wompi/classes/Wompi');
+  let wompi = new Wompi();
+  let body = req.body;
+  let data = body.data;
+  let type = body.type;
+  let bill = body.bill;
+  console.log(bill);
+  wompi.createRequest(type, data);
+  wompi.makeTransaction(bill.value, bill.email).then((response)=>{
+    wompi.sendTransaction(response).then((resp)=>{
+      respData = resp.data.data;
+      let message = 'REJECTED';
+      let description = 'Transacción no creada con exito';
+      if(respData.status=='PENDING'){
+        message = 'CREATED';
+        description = 'Transacción creada exitosamente';
+      }
+      let responseBody = {
+        response : 2,
+        content : {
+          message : message,
+          description : description
+        },
+        details : {
+          id : respData.id,
+          reference : respData.reference,
+          payment_method : respData.payment_method,
+          value_in_cents : respData.amount_in_cents
+        }
+      }
+      res.send(responseBody);
+    }).catch((err)=>{
+      res.send(err);
     });
+  });
+});
+app.post('/payment/Wompi/transactionStatus', function(req, res){
+  const Wompi = require('../modules/PaymentModule/Wompi/classes/Wompi');
+  let wompi = new Wompi();
+  let body = req.body;
+  let transactionID = body.transactionID;
+  wompi.getStatus(transactionID).then((response) => {
+    let respData = response.data.data;
+    let description = 'Transacción pendiente.';
+    let link = undefined;
+    if(respData.status=='APPROVED'){
+      description = 'Compra exitosa';
+    }else if(respData.status=='REJECTED'){
+      description = 'Tu transacción ha sido rechazada, intenta de nuevo.';
+    } else if(respData.payment_method_type=='PSE'){
+      description = description+' Por favor, dirigete al link de pago en PSE y termina la operación';
+      link = respData.payment_method.extra.async_payment_url;
+    }
+    let responseBody = {
+      response : 2,
+      content : {
+        message : respData.status,
+        description : description,
+        link : link
+      }
+    }
+    res.send(responseBody);
+    //res.send(responseBody);
+  }).catch((err) => {
+    let responseBody = {
+      response : 3,
+      content : {
+        message : 'ERROR',
+        description : 'Lo sentimos, ha ocurrido un error.'
+      }
+    }
+    res.send(responseBody);
+  });
+});
+
 
 module.exports = app;
