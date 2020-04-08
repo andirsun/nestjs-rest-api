@@ -6,6 +6,7 @@
 */
 const https = require('https');
 const aws4  = require('aws4');
+//THis path is the root in the project
 require('dotenv').config({path:'.env'});
 var awsSigner = {
     makeSignedRequest:makeSignedRequest
