@@ -157,5 +157,17 @@ class Wompi {
     }
     return axios(config);
   }
+  getPSEInstitutions(){
+    var url = (this.isDevEnv) ? process.env.SANDBOX_URL : process.env.PRODUCTION_URL;
+    var pk = (this.isDevEnv) ? process.env.SANDBOX_PUB_KEY : process.env.PRODUCTION_PUB_KEY;
+    let headers = { 'Authorization' : 'Bearer '+pk }
+    console.log(headers);
+    let config = {
+      method : 'GET',
+      url : url+'/pse/financial_institutions',
+      headers : headers
+    }
+    return axios(config);
+  }
 }
 module.exports = Wompi;

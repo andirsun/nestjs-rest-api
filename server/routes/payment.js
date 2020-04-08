@@ -179,6 +179,37 @@ app.post('/payment/Wompi/transactionStatus', function(req, res){
     res.send(responseBody);
   });
 });
-
+app.get('/payment/Wompi/pse/institutions', function(req, res){
+  const Wompi = require('../modules/PaymentModule/Wompi/classes/Wompi');
+  let wompi = new Wompi();
+  wompi.getPSEInstitutions().then((response) => {
+    let respData = response.data.data;
+    let institutions = []
+    respData.forEach((element) =>{
+      institutions.push({
+        name : element.financial_institution_name,
+        code : element.financial_institution_code
+      });
+    });
+    let responseBody = {
+      response : 2,
+      content : {
+        message : "OK",
+        response : "Listas de instituciones financieras para PSE"
+      },
+      institutions : institutions
+    }
+    res.send(responseBody);
+  }).catch((err) => {
+    let responseBody = {
+      response : 3,
+      content : {
+        message : "ERROR",
+        response : "Lo sentimos, tenemos inconvenientes para realizar pagos con PSE ahora"
+      }
+    }
+    res.send(responseBody);
+  });
+});
 
 module.exports = app;
