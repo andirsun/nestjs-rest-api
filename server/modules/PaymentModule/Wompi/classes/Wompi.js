@@ -9,7 +9,6 @@ class Wompi {
     this.PSE = 'PSE_PAYMENT';
     this.NOT_FOUND = 'NOT_FOUND';
     this.request;
-    this.isDevEnv = true;
     this.creditCardToken = undefined;
     this.nequiToken = undefined;
     this.acceptanceToken = undefined;
@@ -20,6 +19,11 @@ class Wompi {
     this.institutionCode = undefined;
     this.paymentDescription = undefined;
     this.userType = 0;
+    if (process.env.ENVIROMENT=='dev'){
+      this.isDevEnv = true;
+    } else{
+      this.isDevEnv = false;
+    }
   }
 
   createRequest(type, data){
