@@ -5,6 +5,7 @@ const User = require("../models/user");
 const Feedback = require("../models/feedback");
 const jwt = require("jsonwebtoken");
 const temporalOrder = require("../models/temporalOrder");
+const Order = require("../models/orderHistory");
 const publicityMethod = require("../models/publicityMethods");
 const app = express();
 require("dotenv").config();
@@ -111,13 +112,7 @@ app.get("/checkTokenUser",function(req,res){
 });
 app.get("/getHistoryOrders",function(req,res){
   let id = req.params.id;
-  //
-  //
-  //
-  //
-  //
-  //
-  //
+  Order
 });
 app.get("/getAddressesUser",function(req,res){
   let phone = req.query.phone;
@@ -222,6 +217,120 @@ app.get("/sendCode",function(req,res){
     }
   });
 });
+app.get("/getPaymentCards",function(req,res){
+  //phone user 
+  let phoneUser = req.query.phoneUser;
+  //search user by phoneUser to get paymentCards
+  User.findOne({phone:phoneUser},function(err,response){
+    if (err) {
+      return res.status(400).json({
+        response: 3,
+        content:{
+          message: "Error al buscar al usuario con ese celular.",
+          err
+        } 
+      });
+    }
+    if(response){
+      let client = response.toJSON();
+      //array to save cards
+      let cardsArray = [];
+      //loop into cards
+      client.cards.forEach(element => {
+        //get last4 numbers of cards
+        let last4Numbers = element.cardNumber.slice(12,16);
+        let card= {
+          last4Numbers :last4Numbers,
+          franchise : element.franchise,
+          fullName : element.nameCard+" "+element.lastName,
+          favorite : element.favorite
+        }
+        //add card info to response array
+        cardsArray.push(card)
+      });
+      //return response array with cards info
+      return res.status(200).json({
+        response: 2,
+        content:cardsArray
+      });
+    }else{
+      //user not found
+      return res.status(200).json({
+        response: 1,
+        content:{
+          message:"no se encontro a un usuario con ese numero de telefono",
+        }
+      });
+    }
+  });
+});
+app.get("/getPendingRate",function(req,res){
+  let phoneUser = req.query.phoneUser;
+  User.findOne({phone:phoneUser},function(err,user){
+    if (err) {
+      return res.status(400).json({
+        response: 3,
+        content:{
+          message: "Error al buscar al usuario con ese celular.",
+          err
+        } 
+      });
+    }
+    if(user){
+      console.log(user.id);
+      Order.find({idClient:user.id},function(err,orders){
+        if (err) {
+          return res.status(400).json({
+            response: 3,
+            content:{
+              message: "Error al buscar las ordenes del usuario en la DB",
+              err
+            } 
+          });
+        }   
+        if(orders){
+          //let clientOrders = orders.toJSON();
+          let lastOrder = orders[orders.length -1];
+          if(!lastOrder.rate){
+            return res.status(200).json({
+              response: 2,
+              content:lastOrder
+            });    
+          }else{
+            //if the last order is rated ( 1 2 3 )
+            if(lastOrder.rate > 0){
+              return res.status(200).json({
+                response: 1,
+                content:{
+                  message:"no tiene ordenes pendientes por calificar",
+                }
+              });    
+            }else{
+              return res.status(200).json({
+                response: 2,
+                content:lastOrder
+              });   
+            }
+          }
+        }else{
+          return res.status(200).json({
+            response: 1,
+            content:{
+              message:"no se encontraron ordenes para ese usario",
+            }
+          });    
+        }
+      });
+    }else{
+      return res.status(200).json({
+        response: 1,
+        content:{
+          message:"no se encontro a un usuario con ese numero de telefono",
+        }
+      });
+    }
+  });
+});
 app.put("/addPhoneTokenUser",function(req,res){
   let body = req.body;
   console.log("telefono del usuario: "+body.phoneUser);
@@ -233,7 +342,7 @@ app.put("/addPhoneTokenUser",function(req,res){
                                           updated: moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")
                                         },{new: true,runValidators: true},function(err,response){
     if (err) {
-      return res.status(500).json({
+      return res.status(400).json({
         response: 3,
         content:{
           message: "Error al buscar al usuario con ese celular.",
@@ -250,33 +359,25 @@ app.put("/addPhoneTokenUser",function(req,res){
         }
       });
     }else{
-      res.status(400).json({
+      res.status(200).json({
         response: 1,
         content:"no se agrego el token al usuario"
       });
     }
     
   });
-})
+});
 app.put("/addAddressUser",function(req,res){
   let body = req.body;
   let phone = body.phone || 0;
   let city = body.city || "none";
   let address = body.address || "none";
-  User.findOneAndUpdate({phone:phone},{
-    $push : {
-       addresses :  {
-                "city":city ,
-                "address":address,
-                "favorite" :false
-              } //inserted data is the object to be inserted 
-     }
-  },{
-    new: true,
-    runValidators: true
-  },function(err,response){
+  let description = body.description || "none";
+  let lat = body.lat;
+  let lng = body.lng;
+  User.findOne({phone:phone},function(err,user){
     if (err) {
-      return res.status(500).json({
+      return res.status(400).json({
         response: 3,
         content:{
           message: "Error al agregar la direccion del usuario",
@@ -284,18 +385,49 @@ app.put("/addAddressUser",function(req,res){
         } 
       });
     }
-    if(response){
-      res.status(200).json({
-        response: 2,
-        content:{
-          message:"la direccion se actualizo correctamente",
-          user : response
+    if(user){
+      user.addresses.forEach(element=>{
+        element.favorite = false;
+      });
+      console.log("aqui voy");
+      let newAddress = {
+        "city":city ,
+        "address":address,
+        "favorite" :true,
+        "description":description,
+        "lat":lat,
+        "lng":lng
+      };
+      user.addresses.push(newAddress);
+      user.save((err,response)=>{
+        if (err) {
+          return res.status(400).json({
+            response: 3,
+            content:{
+              message: "Error al agregar la direccion del usuario",
+              err
+            } 
+          });
+        }
+        if(response){
+          return res.status(200).json({
+            response: 2,
+            content:{
+              message:"la direccion se agrego correctamente",
+            }
+          });
+        }else{
+          res.status(200).json({
+            response: 1,
+            content:"no se agrego la direccion al usuario"
+          });
         }
       });
+      
     }else{
-      res.status(400).json({
+      res.status(200).json({
         response: 1,
-        content:"no se agrego la direccion al usuario"
+        content:"no se encontro al usuario con ese telefono"
       });
     }
   });
@@ -367,7 +499,7 @@ app.put("/editInfoUser",function(req,res){
   console.log(phone,name,email);
   User.findOneAndUpdate({phone:phone},{name:name,email:email,publicityMethod:publicityMethod},{new: true,runValidators: true},function(err,response){
     if (err) {
-      return res.status(500).json({
+      return res.status(400).json({
         response: 3,
         content:{
           message: "Error al actualizar la informacion del usuario",
@@ -376,18 +508,106 @@ app.put("/editInfoUser",function(req,res){
       });
     }
     if(response){
-      res.status(200).json({
+      return res.status(200).json({
         response: 2,
         content:"El usuario fue actualizado correctamente"
       });
     }else{
-      res.status(400).json({
+      return res.status(200).json({
         response: 1,
         content:"El usuario no se actualizo"
       });
     }
   });
-
+});
+app.put("/setFavoriteAddress",function(req,res){
+  let body = req.body;
+  let phoneUser = body.phoneUser;
+  let address = body.address || "none";
+  User.findOne({phone:phoneUser},function(err,user){
+    if (err) {
+      return res.status(400).json({
+        response: 3,
+        content:{
+          message: "Error al buscar al usuario en la base de datos",
+          err
+        } 
+      });
+    }
+    if(user){
+      user.addresses.forEach(element =>{
+        if(element.address == address){
+          element.favorite = true;
+        }else{
+          element.favorite = false;
+        }
+      });
+      //save user with the changes
+      user.save((err,response)=>{
+        if (err) {
+          return res.status(400).json({
+            response: 3,
+            content:{
+              message: "Error al guardar al usuario con los cambios",
+              err
+            } 
+          });
+        }
+        if(response){
+          return res.status(200).json({
+            response: 2,
+            content:response
+          });
+        }else{
+          return res.status(200).json({
+            response: 1,
+            content:"no se pudo guardar al usuario con los cambios"
+          });
+        }
+      });
+      
+    }else{
+      return res.status(200).json({
+        response: 1,
+        content:"NO se encontro ningun usuario con ese telefono"
+      });
+    }
+  });
+});
+app.put("/rateOrder", function(req,res){
+  let body = req.body;
+  let idOrder = body.idOrder;
+  //let phoneUser = body.phoneUser;
+  let rate = body.rate;
+  let comment = body.comment;
+  Order.findOneAndUpdate({id:idOrder},{rate:rate,
+                                      comments:comment,
+                                      updated: moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")
+                                        },{new: true,runValidators: true},function(err,response){
+    if (err) {
+      return res.status(400).json({
+        response: 3,
+        content:{
+          message: "Error al buscar la orden con ese id en la db",
+          err
+        } 
+      });
+    }
+    if(response){
+      res.status(200).json({
+        response: 2,
+        content:{
+          message:"se califico correctamente la orden",
+          user : response
+        }
+      });
+    }else{
+      res.status(200).json({
+        response: 1,
+        content:"no se encontro una orden con ese id"
+      });
+    }
+  });
 });
 app.post("/saveNewCard",function(req,res){
   let body = req.body;
@@ -414,40 +634,43 @@ app.post("/saveNewCard",function(req,res){
       //handling the response like a json object to manipulate it
       //let user = response.toJSON();
       //the card object to save
-      let card = {
-        "id":0,
-        "favorite":false,
-        "type":typeCard,
-        "nameCard":nameCard,
-        "cardNumber":cardNumber,
-        "lastName":lastNameCard,
-        "monthExpiration" : month,
-        "yearExpiration":year,
-        "last4umbers":"1234",
-        "cvc":cvc,
-        "franchise":franchise,
-      }
-      //user.cards is the array of cards that the user has
       let cardsArray = user.cards;
+      //id of the new card
+      let id = 0;
+      let favorite = false;
       //if the user doesnt has any card
       if(cardsArray.length == 0){
-        //the card that im inserting will be 1
-        card["id"] = 1;
+        //the card id that I`m inserting will be 1
+        id = 1;
+        favorite = true;
       }else{
         //if the user has already card then the id of the new card is autoincremental to the last one
-        card["id"] = cardsArray[cardsArray.length-1].id + 1;
+        id = cardsArray[cardsArray.length-1].id + 1;
       }
       //inserting the new card
       
-      console.log(card); 
+      console.log(id); 
       
       User.findOneAndUpdate({phone:phoneUser},{
-                                                $push : { cards:card},
-                                                updated: moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")
-                                              },{
-                                                new: true,
-                                                runValidators: true
-                                              },function(err,response){
+                            $push : { 
+                              cards:{
+                                "id":id,
+                                "favorite":favorite,
+                                "type":typeCard,
+                                "nameCard":nameCard,
+                                "cardNumber":cardNumber,
+                                "lastName":lastNameCard,
+                                "monthExpiration" : month,
+                                "yearExpiration":year,
+                                "last4umbers":"1234",
+                                "cvc":cvc,
+                                "franchise":franchise,
+                              }
+                            }
+                          },{
+                            new: true,
+                            runValidators: true
+                          },function(err,response){
         if (err) {
           return res.status(400).json({
             response: 3,
@@ -468,7 +691,7 @@ app.post("/saveNewCard",function(req,res){
             content:"No se pudo guardar el usuario" 
           });
         }
-        console.log(response);
+        
       });
       
     }else{

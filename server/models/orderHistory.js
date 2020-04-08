@@ -59,7 +59,7 @@ let orderHistory = new Schema({
     type: Number,
     required: [false]
   },
-  stars: {
+  rate: {
     type: Number,
     required: [false]
   },
