@@ -216,6 +216,7 @@ module.exports = {
           let description="";
           let codeQR = ""
           let message = "REJECTED";
+          let codeQR = undefined;
           var responseCode = 2;
           if ( resp.ResponseMessage ){
             status = resp.ResponseMessage.ResponseHeader.Status.StatusCode;
@@ -231,7 +232,7 @@ module.exports = {
           } else {
             message = "NEQUI_ERROR";
             responseCode = 3;
-            description = "Un error ha ocurrido, intenta más tarde";
+            description = resp.message;
           }
           var response = {
             reponse : responseCode,
@@ -239,7 +240,6 @@ module.exports = {
               message : message,
               description : description,
               codeQR : codeQR
-              
             }
           }
           res.status(200).json(response);
@@ -276,7 +276,10 @@ module.exports = {
             description = resp.ResponseMessage.ResponseHeader.Status.StatusDesc;
             if(status=="0"){
               message="ACCEPTED";
-              description="Pago realizado correctamente";
+              description="Por favor, confirma tu pago en Nequi";
+            } else if(status=="1"){
+              message="APPROVED";
+              description="Listo, ¡realizaste tu compra exitosamente!";
             }
           } else{
             message = "NEQUI_ERROR";
