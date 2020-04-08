@@ -1,3 +1,7 @@
+/******************************** INSTRUCTIONS************ */
+/* This files makes all the request to payU and NEQUI servers*/
+/* this functions are used by Pay u AND NEQUI endpoints ******/
+
 const signer = require('./Nequi/utils/signer');
 
 const NEQUI_SUBS_HOST = 'api.sandbox.nequi.com';
@@ -38,6 +42,7 @@ module.exports = {
     nequiNewSubscription : function(phoneNumber, messageID, clientID, res){
       //Create a new nequiNewSubscription request using the builders and adding
       //information that its needed to be signed by aws4
+      
       const builder = require('./Nequi/newSubscriptionBuilder');
       var newSubscription = builder.createNewSubscriptionRequest(phoneNumber,
         messageID, clientID);
@@ -140,6 +145,7 @@ module.exports = {
             content : {
               message : "ERROR",
               description : "Hemos tenido un inconveniente, ¡Intentalo de nuevo!",
+              err
             }
           }
           res.status(200).json(response);
@@ -154,9 +160,8 @@ module.exports = {
 
       var headers = { 'content-type' : 'application/json' };
       var body = automaticPayment.getRequest();
-
-      signer.makeSignedRequest(NEQUI_SUBS_HOST, NEQUI_SUBS_AUTOMATIC_PAYMENT_PATH,
-        'POST', headers, body,
+      console.log(JSON.stringify(body));
+      signer.makeSignedRequest(NEQUI_SUBS_HOST, NEQUI_SUBS_AUTOMATIC_PAYMENT_PATH,'POST', headers, body,
         (statusCode, resp) => {
           let status="-1";
           let description="";
@@ -191,6 +196,7 @@ module.exports = {
             content : {
               message : "ERROR",
               description : "Hemos tenido un inconveniente, ¡Intentalo de nuevo!",
+              err
             }
           }
           res.status(200).json(response);
@@ -202,22 +208,27 @@ module.exports = {
 
       var headers = { 'content-type' : 'application/json' };
       var body = pushPayment.getRequest();
+      console.log(JSON.stringify(body));
 
-      signer.makeSignedRequest(NEQUI_PUSH_HOST, NEQUI_PUSH_SEND_PATH,
-        'POST', headers, body,
+      signer.makeSignedRequest(NEQUI_PUSH_HOST, NEQUI_PUSH_SEND_PATH,'POST', headers, body,
         (statusCode, resp) => {
           let status="-1";
           let description="";
+          let codeQR = ""
           let message = "REJECTED";
           var responseCode = 2;
-          if(resp.ResponseMessage){
+          if ( resp.ResponseMessage ){
             status = resp.ResponseMessage.ResponseHeader.Status.StatusCode;
             description = resp.ResponseMessage.ResponseHeader.Status.StatusDesc;
-            if(status=="0"){
+            if ( status=="0" ) {
               message="ACCEPTED";
               description="Ya enviamos tu pago, confirmalo en Nequi";
+              codeQR = resp.ResponseMessage.ResponseBody.any.unregisteredPaymentRS.transactionId;
+            } else if (status=="1") {
+              message="APPROVED";
+              description="Listo, ¡realizaste tu compra exitosamente!";
             }
-          } else{
+          } else {
             message = "NEQUI_ERROR";
             responseCode = 3;
             description = "Un error ha ocurrido, intenta más tarde";
@@ -226,7 +237,9 @@ module.exports = {
             reponse : responseCode,
             content : {
               message : message,
-              description : description
+              description : description,
+              codeQR : codeQR
+              
             }
           }
           res.status(200).json(response);
@@ -286,6 +299,7 @@ module.exports = {
             content : {
               message : "ERROR",
               description : "Hemos tenido un inconveniente, ¡Intentalo de nuevo!",
+              err
             }
           }
           res.status(200).json(response);
@@ -293,6 +307,7 @@ module.exports = {
     }
 }
 /*
+                            RESPONSES DOCUMENTATION         
   // response = 1 || 2 || 3; (1=EXT_ERR, 2=ACCEPTED||REJECTD||PENDING, 3=INT_ERR)
   { //Pago con PayU
     response : response,
@@ -330,13 +345,3 @@ module.exports = {
   }
 }
 */
-//module.exports.authAndCapture('1', '1', '1', 35000, 'COP', 'VISA', 'Bdañasdasdsxsoa', 'Short description');
-var messageId = new Date().getTime().toString();
-var messageId = messageId.substring(messageId.length-9);
-//module.exports.nequiNewSubscription('3162452663', messageId.substring(messageId.length-9), '3117348662', 'res');
-//module.exports.nequiGetSubscription('3162452663', 'NmZmNDgwNDItZjhlNC02NGI4LWQzY2MtYTk4ZDlhOWViNzA2', 'res');
-
-//module.exports.nequiAutomaticPayment('3162452663', 'NmZmNDgwNDItZjhlNC02NGI4LWQzY2MtYTk4ZDlhOWViNzA2',
-//  '14900', messageId, '3162452663', ['Barba y corte de cabello'] ,'res');
-//module.exports.nequiPushPayment('3162452663', '13900', messageId, '3116021602', ['Corte basico'], 'res');
-//module.exports.nequiCheckPushPayment('350-3116021602-13647-339663635', '278958999', '3116021602','res');

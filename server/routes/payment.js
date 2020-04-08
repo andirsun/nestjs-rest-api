@@ -1,5 +1,9 @@
 const express = require('express');
 const paymentModule = require('../modules/PaymentModule/paymentModule');
+//User mongoose MODEL
+const User = require("../models/user");
+
+
 app = express();
 
 app.get("/payment/payU-test", function(req, res) {
@@ -26,6 +30,9 @@ app.post("/payment/nequi/newSubscription", function(req, res){
   var phoneNumber = body.phoneNumber;
   var name = body.name || process.env.NEQUI_NAME;
   var messageID = new Date().getTime().toString();
+
+  let document = body.document ; 
+  // hacer la query aca de guardar el metodo de pago de nequi en el araay
   if(!body.messageID){
     messageID = messageID.substring(messageID.length-9);
   } else{
@@ -60,18 +67,61 @@ app.post('/payment/nequi/automaticPayment', function(req, res){
     }
   */
   let body = req.body;
-  var phoneNumber = body.phoneNumber;
-  var token = body.token;
+  // subsciption token 
+  let token = body.token;
+  //PHone with the nequi account
+  var phoneNumber = body.phoneNequi;
+  //Phone User
+  let phoneUser = body.phoneUser;
+  //Query to search subsciption token for this number
+  if(!token){
+    User.findOne({phone:phoneUser},function(err,user){
+      if (err) {
+        return res.status(400).json({
+          response: 3,
+          content: {
+            error: err,
+            message: "Error al buscar el cliente"
+          }
+        });
+      }
+      if(user){
+        if(user.nequiAccounts){
+          user.nequiAccounts.forEach((element)=>{
+            if(element.phone == phoneNumber){
+              token = element.token
+            }
+          });
+        }else{
+          return res.status(200).json({
+            response: 1,
+            content: {
+              message: "ese numero de nequi no tiene token"
+            }
+          });  
+        }
+      }else{
+        return res.status(200).json({
+          response: 1,
+          content: {
+            message: "no se encontro a ningun usuario con ese numero"
+          }
+        });
+      }
+    });
+  } 
+  
   var value = body.value;
+  var clientID = body.clientID || phoneNumber;
+  var references = body.references || ['Cargo sin refencia, Timugo'];
   var messageID = new Date().getTime().toString();
   if(!body.messageID){
     messageID = messageID.substring(messageID.length-9);
   } else{
     messageID = body.messageID;
   }
-  var clientID = body.clientID || phoneNumber;
-  var references = body.references || ['Cargo sin refencia, Timugo'];
-
+  ///Its necesary return a promise in nest js 
+  console.log(phoneNumber, token, value,messageID, clientID, references);
   paymentModule.nequiAutomaticPayment(phoneNumber, token, value,messageID, clientID, references, res);
 });
 app.post('/payment/nequi/pushPayment', function(req, res) {
@@ -94,8 +144,9 @@ app.post('/payment/nequi/pushPayment', function(req, res) {
     messageID = body.messageID;
   }
   var clientID = body.clientID || phoneNumber;
-  var references = body.references || ['Cargo sin refencia, Timugo'];
-
+  //example of references <Corte de peloX1,Corte de barabaX3,CejasX0>
+  var references = body.references || ['Cargo sin refencia, Timugo']; 
+  console.log(phoneNumber, value, messageID, clientID, references);
   paymentModule.nequiPushPayment(phoneNumber, value, messageID, clientID, references, res);
 });
 app.post('/payment/nequi/checkPushPayment', function(req, res){
