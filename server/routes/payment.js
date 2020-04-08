@@ -13,7 +13,6 @@ app.post("/payment/payU", function(req, res){
     payResult = paymentModule.authAndCapture(payInfo.payerIp, payInfo.payerId,
         payInfo.buyerId, payInfo.productValue, payInfo.currency, payInfo.paymentMethod,
         payInfo.paymentReference, payInfo.payDescription, res);
-    console.log(req.body);
 });
 
 app.post("/payment/nequi/newSubscription", function(req, res){
@@ -90,14 +89,14 @@ app.post('/payment/nequi/automaticPayment', function(req, res){
 
     paymentModule.nequiPushPayment(phoneNumber, value, messageID, clientID, references, res);
   });
-  app.post('./payment/nequi/checkPushPayment', function(req, res){
+  app.post('/payment/nequi/checkPushPayment', function(req, res){
       /*Body must be like
         {codeQR : 'transactionId', messageID : 'messageID', clientID : 'clientID'}
         messageID and clientID are optional
       */
       let body = req.body;
       var codeQR = body.codeQR;
-      var messageID = new Date();
+      var messageID = new Date().getTime().toString();
       if (!body.messageID){
         messageID = messageID.substring(messageID.length-9);
       } else{
@@ -113,7 +112,6 @@ app.post('/payment/Wompi/transaction', function(req, res){
   let data = body.data;
   let type = body.type;
   let bill = body.bill;
-  console.log(bill);
   wompi.createRequest(type, data);
   wompi.makeTransaction(bill.value, bill.email).then((response)=>{
     wompi.sendTransaction(response).then((resp)=>{

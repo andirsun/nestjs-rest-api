@@ -218,7 +218,7 @@ module.exports = {
             if(status=="0"){
               message = "ACCEPTED";
               description = "Ya enviamos tu pago, confirmalo en Nequi";
-              codeQR = resp.ResponseBody.any.unregisteredPaymentRS.transactionId;
+              codeQR = resp.ResponseMessage.ResponseBody.any.unregisteredPaymentRS.transactionId;
             }
           } else{
             message = "NEQUI_ERROR";
@@ -267,7 +267,10 @@ module.exports = {
             description = resp.ResponseMessage.ResponseHeader.Status.StatusDesc;
             if(status=="0"){
               message="ACCEPTED";
-              description="Pago realizado correctamente";
+              description="Por favor, confirma tu pago en Nequi";
+            } else if(status=="1"){
+              message="APPROVED";
+              description="Listo, ¡realizaste tu compra exitosamente!";
             }
           } else{
             message = "NEQUI_ERROR";
