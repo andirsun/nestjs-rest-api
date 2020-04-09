@@ -20,6 +20,7 @@ let address = new Schema({
 
 let card = new Schema({
     id:Number,
+    wompiCode :String,
     favorite : Boolean,
     type: String,
     nameCard : String,
@@ -31,6 +32,16 @@ let card = new Schema({
     cvc:String,
     franchise:String
   });
+  let nequi = new Schema({
+    id:Number,
+    favorite : Boolean,
+    type : String,
+    phone : String,
+    document:String,
+    date : String,
+    token : String
+  });
+
 
 let usuarioSchema = new Schema({
   id: {
@@ -92,6 +103,7 @@ let usuarioSchema = new Schema({
     default: true
   },
   cards : [card],
+  nequiAccounts : [nequi],
   publicityMethod:{
     type: String,
     default: "none"
