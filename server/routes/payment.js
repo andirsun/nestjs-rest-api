@@ -158,7 +158,6 @@ app.post('/payment/nequi/checkPushPayment', function(req, res){
       clientID : 'clientID'
     }
   */
-   */
   let body = req.body;
   var codeQR = body.codeQR;
   var messageID = new Date();

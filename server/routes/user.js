@@ -35,7 +35,7 @@ app.get("/checkUserOrder",function(req,res){
   console.log(idUser);
   temporalOrder.findOne({idClient:idUser,status:true},function(err,response){
     if (err) {
-      return res.status(500).json({
+      return res.status(400).json({
         response: 3,
         content: {
           error: err,
@@ -703,8 +703,89 @@ app.post("/saveNewCard",function(req,res){
       });
     }
   });
+});
+app.post("/addNequiAccount",function(req,res){
+  let body = req.body;
+  let phoneUser = body.phoneUser;
+  let phoneNequi = body.phoneNequi;
+  let tokenNequi = body.token || "";
+  let type = "";
+  //If the token is defined then the nequi acount is for suscription
+  if(tokenNequi == ""){
+    type = "Unique"
+  }else{
+    type = "Subscription"
+  }
+  User.findOne({phone:phoneUser},function(err,user){
+    if (err) {
+      return res.status(400).json({
+        response: 3,
+        content:{
+          message: "Error al tratar de encontrar al usuario con ese numero",
+          err
+        } 
+      });
+    }
+    if(user){
+      //the card object to save
+      let NequisArray = user.nequiAccounts;
+      //id of the new nequi
+      let id = 0;
+      let favorite = false;
+      //if the user doesnt has any card
+      if(NequisArray.length == 0){
+        //the card id that I`m inserting will be 1
+        id = 1;
+        favorite = true;
+      }else{
+        //if the user has already card then the id of the new card is autoincremental to the last one
+        id = NequisArray[NequisArray.length-1].id + 1;
+      }
+      //inserting the new card
+      User.findOneAndUpdate({phone:phoneUser},{
+                            $push : { 
+                              nequiAccounts:{
+                                "id":id,
+                                "favorite":favorite,
+                                "type":type,
+                                "phone":phoneNequi,
+                                "date" :moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm") ,
+                                "token":tokenNequi
+                              }
+                            }
+                          },{
+                            new: true,
+                            runValidators: true
+                          },function(err,response){
+        if (err) {
+          return res.status(400).json({
+            response: 3,
+            content:{
+              message: "Error al guardar el nequi al usuario en la base de datos",
+              err
+            } 
+          });
+        }
+        if(response){
+          return res.status(200).json({
+            response:2 ,
+            content: user
+          });
+        }else{
+          return res.status(200).json({
+            response:1 ,
+            content:"No se pudo guardar el nequi al usuario" 
+          });
+        }
+      });
+    }else{
+      return res.status(200).json({
+        response:1 ,
+        content:"No se encontro a ningun usuario con ese celular" 
+      });
+    }
+  });
   
-
 
 });
 app.post("/verificationCode",function(req,res){
