@@ -116,7 +116,7 @@ app.post('/payment/Wompi/transaction', function(req, res){
   wompi.makeTransaction(bill.value, bill.email).then((response)=>{
     wompi.sendTransaction(response).then((resp)=>{
       respData = resp.data.data;
-      let message = 'REJECTED';
+      let message = 'DECLINED';
       let description = 'Transacción no creada con exito';
       if(respData.status=='PENDING'){
         message = 'CREATED';
@@ -126,13 +126,13 @@ app.post('/payment/Wompi/transaction', function(req, res){
         response : 2,
         content : {
           message : message,
-          description : description
-        },
-        details : {
-          id : respData.id,
-          reference : respData.reference,
-          payment_method : respData.payment_method,
-          value_in_cents : respData.amount_in_cents
+          description : description,
+          details : {
+            id : respData.id,
+            reference : respData.reference,
+            payment_method : respData.payment_method,
+            value_in_cents : respData.amount_in_cents
+          }
         }
       }
       res.send(responseBody);
@@ -150,12 +150,20 @@ app.post('/payment/Wompi/transactionStatus', function(req, res){
     let respData = response.data.data;
     let description = 'Transacción pendiente.';
     let link = undefined;
+    console.log(respData);
     if(respData.status=='APPROVED'){
       description = 'Compra exitosa';
-    }else if(respData.status=='REJECTED'){
-      description = 'Tu transacción ha sido rechazada, intenta de nuevo.';
+    }else if(respData.status=='DECLINED' || respData.status=='ERROR'){
+      if(respData.status=='DECLINED'){
+        description = 'Tu transacción ha sido rechazada, intenta de nuevo.';
+      } else{
+        description = 'Error al procesar la transacción';
+      }
     } else if(respData.payment_method_type=='PSE'){
       description = description+' Por favor, dirigete al link de pago en PSE y termina la operación';
+      link = respData.payment_method.extra.async_payment_url;
+    } else if(respData.payment_method_type=='BANCOLOMBIA_TRANSFER'){
+      description = description + 'Por favor, dirigete al link de pago de Bancolombia y realiza la transferencia';
       link = respData.payment_method.extra.async_payment_url;
     }
     let responseBody = {
