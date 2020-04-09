@@ -70,7 +70,6 @@ function sendPushMessageClient(token,title,message){
         title: title,
         body: message
     },
-
     data: {  //you can send only notification or only data(or include both)
         my_key: 'my value',
         my_another_key: 'my another value'
@@ -337,8 +336,8 @@ app.post("/createOrder", function (req, res) {
                                   + ", Valor: " + response.price ;
 
                   let finalMessage = "Your appointment is coming up on "+"NUEVA ORDEN"+" at "+ orderMessage;
-                  //sendWhatsAppMessage(3162452663,finalMessage);
-                  //sendWhatsAppMessage(3106838163,finalMessage);
+                  sendWhatsAppMessage(3162452663,finalMessage);
+                  sendWhatsAppMessage(3106838163,finalMessage);
                   console.log("Nueva Orden: " + finalMessage);
                   //Sending New Order to all Barbers
                   barber.find(function(err,resp){
@@ -356,7 +355,7 @@ app.post("/createOrder", function (req, res) {
 
                     //Here goes the emit function ***
                     global.socketServer.emit('newOrder', {});
-
+                    
                     return res.status(200).json({
                       response: 2,
                       content: {
@@ -387,6 +386,13 @@ app.post("/createOrder", function (req, res) {
     });
   });
 });
+app.post("/createTemporalOrder",function(req,res){
+//diferenciar si el metodo de pago es efectivo entonces el pendiente lo pongo en false y creo la orden sin que notifique a los barberos pero a nosotros si
+
+// CASH NEQUI CARD PSE
+});
+
+
 app.post("/finishOrder",function(req,res){
   let body = req.body;
   let idOrder = parseInt(body.idOrder);
@@ -402,7 +408,10 @@ app.post("/finishOrder",function(req,res){
     if(temporalOrderDB){
       let tempOrder = temporalOrderDB.toJSON();
       if(status =="Finished"){
-        barber.findOneAndUpdate({id:tempOrder.idBarber},{$inc:{points:50}},function(err,barberDb){//updating points to a barber
+        let orderPrice = tempOrder.price;
+        // 30% of commission
+        let orderCommission = orderPrice * 0.30;
+        barber.findOneAndUpdate({id:tempOrder.idBarber},{$inc:{points:50},$inc:{balance:-orderCommission}},function(err,barberDb){//updating points to a barber
           if (err) {
             return res.status(500).json({
               response: 3,
@@ -462,6 +471,7 @@ app.post("/finishOrder",function(req,res){
             city: tempOrder.city,
             bonusCode: "none",
             card: "none",
+            commission : tempOrder.price * 0.30,
             updated: moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")
           });
           orderSave.save((err,orderDb)=>{
@@ -615,6 +625,7 @@ app.put("/editOrder",function(req,res){
     }
   });
 });
+
 app.put("/assignBarberToOrder",function(req,res){
   let body = req.body;
   let idOrder = parseInt(body.idOrder);

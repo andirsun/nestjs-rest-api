@@ -224,18 +224,18 @@ app.get("/getAvailableOrdersByCity",function(req,res){
 });
 app.get("/checkIfBarberConnect",function(req,res){
   let phoneBarber = req.query.phoneBarber;
-  Barber.find({phone:phoneBarber},function(err,response){ 
+  Barber.findOne({phone:phoneBarber},function(err,response){ 
     if (err) {
       return res.status(400).json({
         response: 3,
         content:{
-          message: "Error al agregar la info del dispositivo",
+          message: "Error al buscar a un barbero con ese id",
           err
         } 
       });
     }
     if(response){
-      let barber = response[0].toJSON();
+      let barber = response.toJSON();
       if("connected" in barber){
         if(barber.connected){
           return res.status(200).json({
@@ -268,7 +268,59 @@ app.get("/checkIfBarberConnect",function(req,res){
         }
       });
     }
-
+  });
+});
+app.get("/getBarberHistoryOrders",function(req,res){
+  let idBarber = req.query.idBarber;
+  Order.find({idBarber:idBarber},function(err,orders){
+    if (err) {
+      return res.status(400).json({
+        response: 3,
+        content:{
+          message: "Error al buscar las ordenes en la bd",
+          err
+        } 
+      });
+    }
+    if ( orders.length > 0 ) {
+      return res.status(200).json({
+        response : 2,
+        content : orders
+      });
+    } else {
+      return res.status(200).json({
+        response : 1,
+        content : "no se encontraron ordenes para ese barbero"
+      });
+    }
+  });
+});
+app.get("/getBarberBalance",function(req,res){
+  let phoneBarber = req.query.phoneBarber;
+  Barber.findOne({phone:phoneBarber},function(err,barber){
+    if (err) {
+      return res.status(400).json({
+        response: 3,
+        content:{
+          message: "Error al buscar al barbero en la bd",
+          err
+        } 
+      });
+    }
+    if(barber){
+      return res.status(200).json({
+        response : 2,
+        content :{
+          balance : barber.balance,
+          points : barber.points
+        } 
+      });
+    }else{
+      return res.status(200).json({
+        response : 1,
+        content : "no se encontro el saldo de este barbero"
+      });
+    }
   });
 });
 app.put("/saveBarberDeviceInfo",function(req,res){
@@ -319,10 +371,10 @@ app.put("/saveBarberDeviceInfo",function(req,res){
     }
   });
 });
-app.put("/connectBarber",function(req,res){
+app.put("/connectOrDisconnectBarber",function(req,res){
   let body = req.body;
   let phoneBarber = body.phoneBarber;
-  Barber.findByIdAndUpdate({phone:phoneBarber},{connected:true},(err,response)=>{
+  Barber.findOne({phone:phoneBarber},(err,barber)=>{
     if(err){
       return res.status(400).json({
         response: 3,
@@ -332,48 +384,43 @@ app.put("/connectBarber",function(req,res){
         } 
       });
     }
-    if(response){
-      res.status(200).json({
-        response: 2,
-        content:{
-          message:"Se conecto al barbero "+ response.name,
-          user : response
+    if(barber){
+      //if barber is connected
+      if(barber.connected == true){
+        barber.connected = false;
+      }else{
+        barber.connected = true
+      }
+      //save the barber with the new state of conection
+      barber.save((err,response)=>{
+        if(err){
+          return res.status(400).json({
+            response: 3,
+            content:{
+              message: "Error al actualizar la conexion del barbero en la base de datos",
+              err
+            } 
+          });
         }
+        if(response){
+          return res.status(200).json({
+            response: 2,
+            content:{
+              message:"Se conecto o desconecto al barbero "+ response.name,
+              user : response
+            }
+          });
+        }else{
+          return res.status(200).json({
+            response: 1,
+            content:"no se pudo actualizar el estado de conexion del barbero"
+          });
+        }   
       });
     }else{
-      res.status(200).json({
+      return res.status(200).json({
         response: 1,
         content:"no se pudo conectar el barbero"
-      });
-    }
-  })
-  
-});
-app.put("/disconnectBarber",function(req,res){
-  let body = req.body;
-  let phoneBarber = body.phoneBarber;
-  Barber.findByIdAndUpdate({phone:phoneBarber},{connected:false},(err,response)=>{
-    if(err){
-      return res.status(400).json({
-        response: 3,
-        content:{
-          message: "Error al buscar al barbero con ese celular.",
-          err
-        } 
-      });
-    }
-    if(response){
-      res.status(200).json({
-        response: 2,
-        content:{
-          message:"Se desconecto al barbero "+ response.name,
-          user : response
-        }
-      });
-    }else{
-      res.status(200).json({
-        response: 1,
-        content:"no se pudo desconectar el barbero"
       });
     }
   })
