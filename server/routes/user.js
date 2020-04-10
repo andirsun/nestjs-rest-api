@@ -219,11 +219,11 @@ app.get("/sendCode",function(req,res){
     }
   });
 });
-app.get("/getPaymentCards",function(req,res){
+app.get("/getPaymentMethods",function(req,res){
   //phone user 
   let phoneUser = req.query.phoneUser;
   //search user by phoneUser to get paymentCards
-  User.findOne({phone:phoneUser},function(err,response){
+  User.findOne({phone:phoneUser},function(err,client){
     if (err) {
       return res.status(400).json({
         response: 3,
@@ -233,27 +233,35 @@ app.get("/getPaymentCards",function(req,res){
         } 
       });
     }
-    if(response){
-      let client = response.toJSON();
+    if(client){
       //array to save cards
       let cardsArray = [];
-      //loop into cards
-      client.cards.forEach(element => {
-        //get last4 numbers of cards
-        let last4Numbers = element.cardNumber.slice(12,16);
-        let card= {
-          last4Numbers :last4Numbers,
-          franchise : element.franchise,
-          fullName : element.nameCard+" "+element.lastName,
-          favorite : element.favorite
-        }
-        //add card info to response array
-        cardsArray.push(card)
-      });
-      //return response array with cards info
+      if(client.cards){
+        //loop into cards
+        client.cards.forEach(element => {
+          console.log(element);
+          //get last4 numbers of cards
+          if(element.cardNumber){
+            let last4Numbers = element.cardNumber.slice(12,16);
+            let card= {
+              last4Numbers :last4Numbers,
+              franchise : element.franchise,
+              fullName : element.nameCard+" "+element.lastName,
+              favorite : element.favorite
+            }
+            //add card info to response array
+            cardsArray.push(card)
+          }
+        });
+        //return response array with cards info
+      }
       return res.status(200).json({
         response: 2,
-        content:cardsArray
+        content:{
+          cards : cardsArray,
+          nequiAccounts :client.nequiAccounts 
+        }
+          
       });
     }else{
       //user not found
