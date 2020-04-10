@@ -235,7 +235,7 @@ module.exports = {
             description = resp.message;
           }
           var response = {
-            reponse : responseCode,
+            response : responseCode,
             content : {
               message : message,
               description : description,
