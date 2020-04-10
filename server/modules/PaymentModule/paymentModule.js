@@ -287,7 +287,7 @@ module.exports = {
             description = "Un error ha ocurrido, intenta más tarde";
           }
           var response = {
-            reponse : responseCode,
+            response : responseCode,
             content : {
               message : message,
               description : description
