@@ -42,7 +42,7 @@ module.exports = {
     nequiNewSubscription : function(phoneNumber, messageID, clientID, res){
       //Create a new nequiNewSubscription request using the builders and adding
       //information that its needed to be signed by aws4
-      
+
       const builder = require('./Nequi/newSubscriptionBuilder');
       var newSubscription = builder.createNewSubscriptionRequest(phoneNumber,
         messageID, clientID);
@@ -214,7 +214,6 @@ module.exports = {
         (statusCode, resp) => {
           let status="-1";
           let description="";
-          //let codeQR = ""
           let message = "REJECTED";
           let codeQR = undefined;
           var responseCode = 2;
@@ -310,7 +309,7 @@ module.exports = {
     }
 }
 /*
-                            RESPONSES DOCUMENTATION         
+                            RESPONSES DOCUMENTATION
   // response = 1 || 2 || 3; (1=EXT_ERR, 2=ACCEPTED||REJECTD||PENDING, 3=INT_ERR)
   { //Pago con PayU
     response : response,

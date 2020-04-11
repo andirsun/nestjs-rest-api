@@ -32,7 +32,7 @@ app.post("/payment/nequi/newSubscription", function(req, res){
   var name = body.name || process.env.NEQUI_NAME;
   var messageID = new Date().getTime().toString();
 
-  let document = body.document ; 
+  let document = body.document ;
   // hacer la query aca de guardar el metodo de pago de nequi en el araay
   if(!body.messageID){
     messageID = messageID.substring(messageID.length-9);
@@ -68,7 +68,7 @@ app.post('/payment/nequi/automaticPayment', function(req, res){
     }
   */
   let body = req.body;
-  // subsciption token 
+  // subsciption token
   let token = body.token;
   //PHone with the nequi account
   var phoneNumber = body.phoneNequi;
@@ -99,7 +99,7 @@ app.post('/payment/nequi/automaticPayment', function(req, res){
             content: {
               message: "ese numero de nequi no tiene token"
             }
-          });  
+          });
         }
       }else{
         return res.status(200).json({
@@ -110,8 +110,8 @@ app.post('/payment/nequi/automaticPayment', function(req, res){
         });
       }
     });
-  } 
-  
+  }
+
   var value = body.value;
   var clientID = body.clientID || phoneNumber;
   var references = body.references || ['Cargo sin refencia, Timugo'];
@@ -121,7 +121,7 @@ app.post('/payment/nequi/automaticPayment', function(req, res){
   } else{
     messageID = body.messageID;
   }
-  ///Its necesary return a promise in nest js 
+  ///Its necesary return a promise in nest js
   console.log(phoneNumber, token, value,messageID, clientID, references);
   paymentModule.nequiAutomaticPayment(phoneNumber, token, value,messageID, clientID, references, res);
 });
@@ -146,7 +146,7 @@ app.post('/payment/nequi/pushPayment', function(req, res) {
   }
   var clientID = body.clientID || phoneNumber;
   //example of references <Corte de peloX1,Corte de barabaX3,CejasX0>
-  var references = body.references || ['Cargo sin refencia, Timugo']; 
+  var references = body.references || ['Cargo sin refencia, Timugo'];
   console.log(phoneNumber, value, messageID, clientID, references);
   paymentModule.nequiPushPayment(phoneNumber, value, messageID, clientID, references, res);
 });
@@ -180,7 +180,7 @@ app.post('/payment/Wompi/transaction', function(req, res){
   wompi.makeTransaction(bill.value, bill.email).then((response)=>{
     wompi.sendTransaction(response).then((resp)=>{
       respData = resp.data.data;
-      let message = 'REJECTED';
+      let message = 'DECLINED';
       let description = 'Transacción no creada con exito';
       if(respData.status=='PENDING'){
         message = 'CREATED';
@@ -190,13 +190,13 @@ app.post('/payment/Wompi/transaction', function(req, res){
         response : 2,
         content : {
           message : message,
-          description : description
-        },
-        details : {
-          id : respData.id,
-          reference : respData.reference,
-          payment_method : respData.payment_method,
-          value_in_cents : respData.amount_in_cents
+          description : description,
+          details : {
+            id : respData.id,
+            reference : respData.reference,
+            payment_method : respData.payment_method,
+            value_in_cents : respData.amount_in_cents
+          }
         }
       }
       res.send(responseBody);
@@ -214,12 +214,20 @@ app.post('/payment/Wompi/transactionStatus', function(req, res){
     let respData = response.data.data;
     let description = 'Transacción pendiente.';
     let link = undefined;
+    console.log(respData);
     if(respData.status=='APPROVED'){
       description = 'Compra exitosa';
-    }else if(respData.status=='REJECTED'){
-      description = 'Tu transacción ha sido rechazada, intenta de nuevo.';
+    }else if(respData.status=='DECLINED' || respData.status=='ERROR'){
+      if(respData.status=='DECLINED'){
+        description = 'Tu transacción ha sido rechazada, intenta de nuevo.';
+      } else{
+        description = 'Error al procesar la transacción';
+      }
     } else if(respData.payment_method_type=='PSE'){
       description = description+' Por favor, dirigete al link de pago en PSE y termina la operación';
+      link = respData.payment_method.extra.async_payment_url;
+    } else if(respData.payment_method_type=='BANCOLOMBIA_TRANSFER'){
+      description = description + 'Por favor, dirigete al link de pago de Bancolombia y realiza la transferencia';
       link = respData.payment_method.extra.async_payment_url;
     }
     let responseBody = {

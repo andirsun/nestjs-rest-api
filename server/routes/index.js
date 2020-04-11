@@ -13,7 +13,7 @@ app.use(require('./service'));
 app.use(require('./admin'));
 app.use(require('./city'));
 app.use(require('./payment'));
-
+app.use(require('./spaces'));
 
 
 module.exports  = app; //export to use this file in server.js file

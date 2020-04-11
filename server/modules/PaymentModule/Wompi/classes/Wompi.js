@@ -7,6 +7,7 @@ class Wompi {
     this.CREDIT_CARD = 'CREDIT_CARD_PAYMENT';
     this.NEQUI = 'NEQUI_PAYMENT';
     this.PSE = 'PSE_PAYMENT';
+    this.BANCOLOMBIA = 'BANCOLOMBIA_PAYMENT';
     this.NOT_FOUND = 'NOT_FOUND';
     this.request;
     this.creditCardToken = undefined;
@@ -62,6 +63,13 @@ class Wompi {
       this.institutionCode = data.institutionCode;
       this.paymentDescription = data.paymentDescription;
       this.userType = data.userType;
+    } if(type==this.BANCOLOMBIA){
+      console.log('Bancolombia Request');
+      this.userType = data.userType;
+      this.paymentDescription = data.paymentDescription;
+      if(this.isDevEnv){
+        this.sandBoxStatus = data.sandBoxStatus;
+      }
     }
     /*
       Generating an authorization token needed for transactions
@@ -96,7 +104,8 @@ class Wompi {
       let intervals = [];
       let cont=0;
       let interval = setInterval(() =>{
-        if((this.type==this.PSE || this.getCreditCardToken('', '', '')!='NOT_FOUND')
+        let PSE_OR_BANCOLOMBIA = this.type==this.PSE || this.type==this.BANCOLOMBIA;
+        if((PSE_OR_BANCOLOMBIA ||this.getCreditCardToken('', '', '')!='NOT_FOUND')
             && this.getAcceptanceToken()!='NOT_FOUND'){
           cont+=1;
           let paymentMethod = {};
@@ -107,7 +116,6 @@ class Wompi {
               installments : 1
             };
           } else if(this.type==this.PSE){
-            console.log('Payment with PSE');
             paymentMethod = {
               type: "PSE",
               user_type: this.userType, // Tipo de persona, natural (0) o jurídica (1)
@@ -115,6 +123,16 @@ class Wompi {
               user_legal_id: this.idNumber, // Número de documento
               financial_institution_code: this.institutionCode, //"1", // Código (`code`) de la institución financiera
               payment_description: this.paymentDescription
+            }
+          }
+          console.log('HERE I am');
+          if(this.type==this.BANCOLOMBIA) {
+            console.log("It's bancolombia body");
+            paymentMethod = {
+              type : "BANCOLOMBIA_TRANSFER",
+              user_type : this.userType,
+              payment_description : this.paymentDescription,
+              sandbox_status : this.sandBoxStatus
             }
           }
 
