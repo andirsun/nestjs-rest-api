@@ -2,6 +2,7 @@ class FCMRequest {
   constructor(){
     this._FCMRequest = getBaseFCMRequest();
     this._customForAndroid = false;
+    this._customForIOS = false;
   }
   setDestination(destination){
     this._FCMRequest.message.token = destination;
@@ -16,11 +17,40 @@ class FCMRequest {
     this._FCMRequest.message.notification.image=imageURL;
   }
   setAndroidIcon(drawIcon){
+    this.setAndroidCustom();
+    this._FCMRequest.message.android.notification['icon'] = drawIcon;
+  }
+  setAndroidLightColor(color){
+    // Color must be a color in format #rrggbb (HTML Color)
+    this.setAndroidCustom();
+    this._FCMRequest.message.android.notification['color'] = color;
+  }
+  setAndroidSound(sound){
+    //The sound to play when the device receives the notification.
+    //Supports "default" or the filename of a sound resource bundled in the app.
+    // Sound files must reside in /res/raw/
+    this.setAndroidCustom();
+    this._FCMRequest.message.android.notification['sound'] = sound;
+  }
+  setIOSSound(sound){
+    this.setIOSCustom();
+    this._FCMRequest.message.apns.payload.aps['soundName'] = sound;
+  }
+  setAndroidClickAction(clickAction){
+    //If present an activity with the right action filter starts action
+    this.setAndroidCustom();
+    this._FCMRequest.message.android.notification['click_action'] = clickAction;
+  }
+  setAndroidCustom(){
     if(!this._customForAndroid){
-      this._FCMRequest.message.android.notification = {icon : drawIcon};
+      this._FCMRequest.message.android.notification = {};
       this._customForAndroid = true;
-    } else{
-      this._FCMRequest.message.android.notification.icon = drawIcon;
+    }
+  }
+  setIOSCustom(){
+    if(!this._customForIOS){
+      this._FCMRequest.message.apns['payload']={aps: {}};
+      this._customForIOS = true;
     }
   }
   addKeyValueData(key, value){
@@ -63,3 +93,11 @@ function getBaseFCMRequest(){
 }
 
 module.exports = FCMRequest;
+
+var fcm = new FCMRequest();
+fcm.setAndroidIcon('iconsito');
+fcm.setAndroidLightColor('#FFFFFF');
+fcm.setAndroidSound('default');
+fcm.setAndroidClickAction('Some click action');
+//fcm.setIOSSound('default');
+console.log(fcm.getRequest().message.apns);

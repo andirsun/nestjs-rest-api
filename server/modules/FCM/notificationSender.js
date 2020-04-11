@@ -1,5 +1,8 @@
+require('dotenv').config({path:'.env'});
 const fcmURL = process.env.TIMUGO_CLIENTS_FCM_URL;
 const axios = require('axios');
+
+let _request = undefined;
 
 module.exports = {
   request : undefined,
@@ -17,8 +20,24 @@ module.exports = {
     for (var entry of mapedData.entries()){
       req.addKeyValueData(entry[0], entry[1]);
     }
-    this.request = req;
+    _request = req;
     return req;
+  },
+  setAndroidCustomization(color, sound, clickAction){
+    if(color){
+      _request.setAndroidLightColor(color);
+    }
+    if(sound){
+      _request.setAndroidSound(sound);
+    }
+    if(clickAction){
+      _request.setAndroidClickAction(clickAction);
+    }
+  },
+  setIOSCustomization(sound){
+    if(sound){
+      _request.setIOSSound(sound);
+    }
   },
   sendNotification(request){
     //This function send the http request to the FCM API with the right headers
@@ -51,6 +70,9 @@ module.exports = {
         console.log('error', err);
       });
     }
+  },
+  getRequest(){
+    return _request.getRequest();
   }
 }
 /* Little example of how to use the module
@@ -59,7 +81,12 @@ data.set('Barcelona', 'Messi');
 data.set('I am', 'Driving me insane');
 var mod = module.exports;
 //mod.sendNotification();
-var request = mod.createNotification('La ultima.', 'Para ver si funciona con variables de entorno', undefined, data, undefined, process.env.MY_TOKEN);
+mod.createNotification('La ultima.', 'Para ver si funciona con variables de entorno', undefined, data, undefined, process.env.MY_TOKEN);
 //console.log(JSON.stringify(mod.request));
-mod.sendNotification(request);
+//If u want customization for different platforms use following lines
+//mod.setAndroidCustomization('#FFCCDD', 'default', undefined);
+//mod.setIOSCustomization('default');
+console.log(JSON.stringify(mod.getRequest()));
+
+mod.sendNotification(mod.getRequest());
 //*/
