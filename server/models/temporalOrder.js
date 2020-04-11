@@ -5,8 +5,21 @@ let validMethodTypes = {
   values: ["cash", "creditCard", "debitCard", "BonusCode"],
   message: "{VALUE} no es un metodo de pago valido"
 };
+
+
 let Schema = mongoose.Schema;
 
+let logPayment = new Schema({
+  date : String,
+  id1 : Number,
+  codeQr : String,
+  description : String
+});
+
+let address  = new Schema({
+  address :String,
+  description : String 
+});
 let temporalOrder = new Schema({
   id: {
     type: Number,
@@ -33,10 +46,7 @@ let temporalOrder = new Schema({
     type: String,
     require:[false]
   },
-  address: {
-    type: String,
-    required: [true,"la direccion es necesaria"]
-  },
+  address: [address],
   city:{
     type: String,
     required: [true, "la ciudad es necesaria"]
@@ -64,6 +74,12 @@ let temporalOrder = new Schema({
     price: Number,
     quantity:Number
   }],
+  pending : {
+    type : Boolean,
+    required:[true, "el estaod de pendiente es necesario"],
+    default : true 
+  },
+  logPayment : [logPayment],
   status: {
     type: Boolean,
     default: true,

@@ -160,31 +160,14 @@ app.post('/payment/nequi/checkPushPayment', function(req, res){
   */
   let body = req.body;
   var codeQR = body.codeQR;
-  var messageID = new Date();
+  var messageID = new Date().getTime().toString();
   if (!body.messageID){
     messageID = messageID.substring(messageID.length-9);
   } else{
     messageID = body.messageID;
   }
-  var clientID = body.clientID || phoneNumber;
-  var references = body.references || ['Cargo sin refencia, Timugo'];
-  paymentModule.nequiPushPayment(phoneNumber, value, messageID, clientID, references, res);
-});
-  app.post('/payment/nequi/checkPushPayment', function(req, res){
-      /*Body must be like
-        {codeQR : 'transactionId', messageID : 'messageID', clientID : 'clientID'}
-        messageID and clientID are optional
-      */
-      let body = req.body;
-      var codeQR = body.codeQR;
-      var messageID = new Date().getTime().toString();
-      if (!body.messageID){
-        messageID = messageID.substring(messageID.length-9);
-      } else{
-        messageID = body.messageID;
-      }
-      var clientID = body.clientID || '3116021602';
-      paymentModule.nequiCheckPushPayment(codeQR, messageID, clientID, res);
+  var clientID = body.clientID || '3116021602';
+  paymentModule.nequiCheckPushPayment(codeQR, messageID, clientID, res);
 });
 app.post('/payment/Wompi/transaction', function(req, res){
   const Wompi = require('../modules/PaymentModule/Wompi/classes/Wompi');
