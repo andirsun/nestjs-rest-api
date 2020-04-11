@@ -387,9 +387,167 @@ app.post("/createOrder", function (req, res) {
   });
 });
 app.post("/createTemporalOrder",function(req,res){
-//diferenciar si el metodo de pago es efectivo entonces el pendiente lo pongo en false y creo la orden sin que notifique a los barberos pero a nosotros si
+  //diferenciar si el metodo de pago es efectivo entonces el pendiente lo pongo en false y creo la orden sin que notifique a los barberos pero a nosotros si
+  let body = req.body;
+  let currentHour  = moment().tz('America/Bogota').format("HH");
+  //Only accept orders in the hours : 8 am to 9 pm
+  if(parseInt(currentHour) > 21 /*|| parseInt(currentHour) < 8*/){
+    //out of service
+    return res.status(400).json({
+      response: 1,
+      content:{
+        message: "Ups, Recuerda nuestro horario de servicio es de 8:00 am - 9:00 pm",
+        code:1
+      }
+    });
+  }else {
+    //CREATE THE ORDER NORMALLY          
+    temporalOrder.find(function (err, temporalOrderDB) {//this query is to know the number of documents
+      if (err) {
+        return res.status(500).json({
+          response: 3,
+          content: err
+        });
+      }
+     
+      let id = 0
+      if(temporalOrderDB.length == 0){
+        //if no exists any order
+        id=1
+      }else{
+        id=temporalOrderDB[temporalOrderDB.length-1].id + 1;
+      }
+      //////////////////////////////////////
+      temporalOrder.findOne({idClient:body.idClient,status:true},function(err,orden){
+        //THIS query is to know is the user has a current order in progress
+        if (err) {//Handlinf error in the query
+          return res.status(500).json({
+            response: 3,
+            content: err
+          });
+        }
+        if(orden){//If exists a orden in progress i need to return this response
+          return res.status(200).json({
+            response: 1,
+            content: {
+              message: "Upss, Aun tienes una orden en progreso. Terminala para poder pedir otra orden."
+            }
+          });
+        }else{
+          //If the user dont have a order in progress we need to create and save the temporal order
+          user.findOne({id:body.idClient},function(err,client){
+            //searching the user to have his name
+            if (err) {//Handling error in qeury
+              return res.status(500).json({
+                response: 3,
+                content: err
+              });
+            }
+            if(client){
+              //Get the type of payment
+              let pending = false ;
+              let typePayment = body.typePayment;
+              if(typePayment == "NEQUI" || typePayment =="CARD" || typePayment == "PSE" ){
+                 // CASH NEQUI CARD PSE
+                 pending = true;
+              }
+              //GET THE PRice of the order depends from services
+              let price = 0;
+              let services = body.services;
+              services = JSON.parse(services);
+              services.forEach(element => {
+                price = price + (element.price*element.quantity);
+              });
+              //Create the new Order
+              let order = new temporalOrder({//creating the order to save in database
+                id,
+                pending : pending,
+                idClient : body.idClient,
+                idBarber : body.idBarber || 0,
+                nameClient: client.name,
+                address :{
+                  address:  body.address,
+                  description : body.addressDescription || ""
+                },
+                dateBeginOrder :  moment().tz('America/Bogota').format("YYYY-MM-DD"),
+                hourStart :  moment().tz('America/Bogota').format("HH:mm"),
+                city : body.city,
+                status : body.status,
+                services,
+                price:price,
+                updated: moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")
+              });
+              //in service
+              order.save((err, response) => {
+                if (err) {//handling the query error
+                  return res.status(400).json({
+                    response: 1,
+                    content:{
+                      err,
+                      message:"Error al guardar la orden, contacta con el administrador"
+                    }
+                  });
+                }
+                if (response) {
+                  //console.log("order Details : "+response);
+                  let orderMessage = "Detalle: id:"+response.id
+                                  +",nombre: "+response.nameClient
+                                  +",celular: "+client.phone
+                                  +",dir: "+response.address
+                                  + ", Valor: " + response.price ;
 
-// CASH NEQUI CARD PSE
+                  let finalMessage = "Your appointment is coming up on "+"NUEVA ORDEN"+" at "+ orderMessage;
+                  //sendWhatsAppMessage(3162452663,finalMessage);
+                  //sendWhatsAppMessage(3106838163,finalMessage);
+                  console.log("Nueva Orden: " + finalMessage);
+                  //Sending New Order to all Barbers if the order is pay with cash and is active
+                  if(pending == false){
+                    barber.find(function(err,resp){
+                      for(i=0;i<resp.length;i++){
+                        //The barber needs to have a phoneToken Registered and need to be connected
+                        if("phoneToken" in resp[i] &&  "connected" in resp[i]){
+                          //need to be connected to recieve the notification of the new order
+                          if(resp[i].connected == true){
+                            console.log("envie mensaje a un barbero");
+                            //sendPushMessageBarber(resp[i].phoneToken,"NUEVA ORDEN ",resp[i].name + "! Tenemos una nueva orden para ti!!");
+                          }
+                        }
+                      }
+                      
+  
+                      //Here goes the emit function ***
+                      global.socketServer.emit('newOrder', {});
+                      
+                      return res.status(200).json({
+                        response: 2,
+                        content: {
+                          orderDB:response,
+                          message: "Genial, Se creo la orden Correctamente, un barbero te contactara pronto."
+                        }
+                      });
+                    });
+                  }
+                }else{
+                  //If the order doesnt save return the error
+                  res.status(200).json({
+                    response: 1,
+                    content: {
+                      message: "Upss, No se guardardo la orden, contacta con el administrador."
+                    }
+                  });
+                }
+              });
+            }else{
+              res.status(200).json({
+                response: 1,
+                content: "Ups, no hemos podido encontrar ese cliente para crear la orden"
+              });
+            }
+          });
+        }
+      });
+    });
+  }
 });
 
 
