@@ -1,9 +1,6 @@
 const express = require('express');
 app = express();
 
-app.get('/spaces-test', (req, res) => {
-  res.send('Spaces working right now');
-});
 app.post('/spaces/uploadFile', (req, res)=>{
   const spacesUtils = require('../spaces/spacesManager');
   let body = req.body;
@@ -60,7 +57,6 @@ app.post('/spaces/deleteFile', (req, res)=>{
     }
   })
 });
-
 app.post('/spaces/accessFile', (req, res)=>{
   let body = req.body;
   let fileName = body.fileName;
