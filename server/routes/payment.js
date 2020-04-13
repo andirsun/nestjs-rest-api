@@ -2,22 +2,15 @@ const express = require('express');
 const paymentModule = require('../modules/PaymentModule/paymentModule');
 //User mongoose MODEL
 const User = require("../models/user");
-
-
 app = express();
 
-
-
-app.get("/payment/payU-test", function(req, res) {
-    res.send('Testing nodemon');
-});
-
+/****************** PAY U Payments *********************** */
 app.post("/payment/payU", function(req, res){
-    let payInfo = req.body;
-    payResult = paymentModule.authAndCapture(payInfo.payerIp, payInfo.payerId,
-        payInfo.buyerId, payInfo.productValue, payInfo.currency, payInfo.paymentMethod,
-        payInfo.paymentReference, payInfo.payDescription, res);
+  let payInfo = req.body;
+  payResult = paymentModule.authAndCapture(payInfo.payerIp, payInfo.payerId,payInfo.buyerId, payInfo.productValue, payInfo.currency, payInfo.paymentMethod,
+              payInfo.paymentReference, payInfo.payDescription, res);
 });
+/********************************************************* */
 /***************** NEQUI PAYMENTS ************************ */
 app.post("/payment/nequi/newSubscription", function(req, res){
   // Body must be like
@@ -55,7 +48,6 @@ app.post('/payment/nequi/getSubscription', function(req, res){
   var token = body.token;
   return paymentModule.nequiGetSubscription(phoneNumber, token, res);
 });
-
 app.post('/payment/nequi/automaticPayment', function(req, res){
   /* Body must be like
     {
@@ -169,7 +161,11 @@ app.post('/payment/nequi/checkPushPayment', function(req, res){
   var clientID = body.clientID || '3116021602';
   paymentModule.nequiCheckPushPayment(codeQR, messageID, clientID, res);
 });
+/********************************************************** */
+/*************** WOMPI PAYMENTS *************************** */
 app.post('/payment/Wompi/transaction', function(req, res){
+  //Make payments with PSE | BANCOLOMBIA | CREDIT CARDS
+  // Module Required
   const Wompi = require('../modules/PaymentModule/Wompi/classes/Wompi');
   let wompi = new Wompi();
   let body = req.body;
@@ -283,5 +279,6 @@ app.get('/payment/Wompi/pse/institutions', function(req, res){
     res.send(responseBody);
   });
 });
+/********************************************************** */
 
 module.exports = app;

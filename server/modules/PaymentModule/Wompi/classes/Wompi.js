@@ -1,8 +1,12 @@
+//FOr read the .env enviroment  file 
 require('dotenv').config({path:'.env'});
-const axios = require('axios');
-const crypto = require('crypto');
-
+// Use fo make request to servers
+import axios from 'axios';
+// Cryprography Native Node js module
+import { randomBytes } from 'crypto';
+//Export this cclass in the end of the file
 class Wompi {
+  //initialize the variables
   constructor(){
     this.CREDIT_CARD = 'CREDIT_CARD_PAYMENT';
     this.NEQUI = 'NEQUI_PAYMENT';
@@ -26,7 +30,6 @@ class Wompi {
       this.isDevEnv = false;
     }
   }
-
   createRequest(type, data){
     /*
       This function create the data struct to be sended to WompiAPI
@@ -86,7 +89,6 @@ class Wompi {
       console.log(err);
     });
   }
-
   getCreditCardToken(holder, number, brand){
     //Here goes the Query to find the token of the user, i supose that with that
     //arguments (holder, number(The last four) and the brand of the card it's enough)
@@ -142,7 +144,7 @@ class Wompi {
             currency : 'COP',
             customer_email : clientEmail,
             payment_method : paymentMethod,
-            reference : crypto.randomBytes(32).toString('hex')
+            reference : randomBytes(32).toString('hex')
           };
           resolve(data);
           clearInterval(intervals[0]);
@@ -169,7 +171,7 @@ class Wompi {
     return axios(config);
   }
   getStatus(transactionID){
-    //This returns the status of the transaction
+    //This returns the status of the transaction for PSE | BANCOLOMBIA | CARDs
     var url = (this.isDevEnv) ? process.env.SANDBOX_URL : process.env.PRODUCTION_URL;
     var pk = (this.isDevEnv) ? process.env.SANDBOX_PUB_KEY : process.env.PRODUCTION_PUB_KEY;
     let headers = { 'Authorization' : 'Bearer '+pk }
@@ -192,4 +194,5 @@ class Wompi {
     return axios(config);
   }
 }
-module.exports = Wompi;
+//Export Class to use in pther files
+export default Wompi;
