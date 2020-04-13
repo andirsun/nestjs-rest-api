@@ -1,9 +1,12 @@
 const fcmURL = process.env.TIMUGO_BARBERS_FCM_URL;
 const axios = require('axios');
 
+var _request = {}; 
+
 module.exports = {
   request : undefined,
   createNotification(title, body, image, mapedData, icon, to){
+    //This setUP a new notitication message body
     const FCMRequest = require('./classes/FCMRequest');
     var req = new FCMRequest();
     req.setNotificationTitle(title);
@@ -11,11 +14,29 @@ module.exports = {
     req.setNotificationImage(image);
     req.setDestination(to);
     req.setAndroidIcon(icon);
+    //This loop add the key-value entries on mapedData that will be putted on
+    //util payload of the notification
     for (var entry of mapedData.entries()){
       req.addKeyValueData(entry[0], entry[1]);
     }
-    this.request = req;
+    _request = req;
     return req;
+  },
+  setAndroidCustomization(color, sound, clickAction){
+    if(color){
+      _request.setAndroidLightColor(color);
+    }
+    if(sound){
+      _request.setAndroidSound(sound);
+    }
+    if(clickAction){
+      _request.setAndroidClickAction(clickAction);
+    }
+  },
+  setIOSCustomization(sound){
+    if(sound){
+      _request.setIOSSound(sound);
+    }
   },
   sendNotification(request){
     if(!request){
