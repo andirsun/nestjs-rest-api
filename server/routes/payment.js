@@ -172,6 +172,7 @@ app.post('/payment/Wompi/transaction', function(req, res){
   let data = body.data;
   let type = body.type;
   let bill = body.bill;
+  // BUild the request first, then make the transaction
   wompi.createRequest(type, data);
   wompi.makeTransaction(bill.value, bill.email).then((response)=>{
     wompi.sendTransaction(response).then((resp)=>{
@@ -180,7 +181,7 @@ app.post('/payment/Wompi/transaction', function(req, res){
       let description = 'Transacción no creada con exito';
       if(respData.status=='PENDING'){
         message = 'CREATED';
-        description = 'Transacción creada exitosamente';
+        description = 'Transacción creada exitosamente y esta pendiente para pago';
       }
       let responseBody = {
         response : 2,
