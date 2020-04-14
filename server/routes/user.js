@@ -13,6 +13,7 @@ const wilioId = process.env.ACCOUNT_SID;
 const wilioToken = process.env.AUTH_TOKEN;
 const moment = require('moment-timezone');
 const client = require("twilio")(wilioId, wilioToken);
+const axios = require('axios').default;
 /////////////////////////////////
 
 
@@ -245,7 +246,7 @@ app.get("/getPaymentMethods",function(req,res){
             let last4Numbers = element.cardNumber.slice(12,16);
             let card= {
               last4Numbers :last4Numbers,
-              franchise : element.franchise,
+              brand : element.brand,
               fullName : element.nameCard+" "+element.lastName,
               favorite : element.favorite
             }
@@ -629,7 +630,7 @@ app.post("/saveNewCard",function(req,res){
   let month = body.month;
   let year = body.year;
   let cvc = body.cvc;
-  let franchise = body.franchise; 
+  let brand = body.brand; 
   User.findOne({phone:phoneUser},function(err,user){
     if (err) {
       return res.status(400).json({
@@ -641,69 +642,96 @@ app.post("/saveNewCard",function(req,res){
       });
     }
     if(user){
-      //handling the response like a json object to manipulate it
-      //let user = response.toJSON();
-      //the card object to save
-      let cardsArray = user.cards;
-      //id of the new card
-      let id = 0;
-      let favorite = false;
-      //if the user doesnt has any card
-      if(cardsArray.length == 0){
-        //the card id that I`m inserting will be 1
-        id = 1;
-        favorite = true;
-      }else{
-        //if the user has already card then the id of the new card is autoincremental to the last one
-        id = cardsArray[cardsArray.length-1].id + 1;
+      let isDevEnv = true;
+      if (process.env.ENVIROMENT=='dev'){
+        isDevEnv = true;
+      } else{
+        isDevEnv = false;
       }
-      //inserting the new card
-      
-      console.log(id); 
-      
-      User.findOneAndUpdate({phone:phoneUser},{
-                            $push : { 
-                              cards:{
-                                "id":id,
-                                "favorite":favorite,
-                                "type":typeCard,
-                                "nameCard":nameCard,
-                                "cardNumber":cardNumber,
-                                "lastName":lastNameCard,
-                                "monthExpiration" : month,
-                                "yearExpiration":year,
-                                "last4umbers":"1234",
-                                "cvc":cvc,
-                                "franchise":franchise,
-                              }
-                            }
-                          },{
-                            new: true,
-                            runValidators: true
-                          },function(err,response){
-        if (err) {
-          return res.status(400).json({
-            response: 3,
-            content:{
-              message: "Error al guardar el usuario",
-              err
-            } 
-          });
+      //url
+      var url = (isDevEnv) ? process.env.PRODUCTION_URL : process.env.SANDBOX_URL;
+      // APi Keys
+      var pk = (isDevEnv) ?  process.env.PRODUCTION_PUB_KEY : process.env.SANDBOX_PUB_KEY;
+      var headers = {'Authorization': 'Bearer '+pk};
+       /*
+        then Starts the tokenization process
+        process described here https://docs.wompi.co/docs/en/metodos-de-pago#tokeniza-una-tarjeta
+      */
+      let config = {
+        method : 'POST',
+        url : url+'/tokens/cards',
+        data : {
+          "number": cardNumber, // Número de la tarjeta
+          "cvc": cvc, // Código de seguridad de la tarjeta (3 o 4 dígitos según corresponda)
+          "exp_month": month, // Mes de expiración (string de 2 dígitos)
+          "exp_year": year, // Año expresado en 2 dígitos
+          "card_holder": nameCard + " " + lastNameCard // Nombre del tarjetahabiente
+        },
+        headers : headers
+      };
+      let creditCardToken = "";
+      axios(config).then((response)=>{
+        // WOmpi TOken
+        creditCardToken = response.data.data.id;  
+        //the card object to save
+        let cardsArray = user.cards;
+        //id of the new card
+        let id = 0;
+        let favorite = false;
+        //if the user doesnt has any card
+        if(cardsArray.length == 0){
+          //the card id that I`m inserting will be 1
+          id = 1;
+          favorite = true;
+        }else{
+          //if the user has already card then the id of the new card is autoincremental to the last one
+          id = cardsArray[cardsArray.length-1].id + 1;
         }
-        if(response){
+        //inserting the new card
+        let card ={
+          "id":id,
+          "wompiCode" : creditCardToken, 
+          "favorite":favorite,
+          "type":typeCard,
+          "nameCard":nameCard,
+          "cardNumber":cardNumber,
+          "lastName":lastNameCard,
+          "monthExpiration" : month,
+          "yearExpiration":year,
+          "last4Numbers":cardNumber.slice(12,16),
+          "cvc":cvc,
+          "brand":brand,
+        };
+        //Add the card to the array of cards from user
+        user.cards.push(card);
+        user.save().then((userInserted)=>{
+          console.log(userInserted);
           return res.status(200).json({
             response:2 ,
-            content: user
+            content: {
+              message : "La tarjeta se agrego correctamente",
+            }
           });
-        }else{
+        }).catch(err=>{
           return res.status(200).json({
             response:1 ,
-            content:"No se pudo guardar el usuario" 
-          });
-        }
-        
+            content:{
+              message :"No se pudo guardar a todo el usuario en la base de datos",
+              err 
+            }
+          });  
+        });
+        //Save the token in the database for this card
+      }).catch((err) => {
+        return res.status(200).json({
+          response:1 ,
+          content:{
+            message :"No se pudo generar el tokenCard the Wompi",
+            err 
+          }
+        });
       });
-      
+    
     }else{
       return res.status(200).json({
         response:1 ,

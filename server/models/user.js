@@ -30,7 +30,7 @@ let card = new Schema({
     yearExpiration : String,
     last4Numbers : String,
     cvc:String,
-    franchise:String
+    brand:String
   });
   let nequi = new Schema({
     id:Number,
