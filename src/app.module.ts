@@ -16,20 +16,24 @@ process.env.NODE_ENV = process.env.NODE_ENV || "dev";
 // ============================
 //  Database
 // ============================
-let urlDB: string = "";
+//Mongo Databases Urls
+let urlMongodbTimugoBarbers : string = "";
+let urlMongoDbTimugoPets : string = "";
 //If the enviroment is develop or local then make URL string conection TEST DATABASE
 if (process.env.ENVIROMENT === 'dev' || process.env.ENVIROMENT === 'local') {
   console.log("Develop or LOCAL MODE");
-  urlDB = process.env.MONGO_URL_TEST;
+  urlMongodbTimugoBarbers = process.env.MONGO_URL_TEST;
 } else {
   console.log("production mode");
-  urlDB = process.env.MONGO_URL;
+  urlMongodbTimugoBarbers = process.env.MONGO_URL;
 }
 
 @Module({
   imports: [
+    //IMports All modules like Other routes, payment modules and other stuff
     UserModule,
-    MongooseModule.forRoot(urlDB, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true, useFindAndModify: false })
+    //MOngoose Database conection 
+    MongooseModule.forRoot(urlMongodbTimugoBarbers, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true, useFindAndModify: false })
   ],
   controllers: [AppController],
   providers: [AppService],
