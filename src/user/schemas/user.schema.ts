@@ -6,6 +6,7 @@ import uniqueValidator = require("mongoose-unique-validator");
 /*Aditional Required Schemas*/ 
 import { AddressSchema } from "./address.schema";
 import { CardSchema } from "./card.schema";
+import { NequiSchema } from "./nequi.schema";
 
 
 let rolesValidos = {
@@ -49,6 +50,8 @@ export const UserSchema = new Schema({
     required: false
   },
   addresses : [AddressSchema],
+  cards : [CardSchema],
+  nequiAccounts : [NequiSchema],
   img: {
     type: String,
     required: false
@@ -72,7 +75,6 @@ export const UserSchema = new Schema({
     type: Boolean,
     default: true
   },
-  cards : [CardSchema],
   publicityMethod:{
     type: String,
     default: "none"
