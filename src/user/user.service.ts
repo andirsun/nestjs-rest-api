@@ -1,8 +1,5 @@
 require("dotenv").config();
-import { Twilio } from "twilio";
-const twilioId = process.env.ACCOUNT_SID || "";
-const twilioToken = process.env.AUTH_TOKEN || "";
-const client = new Twilio(twilioId, twilioToken);
+
 //Nest js Impor
 import { Injectable } from '@nestjs/common';
 //Moongose Dependencies
@@ -18,22 +15,6 @@ import { CreateUserDTO } from "./dto/user.dto";
 export class UserService {
 
     constructor(@InjectModel('User') private readonly userModel : Model<User>){}
-    /* Auxiliarie Functions*/
-    sendSMSMessage(numberDestiny : string,message : string){
-        client.messages.create({
-          from:'+14403974927',
-          to: '+57'+numberDestiny,
-          body : message
-        }).then((message: { sid: any; }) => console.log(message.sid));
-    }
-    //The message need to have a format accord to twilio documentation
-    sendWhatsAppMessage(numberDestiny :string,message:string){
-        client.messages.create({
-          from:'whatsapp:+14155238886',
-          to: 'whatsapp:+57'+numberDestiny,
-          body : message
-        }).then(message => console.log(message.sid));
-    }
     /* Queries*/
     async getUsers(): Promise<User[]> {
         const users = await this.userModel.find();

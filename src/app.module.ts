@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { MongooseModule } from "@nestjs/mongoose";
 //Timugo Barber Users Module
 import { UserModule } from './user/user.module';
+import { TwilioModule } from './twilio/twilio.module';
 //Enviroment Variables
 require("dotenv").config();
 // ============================
@@ -32,8 +33,10 @@ if (process.env.ENVIROMENT === 'dev' || process.env.ENVIROMENT === 'local') {
   imports: [
     //IMports All modules like Other routes, payment modules and other stuff
     UserModule,
+    //Twilio SMS notification and Calls MOdule
+    TwilioModule,
     //MOngoose Database conection 
-    MongooseModule.forRoot(urlMongodbTimugoBarbers, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true, useFindAndModify: false })
+    MongooseModule.forRoot(urlMongodbTimugoBarbers, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true, useFindAndModify: false }),
   ],
   controllers: [AppController],
   providers: [AppService],
