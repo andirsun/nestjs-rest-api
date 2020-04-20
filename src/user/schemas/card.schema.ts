@@ -2,6 +2,7 @@ import { Schema } from "mongoose";
 
 export const CardSchema = new Schema({
     id:Number,
+    wompiCode :String,
     favorite : Boolean,
     type: String,
     nameCard : String,
@@ -11,5 +12,5 @@ export const CardSchema = new Schema({
     yearExpiration : String,
     last4Numbers : String,
     cvc:String,
-    franchise:String
+    brand:String
 });
