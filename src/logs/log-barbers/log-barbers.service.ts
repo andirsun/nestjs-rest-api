@@ -4,28 +4,32 @@ import { Model } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
 //Require Interface to handle info
 import { Log } from "./interfaces/logBarbers.interface";
-/** Class to save a log for save in database */
-import { CreateLogBarbersDTO } from "./dto/logBarbers.dto";
+
 
 @Injectable()
 export class LogBarbersService {
 
     constructor(@InjectModel('LogBarbers') private readonly logModel : Model<Log>){}
     
-    log(message : string) {
+    log(message : string, relatedID : string) {
         let log = new this.logModel();
+        //Create the Log structure
         log.category = "log";
-        log.relatedID = "este es 3el id asicieado";
+        log.relatedID = relatedID;
         log.description = message;
-        console.log(log); 
+        // MOngoose save document
         log.save()
         .then(log=>console.log("log guardado"))
         .catch(err =>console.log(`Error al guardar el log ${err}`));
         
     }
-    error(message : string) {
+    error(message : string,relatedID : string) {
         let log = new this.logModel();
-        log.category = "error"; 
+        //Create the Log structure
+        log.category = "error";
+        log.relatedID = relatedID;
+        log.description = message;
+        // MOngoose save document
         log.save()
         .then(log=>console.log("log guardado"))
         .catch(err =>console.log(`Error al guardar el log ${err}`));
