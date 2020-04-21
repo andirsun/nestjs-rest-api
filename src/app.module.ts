@@ -6,7 +6,11 @@ import { AppService } from './app.service';
 import { MongooseModule } from "@nestjs/mongoose";
 //Timugo Barber Users Module
 import { UserModule } from './user/user.module';
+//Twilio Notification MOdule
 import { TwilioModule } from './twilio/twilio.module';
+/** Logs modules */
+import { LogBarbersModule } from './logs/log-barbers/log-barbers.module';
+import { LogPetsModule } from './logs/log-pets/log-pets.module';
 //Enviroment Variables
 require("dotenv").config();
 // ============================
@@ -35,6 +39,9 @@ if (process.env.ENVIROMENT === 'dev' || process.env.ENVIROMENT === 'local') {
     UserModule,
     //Twilio SMS notification and Calls MOdule
     TwilioModule,
+    //Logs modules
+    LogBarbersModule,
+    LogPetsModule,
     //MOngoose Database conection 
     MongooseModule.forRoot(urlMongodbTimugoBarbers, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true, useFindAndModify: false }),
   ],
