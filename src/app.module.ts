@@ -33,7 +33,7 @@ if (process.env.ENVIROMENT === 'dev' || process.env.ENVIROMENT === 'local') {
   urlMongoDbTimugoPets = process.env.MONGO_URL_PETS_TEST;
 } else {
   console.log("production mode");
-  urlMongodbTimugoBarbers = process.env.MONGO_URL;
+  urlMongodbTimugoBarbers = process.env.MONGO_URL_BARBERS_PRODUCTION;
   urlMongoDbTimugoPets = process.env.MONGO_URL_PETS_PRODUCTION;
 }
 
