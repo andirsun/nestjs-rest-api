@@ -6,6 +6,8 @@ import { AppService } from './app.service';
 import { MongooseModule } from "@nestjs/mongoose";
 //Timugo Barber Users Module
 import { UserModule } from './user/user.module';
+/* Timugo Pets Users module */
+import { UserPetsModule } from './user-pets/user-pets.module';
 //Twilio Notification MOdule
 import { TwilioModule } from './twilio/twilio.module';
 /** Logs modules */
@@ -37,6 +39,7 @@ if (process.env.ENVIROMENT === 'dev' || process.env.ENVIROMENT === 'local') {
   imports: [
     //IMports All modules like Other routes, payment modules and other stuff
     UserModule,
+    UserPetsModule,
     //Twilio SMS notification and Calls MOdule
     TwilioModule,
     //Logs modules

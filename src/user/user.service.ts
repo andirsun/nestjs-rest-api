@@ -1,11 +1,11 @@
 require("dotenv").config();
 
-//Nest js Impor
+/*Nest js Imports */
 import { Injectable } from '@nestjs/common';
-//Moongose Dependencies
+/*Moongose Dependencies */ 
 import { Model } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
-//Require Interface to handle info
+/*Require Interface to handle info*/
 import { User } from "./interfaces/user.interfaces";
 //data transfer object
 import { CreateUserDTO } from "./dto/user.dto";
