@@ -10,9 +10,20 @@ const service = require("../models/service");
 const app = express();
 const moment = require('moment-timezone');
 require("dotenv").config();
-const wilioId = process.env.ACCOUNT_SID;
-const wilioToken = process.env.AUTH_TOKEN;
-const client = require("twilio")(wilioId, wilioToken);
+let twilioID = "";
+let twilioToken = "";
+if(process.env.ENVIROMENT == "local" || process.env.ENVIROMENT == "dev"){
+  //Dev or local enviroment
+  twilioID = process.env.TWILIO_TEST_SID || "";
+  twilioToken = process.env.TWILIO_TEST_AUTH_TOKEN || "";
+}else{
+  //Production Mode in other case
+  twilioID = process.env.TWILIO_PRODUCTION_SID || "";
+  twilioToken = process.env.TWILIO_PRODUCTION_AUTH_TOKEN || "";
+}
+//const wilioId = process.env.ACCOUNT_SID;
+//const wilioToken = process.env.AUTH_TOKEN;
+const client = require("twilio")(twilioID, twilioToken);
 //const request = require('request')
 var FCM = require('fcm-node');
 var serverKeyBarbers = process.env.FCM_TOKEN_BARBERS; //put your server key here

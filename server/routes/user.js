@@ -9,10 +9,21 @@ const Order = require("../models/orderHistory");
 const publicityMethod = require("../models/publicityMethods");
 const app = express();
 require("dotenv").config();
-const wilioId = process.env.ACCOUNT_SID;
-const wilioToken = process.env.AUTH_TOKEN;
+//const wilioId = process.env.ACCOUNT_SID;
+//const wilioToken = process.env.AUTH_TOKEN;
+let twilioID = "";
+let twilioToken = "";
+if(process.env.ENVIROMENT == "local" || process.env.ENVIROMENT == "dev"){
+  //Dev or local enviroment
+  twilioID = process.env.TWILIO_TEST_SID || "";
+  twilioToken = process.env.TWILIO_TEST_AUTH_TOKEN || "";
+}else{
+  //Production Mode in other case
+  twilioID = process.env.TWILIO_PRODUCTION_SID || "";
+  twilioToken = process.env.TWILIO_PRODUCTION_AUTH_TOKEN || "";
+}
+const client = require("twilio")(twilioID, twilioToken);
 const moment = require('moment-timezone');
-const client = require("twilio")(wilioId, wilioToken);
 const axios = require('axios').default;
 /////////////////////////////////
 
