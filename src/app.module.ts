@@ -18,7 +18,7 @@ require("dotenv").config();
 // ============================
 //  Enviroment
 // ============================
-process.env.NODE_ENV = process.env.NODE_ENV || "dev";
+//process.env.NODE_ENV = process.env.NODE_ENV || "dev";
 
 // ============================
 //  Database
@@ -29,10 +29,12 @@ let urlMongoDbTimugoPets : string = "";
 //If the enviroment is develop or local then make URL string conection TEST DATABASE
 if (process.env.ENVIROMENT === 'dev' || process.env.ENVIROMENT === 'local') {
   console.log("Develop or LOCAL MODE");
-  urlMongodbTimugoBarbers = process.env.MONGO_URL_TEST;
+  urlMongodbTimugoBarbers = process.env.MONGO_URL_BARBERS_TEST;
+  urlMongoDbTimugoPets = process.env.MONGO_URL_PETS_TEST;
 } else {
   console.log("production mode");
   urlMongodbTimugoBarbers = process.env.MONGO_URL;
+  urlMongoDbTimugoPets = process.env.MONGO_URL_PETS_PRODUCTION;
 }
 
 @Module({
@@ -45,8 +47,10 @@ if (process.env.ENVIROMENT === 'dev' || process.env.ENVIROMENT === 'local') {
     //Logs modules
     LogBarbersModule,
     LogPetsModule,
-    //MOngoose Database conection 
+    //MOngoose Databases conections 
     MongooseModule.forRoot(urlMongodbTimugoBarbers, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true, useFindAndModify: false }),
+    MongooseModule.forRoot(urlMongoDbTimugoPets, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true, useFindAndModify: false }),
+
   ],
   controllers: [AppController],
   providers: [AppService],
