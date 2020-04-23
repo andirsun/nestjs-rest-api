@@ -17,10 +17,10 @@ let urlDB;
 if (process.env.ENVIROMENT === 'dev' || process.env.ENVIROMENT === 'local') {
     console.log("Develop MODE ");
     //urlDB = 'mongodb://localhost:27017/timugoClientApp';
-    urlDB =process.env.MONGO_URL_TEST;
+    urlDB =process.env.MONGO_URL_BARBERS_TEST;
 } else {
     console.log("production mode");
-    urlDB = process.env.MONGO_URL;
+    urlDB = process.env.MONGO_URL_BARBERS_PRODUCTION;
 }
 
 process.env.URLDB = urlDB;

@@ -113,7 +113,7 @@ app.get("/getBarberByPhone",function(req,res){
     }
   });
 });
-app.get("/getTotalOrdersBarber",function(req,res){
+app.get("/getHistoryOrdersBarber",function(req,res){
   let phoneBarber = req.query.phoneBarber;
   Barber.find({phone:phoneBarber},function(err,Barber){
     if (err) {
@@ -134,7 +134,7 @@ app.get("/getTotalOrdersBarber",function(req,res){
         if(response){
           return res.status(200).json({
             response: 2,
-            content: response.length
+            content: response
           });
         }else{
           return res.status(200).json({

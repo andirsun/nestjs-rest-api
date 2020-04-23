@@ -16,10 +16,6 @@ const socketIO = require("socket.io");
 const publicPath = path.resolve(__dirname, "../public");
 // .env variables with all api keys
 require("dotenv").config();
-// Twillio SMS server configure
-const wilioId = process.env.ACCOUNT_SID;
-const wilioToken = process.env.AUTH_TOKEN;
-const client = require("twilio")(wilioId, wilioToken);
 ////////////////////////////////////
 app.use(express.static(publicPath)); //access to data like images or anything else
 // Using module express-fileupload to upload files to server

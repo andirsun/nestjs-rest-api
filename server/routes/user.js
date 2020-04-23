@@ -9,10 +9,22 @@ const Order = require("../models/orderHistory");
 const publicityMethod = require("../models/publicityMethods");
 const app = express();
 require("dotenv").config();
-const wilioId = process.env.ACCOUNT_SID;
-const wilioToken = process.env.AUTH_TOKEN;
+//const wilioId = process.env.ACCOUNT_SID;
+//const wilioToken = process.env.AUTH_TOKEN;
+let twilioID = "";
+let twilioToken = "";
+if(process.env.ENVIROMENT == "local" || process.env.ENVIROMENT == "dev"){
+  //Dev or local enviroment
+  twilioID = process.env.TWILIO_TEST_SID || "";
+  twilioToken = process.env.TWILIO_TEST_AUTH_TOKEN || "";
+}else{
+  //Production Mode in other case
+  twilioID = process.env.TWILIO_PRODUCTION_SID || "";
+  twilioToken = process.env.TWILIO_PRODUCTION_AUTH_TOKEN || "";
+}
+const client = require("twilio")(twilioID, twilioToken);
 const moment = require('moment-timezone');
-const client = require("twilio")(wilioId, wilioToken);
+const axios = require('axios').default;
 /////////////////////////////////
 
 
@@ -35,7 +47,7 @@ app.get("/checkUserOrder",function(req,res){
   console.log(idUser);
   temporalOrder.findOne({idClient:idUser,status:true},function(err,response){
     if (err) {
-      return res.status(500).json({
+      return res.status(400).json({
         response: 3,
         content: {
           error: err,
@@ -219,11 +231,11 @@ app.get("/sendCode",function(req,res){
     }
   });
 });
-app.get("/getPaymentCards",function(req,res){
+app.get("/getPaymentMethods",function(req,res){
   //phone user 
   let phoneUser = req.query.phoneUser;
   //search user by phoneUser to get paymentCards
-  User.findOne({phone:phoneUser},function(err,response){
+  User.findOne({phone:phoneUser},function(err,client){
     if (err) {
       return res.status(400).json({
         response: 3,
@@ -233,27 +245,35 @@ app.get("/getPaymentCards",function(req,res){
         } 
       });
     }
-    if(response){
-      let client = response.toJSON();
+    if(client){
       //array to save cards
       let cardsArray = [];
-      //loop into cards
-      client.cards.forEach(element => {
-        //get last4 numbers of cards
-        let last4Numbers = element.cardNumber.slice(12,16);
-        let card= {
-          last4Numbers :last4Numbers,
-          franchise : element.franchise,
-          fullName : element.nameCard+" "+element.lastName,
-          favorite : element.favorite
-        }
-        //add card info to response array
-        cardsArray.push(card)
-      });
-      //return response array with cards info
+      if(client.cards){
+        //loop into cards
+        client.cards.forEach(element => {
+          console.log(element);
+          //get last4 numbers of cards
+          if(element.cardNumber){
+            let last4Numbers = element.cardNumber.slice(12,16);
+            let card= {
+              last4Numbers :last4Numbers,
+              brand : element.brand,
+              fullName : element.nameCard+" "+element.lastName,
+              favorite : element.favorite
+            }
+            //add card info to response array
+            cardsArray.push(card)
+          }
+        });
+        //return response array with cards info
+      }
       return res.status(200).json({
         response: 2,
-        content:cardsArray
+        content:{
+          cards : cardsArray,
+          nequiAccounts :client.nequiAccounts 
+        }
+          
       });
     }else{
       //user not found
@@ -621,7 +641,7 @@ app.post("/saveNewCard",function(req,res){
   let month = body.month;
   let year = body.year;
   let cvc = body.cvc;
-  let franchise = body.franchise; 
+  let brand = body.brand; 
   User.findOne({phone:phoneUser},function(err,user){
     if (err) {
       return res.status(400).json({
@@ -633,40 +653,151 @@ app.post("/saveNewCard",function(req,res){
       });
     }
     if(user){
-      //handling the response like a json object to manipulate it
-      //let user = response.toJSON();
+      let isDevEnv = true;
+      if (process.env.ENVIROMENT=='dev'){
+        isDevEnv = true;
+      } else{
+        isDevEnv = false;
+      }
+      //url
+      var url = (isDevEnv) ? process.env.PRODUCTION_URL : process.env.SANDBOX_URL;
+      // APi Keys
+      var pk = (isDevEnv) ?  process.env.PRODUCTION_PUB_KEY : process.env.SANDBOX_PUB_KEY;
+      var headers = {'Authorization': 'Bearer '+pk};
+       /*
+        then Starts the tokenization process
+        process described here https://docs.wompi.co/docs/en/metodos-de-pago#tokeniza-una-tarjeta
+      */
+      let config = {
+        method : 'POST',
+        url : url+'/tokens/cards',
+        data : {
+          "number": cardNumber, // Número de la tarjeta
+          "cvc": cvc, // Código de seguridad de la tarjeta (3 o 4 dígitos según corresponda)
+          "exp_month": month, // Mes de expiración (string de 2 dígitos)
+          "exp_year": year, // Año expresado en 2 dígitos
+          "card_holder": nameCard + " " + lastNameCard // Nombre del tarjetahabiente
+        },
+        headers : headers
+      };
+      let creditCardToken = "";
+      axios(config).then((response)=>{
+        // WOmpi TOken
+        creditCardToken = response.data.data.id;  
+        //the card object to save
+        let cardsArray = user.cards;
+        //id of the new card
+        let id = 0;
+        let favorite = false;
+        //if the user doesnt has any card
+        if(cardsArray.length == 0){
+          //the card id that I`m inserting will be 1
+          id = 1;
+          favorite = true;
+        }else{
+          //if the user has already card then the id of the new card is autoincremental to the last one
+          id = cardsArray[cardsArray.length-1].id + 1;
+        }
+        //inserting the new card
+        let card ={
+          "id":id,
+          "wompiCode" : creditCardToken, 
+          "favorite":favorite,
+          "type":typeCard,
+          "nameCard":nameCard,
+          "cardNumber":cardNumber,
+          "lastName":lastNameCard,
+          "monthExpiration" : month,
+          "yearExpiration":year,
+          "last4Numbers":cardNumber.slice(12,16),
+          "cvc":cvc,
+          "brand":brand,
+        };
+        //Add the card to the array of cards from user
+        user.cards.push(card);
+        user.save().then((userInserted)=>{
+          console.log(userInserted);
+          return res.status(200).json({
+            response:2 ,
+            content: {
+              message : "La tarjeta se agrego correctamente",
+            }
+          });
+        }).catch(err=>{
+          return res.status(200).json({
+            response:1 ,
+            content:{
+              message :"No se pudo guardar a todo el usuario en la base de datos",
+              err 
+            }
+          });  
+        });
+        //Save the token in the database for this card
+      }).catch((err) => {
+        return res.status(200).json({
+          response:1 ,
+          content:{
+            message :"No se pudo generar el tokenCard the Wompi",
+            err 
+          }
+        });
+      });
+    
+    }else{
+      return res.status(200).json({
+        response:1 ,
+        content:"No se encontro a ningun usuario con ese celular" 
+      });
+    }
+  });
+});
+app.post("/addNequiAccount",function(req,res){
+  let body = req.body;
+  let phoneUser = body.phoneUser;
+  let phoneNequi = body.phoneNequi;
+  let tokenNequi = body.token || "";
+  let type = "";
+  //If the token is defined then the nequi acount is for suscription
+  if(tokenNequi == ""){
+    type = "Unique"
+  }else{
+    type = "Subscription"
+  }
+  User.findOne({phone:phoneUser},function(err,user){
+    if (err) {
+      return res.status(400).json({
+        response: 3,
+        content:{
+          message: "Error al tratar de encontrar al usuario con ese numero",
+          err
+        } 
+      });
+    }
+    if(user){
       //the card object to save
-      let cardsArray = user.cards;
-      //id of the new card
+      let NequisArray = user.nequiAccounts;
+      //id of the new nequi
       let id = 0;
       let favorite = false;
       //if the user doesnt has any card
-      if(cardsArray.length == 0){
+      if(NequisArray.length == 0){
         //the card id that I`m inserting will be 1
         id = 1;
         favorite = true;
       }else{
         //if the user has already card then the id of the new card is autoincremental to the last one
-        id = cardsArray[cardsArray.length-1].id + 1;
+        id = NequisArray[NequisArray.length-1].id + 1;
       }
       //inserting the new card
-      
-      console.log(id); 
-      
       User.findOneAndUpdate({phone:phoneUser},{
                             $push : { 
-                              cards:{
+                              nequiAccounts:{
                                 "id":id,
                                 "favorite":favorite,
-                                "type":typeCard,
-                                "nameCard":nameCard,
-                                "cardNumber":cardNumber,
-                                "lastName":lastNameCard,
-                                "monthExpiration" : month,
-                                "yearExpiration":year,
-                                "last4umbers":"1234",
-                                "cvc":cvc,
-                                "franchise":franchise,
+                                "type":type,
+                                "phone":phoneNequi,
+                                "date" :moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm") ,
+                                "token":tokenNequi
                               }
                             }
                           },{
@@ -677,7 +808,7 @@ app.post("/saveNewCard",function(req,res){
           return res.status(400).json({
             response: 3,
             content:{
-              message: "Error al guardar el usuario",
+              message: "Error al guardar el nequi al usuario en la base de datos",
               err
             } 
           });
@@ -690,12 +821,10 @@ app.post("/saveNewCard",function(req,res){
         }else{
           return res.status(200).json({
             response:1 ,
-            content:"No se pudo guardar el usuario" 
+            content:"No se pudo guardar el nequi al usuario" 
           });
         }
-        
       });
-      
     }else{
       return res.status(200).json({
         response:1 ,
@@ -704,7 +833,6 @@ app.post("/saveNewCard",function(req,res){
     }
   });
   
-
 
 });
 app.post("/verificationCode",function(req,res){
