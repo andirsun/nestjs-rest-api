@@ -664,7 +664,6 @@ app.post("/saveNewCard",function(req,res){
       // APi Keys
       var pk = (isDevEnv) ?  process.env.SANDBOX_PUB_KEY : process.env.PRODUCTION_PUB_KEY ; 
       var headers = {'Authorization': 'Bearer '+pk};
-      console.log(url,pk,headers);
        /*
         then Starts the tokenization process
         process described here https://docs.wompi.co/docs/en/metodos-de-pago#tokeniza-una-tarjeta
@@ -714,7 +713,7 @@ app.post("/saveNewCard",function(req,res){
           "cvc":cvc,
           "brand":brand,
         };
-        console.log(card);
+        
         //Add the card to the array of cards from user
         user.cards.push(card);
         user.save().then((userInserted)=>{
