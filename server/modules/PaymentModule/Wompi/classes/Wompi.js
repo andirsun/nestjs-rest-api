@@ -10,38 +10,50 @@ const User = require("../../../../models/user");
 class Wompi {
   //initialize the variables
   constructor(){
-    this.CREDIT_CARD = 'CREDIT_CARD_PAYMENT';
-    this.NEQUI = 'NEQUI_PAYMENT';
-    this.PSE = 'PSE_PAYMENT';
-    this.BANCOLOMBIA = 'BANCOLOMBIA_PAYMENT';
-    this.NOT_FOUND = 'NOT_FOUND';
-    this.request;
-    this.creditCardToken = undefined;
-    this.nequiToken = undefined;
-    //Requiered for make request to buy in api wompi
+    //Requiered for make all  request to buy in api wompi details here https://docs.wompi.co/docs/en/tokens-de-aceptacion
     this.acceptanceToken = undefined;
     this.permaLink = undefined;
-    //type of payment
-    this.type = undefined;
-    this.idType = undefined;
-    this.idNumber = undefined;
-    this.institutionCode = undefined;
+    //Global variables for all payment methods
+    this.NOT_FOUND = 'NOT_FOUND';
+    this.request;
+    this.type = undefined; //type of payment
     this.paymentDescription = undefined;
-    this.userType = 0;
+    //For Credit Card Payment
+    this.CREDIT_CARD = 'CREDIT_CARD_PAYMENT';
+    this.creditCardToken = undefined;
+    // FOr nequi pay,emt
+    this.NEQUI = 'NEQUI_PAYMENT';
+    this.phone_number_nequi = "";
+    this.nequiToken = undefined;
+    // FOr pse Payment
+    this.institutionCode = undefined;
+    this.idNumber = undefined;
+    this.PSE = 'PSE_PAYMENT';
+    this.idType = undefined;
+    this.userType = 0; // 0 is natural person , 1 is persona juridica
+    // For Bancolombia payment
+    this.BANCOLOMBIA = 'BANCOLOMBIA_PAYMENT';
+    this.BANCOLOMBIA_SANDBOX_STATUS = "";
+    
+    /* enviroment variables */
     if (process.env.ENVIROMENT=='dev' || process.env.ENVIROMENT == 'local'){
       this.url = process.env.SANDBOX_URL;
       this.wompiKey = process.env.SANDBOX_PUB_KEY;
+      // Status final deseado en el Sandbox. Uno de los siguientes: APPROVED, DECLINED o ERROR
+      this.BANCOLOMBIA_SANDBOX_STATUS = "APPROVED";  
     } else{
       this.url = process.env.PRODUCTION_URL;
       this.wompiKey = process.env.PRODUCTION_PUB_KEY;
     }
+    
+
   }
   async createRequest(type, data){
     /*
       This function create the data struct to be sended to WompiAPI
       Check if are PSE or CARD payment and full it with those petition
     */
-    //Type of payment PSE \\ BANCOLMBIA \\ PSE
+    //Type of payment PSE \\ BANCOLMBIA \\ PSE \\ NEQUI
     this.type = type;
     var headers = {'Authorization': 'Bearer '+this.wompiKey};
     // Build the request if the paymmet is for credit card
@@ -74,6 +86,9 @@ class Wompi {
       console.log('Bancolombia Request');
       this.userType = data.userType;
       this.paymentDescription = data.paymentDescription;
+    } else if(type == this.NEQUI){
+      // Build the request if the type of payment is nequi
+      this.phone_number_nequi = data.phoneNequi;
     }
     /*
       Generating an authorization token needed for transactions
@@ -83,11 +98,16 @@ class Wompi {
       method : 'GET',
       url : this.url+'/merchants/'+this.wompiKey,
     };
+    /** Make the query for prove in the user has de acceptance token if note make the request */
     /*  Make the request with axios */
     axios(config).then((response) =>{
+      //Aceptace token and permLink are described in the wompi documentation here https://docs.wompi.co/docs/en/tokens-de-aceptacion#paso-1-obtener-un-token-de-aceptacion-prefirmado
       this.acceptanceToken = response.data.data.presigned_acceptance.acceptance_token;
       this.permaLink = response.data.data.presigned_acceptance.permalink;
+      //The acceptance TOken need to be save in the database once, when the use make their first payment
+      //THen need to catch the acceptance token from the database
     }).catch((err) => {
+      console.log("Error al obtener el token de aceptacion y el link");
       console.log(err);
     });
   }
@@ -98,8 +118,9 @@ class Wompi {
       let intervals = [];
       let cont=0;
       let interval = setInterval(() =>{
-        let PSE_OR_BANCOLOMBIA = this.type==this.PSE || this.type==this.BANCOLOMBIA;
-        if((PSE_OR_BANCOLOMBIA !='NOT_FOUND') && this.getAcceptanceToken()!='NOT_FOUND'){
+
+        let PSE_OR_BANCOLOMBIA_OR_NEQUI = this.type==this.PSE || this.type==this.BANCOLOMBIA || this.type==this.NEQUI;
+        if((PSE_OR_BANCOLOMBIA_OR_NEQUI !='NOT_FOUND') && this.getAcceptanceToken()!='NOT_FOUND'){
           cont+=1;
           let paymentMethod = {};
           if(this.type == this.CREDIT_CARD){
@@ -117,16 +138,22 @@ class Wompi {
               financial_institution_code: this.institutionCode, //"1", // Código (`code`) de la institución financiera
               payment_description: this.paymentDescription
             }
-          }
-          if(this.type==this.BANCOLOMBIA) {
+          } else if( this.type==this.BANCOLOMBIA ){
             console.log("It's bancolombia body");
             paymentMethod = {
               type : "BANCOLOMBIA_TRANSFER",
               user_type : this.userType,
               payment_description : this.paymentDescription,
-              sandbox_status : this.sandBoxStatus
+              sandbox_status : this.BANCOLOMBIA_SANDBOX_STATUS
+            }
+          } else if (this.type == this.NEQUI){
+            paymentMethod = {
+              type : "NEQUI",
+              phone_number : this.phone_number_nequi
             }
           }
+
+          
 
           let data = {
             acceptance_token : this.getAcceptanceToken(),

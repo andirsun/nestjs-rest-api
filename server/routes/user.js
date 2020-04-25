@@ -654,15 +654,15 @@ app.post("/saveNewCard",function(req,res){
     }
     if(user){
       let isDevEnv = true;
-      if (process.env.ENVIROMENT=='dev'){
+      if (process.env.ENVIROMENT=='dev' || process.env.ENVIROMENT=='local' ){
         isDevEnv = true;
       } else{
         isDevEnv = false;
       }
       //url
-      var url = (isDevEnv) ? process.env.PRODUCTION_URL : process.env.SANDBOX_URL;
+      var url = (isDevEnv) ?  process.env.SANDBOX_URL :process.env.PRODUCTION_URL ; 
       // APi Keys
-      var pk = (isDevEnv) ?  process.env.PRODUCTION_PUB_KEY : process.env.SANDBOX_PUB_KEY;
+      var pk = (isDevEnv) ?  process.env.SANDBOX_PUB_KEY : process.env.PRODUCTION_PUB_KEY ; 
       var headers = {'Authorization': 'Bearer '+pk};
        /*
         then Starts the tokenization process
@@ -713,6 +713,7 @@ app.post("/saveNewCard",function(req,res){
           "cvc":cvc,
           "brand":brand,
         };
+        
         //Add the card to the array of cards from user
         user.cards.push(card);
         user.save().then((userInserted)=>{
@@ -756,12 +757,18 @@ app.post("/addNequiAccount",function(req,res){
   let phoneUser = body.phoneUser;
   let phoneNequi = body.phoneNequi;
   let tokenNequi = body.token || "";
-  let type = "";
+  let type = "" ;
   //If the token is defined then the nequi acount is for suscription
   if(tokenNequi == ""){
     type = "Unique"
   }else{
     type = "Subscription"
+  }
+  if(!phoneNequi){
+    return res.status(200).json({
+      response:1 ,
+      content:"Debes enviar el telefono de nequi" 
+    });
   }
   User.findOne({phone:phoneUser},function(err,user){
     if (err) {

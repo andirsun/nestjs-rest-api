@@ -168,13 +168,17 @@ app.post('/payment/Wompi/transaction', function(req, res){
   // Module Required
   const Wompi = require('../modules/PaymentModule/Wompi/classes/Wompi');
   let wompi = new Wompi();
+  //All body of the request
   let body = req.body;
+  //Neccesary parameters to build the request
   let data = body.data;
   let type = body.type;
   let bill = body.bill;
   // BUild the request first, then make the transaction
   wompi.createRequest(type, data);
+  //Make a trasaction with all parameters
   wompi.makeTransaction(bill.value, bill.email).then((response)=>{
+    //When the transaction its build then need to send to wompi
     wompi.sendTransaction(response).then((resp)=>{
       respData = resp.data.data;
       let message = 'DECLINED';
