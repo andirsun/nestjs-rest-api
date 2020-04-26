@@ -6,7 +6,7 @@ import { Controller,Get,Post,Put,Delete,Res,HttpStatus,Body, Query} from '@nestj
 //Data Onjects Transfer are all the interfaces to transfer betwen this class en requests
 import { CreateUserDTO } from "./dto/user.dto";
 import { UserService } from "./user.service";
-import { LogBarbersService } from "../logs/log-barbers/log-barbers.service";
+import { LogBarbersService } from "../log-barbers/log-barbers.service";
 
 
 @Controller('user')

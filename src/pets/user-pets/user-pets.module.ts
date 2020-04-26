@@ -6,7 +6,7 @@ import { UserPetsSchema } from "./schemas/user-pets.schema";
 import { UserPetsService } from './user-pets.service';
 /* Extra modules importations */
 import { MongooseModule } from "@nestjs/mongoose";
-import { LogPetsModule } from 'src/logs/log-pets/log-pets.module';
+import { LogPetsModule } from 'src/pets/log-pets/log-pets.module';
 
 @Module({
   imports: [

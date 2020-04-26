@@ -6,7 +6,7 @@ import { UserService } from './user.service';
 import { UserSchema } from "./schemas/user.schema";
 /* Extra modules importations */
 import { MongooseModule } from "@nestjs/mongoose";
-import { LogBarbersModule } from 'src/logs/log-barbers/log-barbers.module';
+import { LogBarbersModule } from 'src/barbers/log-barbers/log-barbers.module';
 
 
 @Module({

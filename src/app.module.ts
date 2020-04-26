@@ -5,14 +5,14 @@ import { AppService } from './app.service';
 //Mongoose ORM Database Module COnection
 import { MongooseModule } from "@nestjs/mongoose";
 //Timugo Barber Users Module
-import { UserModule } from './user/user.module';
+import { UserModule } from './barbers/user/user.module';
 /* Timugo Pets Users module */
-import { UserPetsModule } from './user-pets/user-pets.module';
+import { UserPetsModule } from './pets/user-pets/user-pets.module';
 //Twilio Notification MOdule
 import { TwilioModule } from './twilio/twilio.module';
 /** Logs modules */
-import { LogBarbersModule } from './logs/log-barbers/log-barbers.module';
-import { LogPetsModule } from './logs/log-pets/log-pets.module';
+import { LogBarbersModule } from './barbers/log-barbers/log-barbers.module';
+import { LogPetsModule } from './pets/log-pets/log-pets.module';
 //Enviroment Variables
 require("dotenv").config();
 // ============================
