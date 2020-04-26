@@ -57,6 +57,10 @@ let usuarioSchema = new Schema({
     type: String,
     required:false, 
   },
+  registerCity :{
+    type: String,
+    required:[true,"La ciudad de registro es necesaria"]
+  },
   name: {
     type: String,
     required: false

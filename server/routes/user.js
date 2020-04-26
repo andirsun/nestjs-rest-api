@@ -5,6 +5,7 @@ const User = require("../models/user");
 const Feedback = require("../models/feedback");
 const jwt = require("jsonwebtoken");
 const temporalOrder = require("../models/temporalOrder");
+const City= require("../models/city");
 const Order = require("../models/orderHistory");
 const publicityMethod = require("../models/publicityMethods");
 const app = express();
@@ -883,9 +884,12 @@ app.post("/verificationCode",function(req,res){
     }
   });
 });
-app.post("/loginUser",function(req,res){
+app.post("/loginUser",async function(req,res){
+  //Create New User only with phone number and city
   let body = req.body;
   let phone = body.phone;
+  let city = body.city;
+  //If exists already the user
   User.find(function(err,records){
     if (err) {
       return res.status(400).json({
@@ -896,7 +900,7 @@ app.post("/loginUser",function(req,res){
     if(records){
       User.findOne({phone:phone},function(err,response){
         if (err) {
-          return res.status(500).json({
+          return res.status(400).json({
             response: 3,
             content: err
           });
@@ -907,15 +911,15 @@ app.post("/loginUser",function(req,res){
           if(phone == 1234567891){
             //this is the only test for apple store review
             code = "123456";
-            console.log("EL usuario es generico de apple");
           }else{
-            console.log("Usuario nuevo, generando nuevo codigo");
+            /* Generating a new code  */
             code = Math.floor(100000 + Math.random() * 900000).toString(); //a number between 100.000 and 999.999
           }
+          /* Aisgn the new code to send if maybe the sms doest arrive to person */
           response["registrationCode"] = code;
           response.save((err,response)=>{
             if (err) {
-              return res.status(500).json({
+              return res.status(400).json({
                 response: 3,
                 content: err
               });
@@ -923,15 +927,14 @@ app.post("/loginUser",function(req,res){
             if(response){
               let updateUser = response.toJSON();
               let message = 'Your verification code is '+updateUser.registrationCode.toString();
+              /* Send SMS with the new code */
               sendSMSMessage(updateUser.phone,message);
-              
-              
-              res.status(200).json({
+              return res.status(200).json({
                 response: 2,
                 content:"El usuario ya esta registrado y tiene codigo nuevo enviado"
               });
             }else{
-              res.status(400).json({
+              return res.status(200).json({
                 response: 1,
                 content:"No se le pudo actualizar el codigo"
               });
@@ -940,11 +943,12 @@ app.post("/loginUser",function(req,res){
         }else{
           //If the user isnt registered then we need to create his code of registration
           let code = "";
+          //this is the only test for apple store review
           if(phone == 1234567891){
-            //this is the only test for apple store review
             code = "123456";
             console.log("EL usuario es generico de apple");
           }else{
+            //If is the new user 
             console.log("Usuario nuevo, generando nuevo codigo");
             code = Math.floor(100000 + Math.random() * 900000).toString(); //a number between 100.000 and 999.999
           }
@@ -958,38 +962,63 @@ app.post("/loginUser",function(req,res){
             //if exists records then I take the last id of the last record and increment the value in 1
             id=(records[records.length-1].id + 1);
           }
-          console.log("id que voy a insertar"+id);
+          // user to save in thedatabase
           let userSave = new User({
             id,
             phone,
+            registerCity : city,
             registrationCode :code,
             email:phone.toString()+"@timugo.com" //temporal email before the people provide us the right email
           });
-          userSave.save((err,usuarioDB)=>{
-            if(err){
-              return res.status(400).json({
-                response: 1,
-                content:{
-                  err,
-                  message:"No se pudo guardar al usuario en la base de datos"
-                  }  
-                });
-            }
-            if(usuarioDB){
-              let user = usuarioDB.toJSON();
-              let message = 'Your verification code is '+user.registrationCode.toString();
-              sendSMSMessage(user.phone,message);
-              res.status(200).json({
-                response: 2,
-                content: usuarioDB
+          /* Check if the city is one our operation city */
+          City.findOne({name:city},function(err,resp){
+            if(err) return res.status(400).json({reponse : 3,err});
+            if(resp){
+              //if the city is one of our operative cities
+              userSave.save((err,usuarioDB)=>{
+                if(err) return res.status(400).json({response: 3,content:{err,message:"No se pudo guardar al usuario en la base de datos"}});
+                if(usuarioDB){
+                  let user = usuarioDB.toJSON();
+                  let message = 'Your verification code is '+user.registrationCode.toString();
+                  //Send the message with the registration code
+                  sendSMSMessage(user.phone,message);
+                  return res.status(200).json({
+                    response: 2,
+                    content:{
+                      user : usuarioDB,
+                      code  : 1
+                    } 
+                  });
+                }else{
+                
+                  return res.status(400).json({
+                    response: 1,
+                    content:"No se guardar al usuario "
+                  });        
+                }
               });
             }else{
-              console.log("entre al else");
-              res.status(400).json({
-                response: 1,
-                content:"No se pudo calcular el numero total de usuarios"
-              });        
+              //no exist this city in pur operative cities
+              userSave.save((err,usuarioDB)=>{
+                if(err) return res.status(400).json({response: 3,content:{err,message:"No se pudo guardar al usuario en la base de datos"}});
+                if(usuarioDB){
+                  let user = usuarioDB.toJSON();
+                  return res.status(200).json({
+                    response: 2,
+                    content:{
+                      user : usuarioDB,
+                      code  : 2
+                    } 
+                  });
+                }else{
+                  return res.status(200).json({
+                    response: 1,
+                    content:"No se pudo guardar al usuario "
+                  });        
+                }
+              });
             }
+              
           });
         }
       });
