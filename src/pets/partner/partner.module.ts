@@ -8,6 +8,7 @@ import { PartnerSchema } from "./schemas/partner.schema";
 /* Extra modules importations */
 import { MongooseModule } from "@nestjs/mongoose";
 import { LogPetsModule } from '../log-pets/log-pets.module';
+import { TwilioModule } from 'src/twilio/twilio.module';
 @Module({
   imports: [
     MongooseModule.forFeature(
@@ -20,7 +21,8 @@ import { LogPetsModule } from '../log-pets/log-pets.module';
         {name:"Partner",schema : PartnerSchema}
       ],'PetsMongoDb'),
     // Other module is required need to import here
-    LogPetsModule
+    LogPetsModule,
+    TwilioModule
     
   ],
   providers: [PartnerService],

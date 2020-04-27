@@ -2,42 +2,56 @@ import { Controller,Get,Post,Put,Delete,Res,HttpStatus,Body, Query} from '@nestj
 /* Services */
 import { PartnerService } from "./partner.service";
 import { LogPetsService } from "../log-pets/log-pets.service";
+import { TwilioService } from "src/twilio/twilio.service";
 /* DTOs */
 import { CreatePartnerDTO } from "./dto/partner.dto";
 @Controller('partner')
 export class PartnerController {
-    /*
-        In the constructor we can import Dtos, services
-        , schemas etc to be injected
-    */
-    constructor(
-        private partnerService : PartnerService,
-        private logService : LogPetsService
-    ){}
-		
-		/*
-			Endpoint to create a partner user
-		*/
-    @Post('/createPartner')
-    async createUser(@Res() res, @Body() createPartnerDTO : CreatePartnerDTO ){
-      await this.partnerService.createUser(createPartnerDTO)
-            .then((partner)=>{
-								/* Create a log */
-								this.logService.log("Se creo un nuevo partner",partner._id)
-                console.log("Llegue positivo");
-                return res.status(HttpStatus.OK).json({
-                    response: 2,
-                    content:{
-											partner
-										} 
-                });
-            })
-            .catch((err)=>{
-                console.log("llegue negativo");
-                return res.status(HttpStatus.BAD_REQUEST).json({
-                    response: 3,
-                    content: err
-                });
-            });
-    }
+	/*
+		In the constructor we can import Dtos, services
+		, schemas etc to be injected
+	*/
+	constructor(
+		private partnerService: PartnerService,
+		private logService: LogPetsService,
+		private twilioService : TwilioService
+	) {}
+
+	/*
+	  Endpoint to create a partner user
+	*/
+	@Post('/createPartner')
+	async createPartner(@Res() res, @Body() createPartnerDTO: CreatePartnerDTO) {
+		await this.partnerService.createUser(createPartnerDTO)
+			.then((partner) => {
+				/* Create a log */
+				this.logService.log("Se creo un nuevo partner", partner._id)
+				return res.status(HttpStatus.OK).json({
+					response: 2,
+					content: {
+						partner
+					}
+				});
+			})
+			.catch((err) => {
+				console.log("llegue negativo");
+				this.logService.error("Error al crear un partner","");
+				return res.status(HttpStatus.BAD_REQUEST).json({
+					response: 3,
+					content: err
+				});
+			});
+	};
+
+	@Post('/sendSms')
+	async sendSms(@Res() res){
+		this.twilioService.sendWhatsAppMessage(3188758481,`Your verification code is 4564654`,57)
+			.then((message)=>{
+				this.logService.log(`Se en envio un mensaje de twilio exitosamente '${""}' al numero ${""}`,message.sid)
+			})
+			.catch((err)=>{
+				this.logService.error("Ocurrio un error al tratar de enviar el mensaje '${'}' al usuario ${'} ","");
+			});
+
+	}
 }
