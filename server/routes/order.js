@@ -247,8 +247,9 @@ app.post("/createOrder", function (req, res) {
   let body = req.body;
   temporalOrder.find(function (err, temporalOrderDB) {//this query is to know the number of documents
     if (err) {
-      return res.status(500).json({
-        response: 3,
+      console.log( "error al buscar todas la ordenes en la base de datos");
+      return res.status(400).json({
+        response: 1,
         content: err
       });
     }
@@ -276,9 +277,11 @@ app.post("/createOrder", function (req, res) {
     //////////////////////////////////////
     temporalOrder.findOne({idClient:idClient,status:true},function(err,orden){
       //THIS query is to know is the user has a current order in progress
+     
       if (err) {//Handlinf error in the query
-        return res.status(500).json({
-          response: 3,
+        console.log("Error al buscar si el cliente ya tiene una orden activa");
+        return res.status(400).json({
+          response: 1,
           content: err
         });
       }
@@ -293,9 +296,11 @@ app.post("/createOrder", function (req, res) {
         //If the user dont have a order in progress we need to create and save the temporal order
         user.findOne({id:idClient},function(err,clientDB){
           //searching the user to have his name
+          
           if (err) {//Handling error in qeury
-            return res.status(500).json({
-              response: 3,
+            console.log("Error al buscar al usuario con el id");
+            return res.status(400).json({
+              response: 1,
               content: err
             });
           }
@@ -329,7 +334,9 @@ app.post("/createOrder", function (req, res) {
             }else{
               //in service
               order.save((err, response) => {
+                
                 if (err) {//handling the query error
+                  console.log("Error al guardar la orden nueva");
                   return res.status(400).json({
                     response: 1,
                     content:{
@@ -397,6 +404,10 @@ app.post("/createOrder", function (req, res) {
     });
   });
 });
+/* 
+  Second version of create Orders with new
+  payment methods
+*/
 app.post("/createTemporalOrder",function(req,res){
   //diferenciar si el metodo de pago es efectivo entonces el pendiente lo pongo en false y creo la orden sin que notifique a los barberos pero a nosotros si
   let body = req.body;
@@ -560,8 +571,6 @@ app.post("/createTemporalOrder",function(req,res){
     });
   }
 });
-
-
 app.post("/finishOrder",function(req,res){
   let body = req.body;
   let idOrder = parseInt(body.idOrder);

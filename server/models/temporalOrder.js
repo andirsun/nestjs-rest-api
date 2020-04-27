@@ -46,7 +46,15 @@ let temporalOrder = new Schema({
     type: String,
     require:[false]
   },
-  address: [address],
+  //address: [address],
+  /*
+    Temporal fix , the address in the V1.0 must be a 
+    string and in the version 2.0 of create order
+    must be a Addres Schema
+   */
+  address : {
+    type : String
+  },
   city:{
     type: String,
     required: [true, "la ciudad es necesaria"]
