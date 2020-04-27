@@ -13,6 +13,7 @@ import { TwilioModule } from './twilio/twilio.module';
 /** Logs modules */
 import { LogBarbersModule } from './barbers/log-barbers/log-barbers.module';
 import { LogPetsModule } from './pets/log-pets/log-pets.module';
+import { PartnerModule } from './pets/partner/partner.module';
 //Enviroment Variables
 require("dotenv").config();
 // ============================
@@ -50,6 +51,7 @@ if (process.env.ENVIROMENT === 'dev' || process.env.ENVIROMENT === 'local') {
     //MOngoose Databases conections 
     MongooseModule.forRoot(urlMongodbTimugoBarbers, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true, useFindAndModify: false }),
     MongooseModule.forRoot(urlMongoDbTimugoPets, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true, useFindAndModify: false }),
+    PartnerModule,
 
   ],
   controllers: [AppController],
