@@ -1,5 +1,6 @@
 // NEST JS injectable dependecy
 import { Injectable } from '@nestjs/common';
+/*  */
 /*Require to read .env file enviroment*/
 require("dotenv").config();
 /*Twilio Dependencies*/
@@ -23,22 +24,19 @@ const client = new Twilio(twilioID, twilioToken);
 export class TwilioService {
     /* Auxiliarie Functions*/
     sendSMSMessage(numberDestiny : number,message : string, countryCode : number){
-        client.messages.create({
+        return client.messages.create({
           from:'+14403974927',
           to: `+${countryCode}${numberDestiny}`,
           body : message
-        })
-        .then((message: { sid: any; }) => console.log(`SMS message: ${message} to number: ${numberDestiny} ${message.sid}`))
-        .catch((err)=>console.log(err));
+        });
+       
     }
     //The message need to have a format accord to twilio documentation ask to admin for more info about formats
     sendWhatsAppMessage(numberDestiny :number,message:string,countryCode : number){
-        client.messages.create({
+        return client.messages.create({
           from:'whatsapp:+14155238886',
           to:`whatsapp:+${countryCode}${numberDestiny}`,
           body : message
-        })
-        .then(message => console.log(`WhatsApp message: ${message} to number: ${numberDestiny} ${message.sid}`))
-        .catch(err => console.log(err));
+        });
     }
 }
