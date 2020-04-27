@@ -1,10 +1,16 @@
-/* Other interfaces */
+/* External interfaces to inject in the partener interface */
 import { BankAccount } from "./bankAccount.interface";
 import { NequiAccount } from "./nequiAccount.interface";
 import { Comment } from "./comments.interface";
 import { Product } from "./product.interface";
 import { Service } from "./service.interface";
-
+/* Mongoose dependencies */
+import { Document } from "mongoose";
+/* 
+    Principal interface to export 
+    Needs to extends a mongoose document
+    to be used in the parter.service like a model
+*/
 export interface Partner extends Document {
     readonly id: number,
     readonly status: boolean,
@@ -30,7 +36,9 @@ export interface Partner extends Document {
     readonly discounts: [Discount],
     readonly comments : [Comment] 
 };
-/* Aditional local  interfaces */
+/* 
+    Aditional local  interfaces 
+*/
 interface Discount {
     readonly id : number,
     readonly cupon : string, //optional
