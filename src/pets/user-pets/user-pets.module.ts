@@ -10,13 +10,18 @@ import { LogPetsModule } from 'src/pets/log-pets/log-pets.module';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([
-      //If we need more schemas for user module can import here
-      {name:"UserPets",schema : UserPetsSchema}
-    ]),
-    // Other module is required need to import here
-    LogPetsModule
-    
+    MongooseModule.forFeature(
+       /*
+        Fist paremeter : array with the schemas to save in the database
+        the second parameter : name database 
+      */
+      [
+        //If we need more schemas for user module can import here
+        {name:"UserPets",schema : UserPetsSchema}
+        
+      ],'PetsMongoDb'),
+      // Other module is required need to import here
+      LogPetsModule
   ],
   providers: [UserPetsService],
   controllers: [UserPetsController]

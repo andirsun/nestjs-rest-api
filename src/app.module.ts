@@ -49,8 +49,20 @@ if (process.env.ENVIROMENT === 'dev' || process.env.ENVIROMENT === 'local') {
     LogBarbersModule,
     LogPetsModule,
     //MOngoose Databases conections 
-    MongooseModule.forRoot(urlMongodbTimugoBarbers, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true, useFindAndModify: false }),
-    MongooseModule.forRoot(urlMongoDbTimugoPets, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true, useFindAndModify: false }),
+    MongooseModule.forRoot(urlMongodbTimugoBarbers, {
+      connectionName : 'BarbersMongoDb',
+      useNewUrlParser: true,
+      useCreateIndex: true,
+      useUnifiedTopology: true,
+      useFindAndModify: false
+    }),
+    MongooseModule.forRoot(urlMongoDbTimugoPets, {
+      connectionName : 'PetsMongoDb',
+      useNewUrlParser: true,
+      useCreateIndex: true,
+      useUnifiedTopology: true,
+      useFindAndModify: false
+    }),
     PartnerModule,
 
   ],
