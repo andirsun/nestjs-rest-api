@@ -7,6 +7,8 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Partner } from "./interfaces/partner.interface";
 /* necesary to read the .env files */
 require("dotenv").config();
+/* DTOs */
+import { CreatePartnerDTO } from "./dto/partner.dto";
 
 @Injectable()
 export class PartnerService {
@@ -22,8 +24,10 @@ export class PartnerService {
 			THis function create an user. you need to pass the
 			CreateUserDto object to works
 	*/
-	async createUser(createPartnerDTO : CreateUserDTO) : Promise<Partner>{
-		const user = new this.userModel(createUserDTO);
+	async createUser(createPartnerDTO : CreatePartnerDTO) : Promise<Partner>{
+		// Initialize the user with the data transfer object 
+		const user = new this.partnerModel(createPartnerDTO);
+		//Return the insert query to be handle in the controller
 		return await user.save();
 }
 }
