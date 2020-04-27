@@ -1,10 +1,10 @@
-//Personal Libraries
-import {  } from "bcrypt";
-const _ = require("underscore");
-
+/* Nest Js dependencies */
 import { Controller,Get,Post,Put,Delete,Res,HttpStatus,Body, Query} from '@nestjs/common';
-//Data Onjects Transfer are all the interfaces to transfer betwen this class en requests
+/*
+    Data Onjects Transfer are all the interfaces to transfer betwen this class en requests
+*/
 import { CreateUserDTO } from "./dto/user.dto";
+/* Services */
 import { UserService } from "./user.service";
 import { LogBarbersService } from "../log-barbers/log-barbers.service";
 
@@ -33,7 +33,7 @@ export class UserController {
                     response: 3,
                     content: err
                 });
-            })   
+            });   
     }
     
     @Get('/createLog')
