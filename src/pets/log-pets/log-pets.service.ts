@@ -9,6 +9,9 @@ export class LogPetsService {
 
     constructor(@InjectModel('LogPets') private readonly logModel : Model<Log>){}
 
+    
+
+
     log(message : string, relatedID : string) {
         let log = new this.logModel();
         //Create the Log structure

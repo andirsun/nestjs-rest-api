@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get,InternalServerErrorException } from '@nestjs/common';
 import { AppService } from './app.service';
 
 
@@ -9,7 +9,14 @@ export class AppController {
 
   @Get()
   getHello(): string { 
-    
     return this.appService.getHello();
   }
+
+  /*  Redirect to other url*/
+	// @Get('/docs')
+	// @Redirect('https://fb.com', 302)
+	// getDocs() {
+	// 		return { url: 'https://docs.nestjs.com/v5/' };
+		
+	// }
 }

@@ -1,10 +1,15 @@
-import { Controller,Get,Post,Put,Delete,Res,HttpStatus,Body, Query} from '@nestjs/common';
+import { Controller,Get,Post,Put,Delete,Res,HttpStatus,Body, Query, Redirect} from '@nestjs/common';
 /* Services */
 import { PartnerService } from "./partner.service";
 import { LogPetsService } from "../log-pets/log-pets.service";
 import { TwilioService } from "src/twilio/twilio.service";
 /* DTOs */
 import { CreatePartnerDTO } from "./dto/partner.dto";
+/* Personal Libraries */
+const Sentry = require('@sentry/node');
+
+
+
 @Controller('partner')
 export class PartnerController {
 	/*
@@ -35,7 +40,7 @@ export class PartnerController {
 			})
 			.catch((err) => {
 				console.log("llegue negativo");
-				this.logService.error("Error al crear un partner","");
+				this.logService.error("Error al crear un partner","none");
 				return res.status(HttpStatus.BAD_REQUEST).json({
 					response: 3,
 					content: err
@@ -45,12 +50,14 @@ export class PartnerController {
 
 	@Post('/sendSms')
 	async sendSms(@Res() res){
-		this.twilioService.sendWhatsAppMessage(3188758481,`Your verification code is 4564654`,57)
+		this.twilioService.sendWhatsAppMessage(318875881,`Your verification code is 4564654`,871125)
 			.then((message)=>{
 				this.logService.log(`Se en envio un mensaje de twilio exitosamente '${""}' al numero ${""}`,message.sid)
 			})
 			.catch((err)=>{
-				this.logService.error("Ocurrio un error al tratar de enviar el mensaje '${'}' al usuario ${'} ","");
+				this.logService.error("Ocurrio un error al tratar de enviar el mensaje '${'}' al usuario ${'} ","none");
+				/* Interceptor send to sentry service */
+				throw new Error(err);
 			});
 
 	}

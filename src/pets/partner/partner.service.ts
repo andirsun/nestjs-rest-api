@@ -9,6 +9,8 @@ import { Partner } from "./interfaces/partner.interface";
 require("dotenv").config();
 /* DTOs */
 import { CreatePartnerDTO } from "./dto/partner.dto";
+/* Schemas */
+import { PartnerSchema } from "./schemas/partner.schema";
 
 @Injectable()
 export class PartnerService {
@@ -17,9 +19,6 @@ export class PartnerService {
 		if Model<Partner> interface extends a Document from mongoose
 	*/
 	constructor (@InjectModel('Partner') private readonly partnerModel : Model<Partner>){}
-
-	/* Functions  */
-
 	/*
 			THis function create an user. you need to pass the
 			CreateUserDto object to works
@@ -29,5 +28,14 @@ export class PartnerService {
 		const user = new this.partnerModel(createPartnerDTO);
 		//Return the insert query to be handle in the controller
 		return await user.save();
-}
+	}
+	async getPartner(partnerID : string) : Promise<Partner>{
+		const partner = await this.partnerModel.findById(partnerID);
+		return partner;
+	}
+
+	// async updatePassword(partnerID : string, createPartnerDTO : CreatePartnerDTO) : Promise<Partner>{
+	// 	const updatedPartner = await this.partnerModel.findByIdAndUpdate(partnerID,createPartnerDTO,{new : true})
+	// 	return updatedPartner;
+	// }
 }

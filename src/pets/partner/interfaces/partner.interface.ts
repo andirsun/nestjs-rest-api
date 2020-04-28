@@ -12,44 +12,45 @@ import { Document } from "mongoose";
     to be used in the parter.service like a model
 */
 export interface Partner extends Document {
-    readonly id: number,
-    readonly status: boolean,
-    readonly idNumber : number
-    readonly numOrders:number,
-    readonly phoneToken:string,
-    readonly products: [Product],
-    readonly services: [Service],
-    readonly payments : ["debe tener estado pendiente - pagado"]
-    readonly devices : [ "devices"]
-    readonly businessName: string,
-    readonly appName :string,
-    readonly landline: number,
-    readonly phone : number
-    readonly description : string,
-    readonly email: string,
-    readonly logo: string,
-    readonly nequiAccount : NequiAccount
-    readonly bankAccount : BankAccount,
-    readonly rutFile : string,
-    readonly idCardFile : string,
-    readonly contractFile : string,
-    readonly discounts: [Discount],
-    readonly comments : [Comment] 
+    id: number,
+    status: boolean,
+    idNumber : number,
+    password : string,
+    numOrders:number,
+    phoneToken:string,
+    products: [Product],
+    services: [Service],
+    payments : ["debe tener estado pendiente - pagado"]
+    devices : [ "devices"]
+    businessName: string,
+    appName :string,
+    landline: number,
+    phone : number
+    description : string,
+    email: string,
+    logo: string,
+    nequiAccount : NequiAccount
+    bankAccount : BankAccount,
+    rutFile : string,
+    idCardFile : string,
+    contractFile : string,
+    discounts: [Discount],
+    comments : [Comment] 
 };
 /* 
     Aditional local  interfaces 
 */
 interface Discount {
-    readonly id : number,
-    readonly cupon : string, //optional
-    readonly presentations : [PresentationsDiscount], 
-    readonly date : string, 
-    readonly status :string, // active , disabled
-    readonly percetage  : number,
+    id : number,
+    cupon : string, //optional
+    presentations : [PresentationsDiscount], 
+    date : string, 
+    status :string, // active , disabled
+    percetage  : number,
 };
 interface PresentationsDiscount {
-    readonly idPresentation : string,
-    readonly percentage : number, 
+    idPresentation : string,
+    percentage : number, 
 };
 
 

@@ -33,6 +33,7 @@ export const PartnerSchema = new Schema({
 		type : Number,
 		default:0
 	},
+	password :{type:String},
 	businessName: {type: String,unique : true},
 	landline: {type: Number, unique :true},
   phoneToken:{type:String},
