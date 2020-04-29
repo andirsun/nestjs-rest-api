@@ -6,6 +6,7 @@ require("dotenv").config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableCors();
   if(process.env.ENVIROMENT == "prod" ){
     //Production enviroment
     /*
@@ -13,7 +14,7 @@ async function bootstrap() {
       first need to init the handler
     */
     Sentry.init({
-      dsn: 'https://2cc8cd05168f4b39aaaa2c80274524f3@o384878.ingest.sentry.io/5216817',
+      dsn: process.env.SENTRY_PRODUCTION_DSN,
     });
     /* 
       Global sentry interceptor for watch all exceptions
