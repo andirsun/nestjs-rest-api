@@ -9,11 +9,12 @@ import { UserModule } from './barbers/user/user.module';
 /* Timugo Pets Users module */
 import { UserPetsModule } from './pets/user-pets/user-pets.module';
 //Twilio Notification MOdule
-import { TwilioModule } from './twilio/twilio.module';
+import { TwilioModule } from './modules/twilio/twilio.module';
 /** Logs modules */
 import { LogBarbersModule } from './barbers/log-barbers/log-barbers.module';
 import { LogPetsModule } from './pets/log-pets/log-pets.module';
 import { PartnerModule } from './pets/partner/partner.module';
+import { AuthModule } from './modules/auth/auth.module';
 //Enviroment Variables
 require("dotenv").config();
 // ============================
@@ -64,6 +65,7 @@ if (process.env.ENVIROMENT === 'dev' || process.env.ENVIROMENT === 'local') {
       useFindAndModify: false
     }),
     PartnerModule,
+    AuthModule,
 
   ],
   controllers: [AppController],

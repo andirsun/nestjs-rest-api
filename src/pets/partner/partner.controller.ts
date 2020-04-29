@@ -2,7 +2,7 @@ import { Controller,Get,Post,Put,Delete,Res,HttpStatus,Body, Query, Redirect} fr
 /* Services */
 import { PartnerService } from "./partner.service";
 import { LogPetsService } from "../log-pets/log-pets.service";
-import { TwilioService } from "src/twilio/twilio.service";
+import { TwilioService } from "src/modules/twilio/twilio.service";
 /* DTOs */
 import { CreatePartnerDTO } from "./dto/partner.dto";
 /* Personal Libraries */
