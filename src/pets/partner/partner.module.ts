@@ -9,6 +9,7 @@ import { PartnerSchema } from "./schemas/partner.schema";
 import { MongooseModule } from "@nestjs/mongoose";
 import { LogPetsModule } from '../log-pets/log-pets.module';
 import { TwilioModule } from 'src/modules/twilio/twilio.module';
+import { PassportModule } from "@nestjs/passport";
 @Module({
   imports: [
     MongooseModule.forFeature(
@@ -22,10 +23,15 @@ import { TwilioModule } from 'src/modules/twilio/twilio.module';
       ],'PetsMongoDb'),
     // Other module is required need to import here
     LogPetsModule,
-    TwilioModule
+    TwilioModule,
+    PassportModule.register({
+      defaultStrategy :'jwt',
+      session:false
+    }),
     
   ],
   providers: [PartnerService],
-  controllers: [PartnerController]
+  controllers: [PartnerController],
+  exports : [PartnerService]
 })
 export class PartnerModule {}

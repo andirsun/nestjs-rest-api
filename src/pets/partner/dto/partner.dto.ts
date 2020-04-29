@@ -9,4 +9,7 @@ export class CreatePartnerDTO {
 	readonly appName: string;
 	readonly phone: string;
 	readonly email: string;
+	readonly landLine : number;
+	readonly businessName : string;
+	readonly password :string
 }

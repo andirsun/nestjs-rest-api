@@ -7,6 +7,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Partner } from "./interfaces/partner.interface";
 /* necesary to read the .env files */
 require("dotenv").config();
+import * as bcrypt from 'bcrypt';
 /* DTOs */
 import { CreatePartnerDTO } from "./dto/partner.dto";
 /* Schemas */
@@ -29,11 +30,18 @@ export class PartnerService {
 		//Return the insert query to be handle in the controller
 		return await user.save();
 	}
-	async getPartner(partnerID : string) : Promise<Partner>{
-		const partner = await this.partnerModel.findById(partnerID);
-		return partner;
+	async getPartner(phone : number) : Promise<Partner>{
+		
+		return await this.partnerModel.findOne({phone:phone});
 	}
 
+	async checkPassword(partner:Partner, password : string){
+		
+		bcrypt.compare(password, partner.password, (err, isMatch) => {
+			if(err) return err;
+			return isMatch;
+	});
+	}
 	// async updatePassword(partnerID : string, createPartnerDTO : CreatePartnerDTO) : Promise<Partner>{
 	// 	const updatedPartner = await this.partnerModel.findByIdAndUpdate(partnerID,createPartnerDTO,{new : true})
 	// 	return updatedPartner;

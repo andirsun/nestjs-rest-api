@@ -1,4 +1,5 @@
-import { Controller,Get,Post,Put,Delete,Res,HttpStatus,Body, Query, Redirect} from '@nestjs/common';
+import { Controller,Get,Post,Put,Delete,Res,HttpStatus,Body, Query, Redirect, UseGuards} from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 /* Services */
 import { PartnerService } from "./partner.service";
 import { LogPetsService } from "../log-pets/log-pets.service";
@@ -6,7 +7,7 @@ import { TwilioService } from "src/modules/twilio/twilio.service";
 /* DTOs */
 import { CreatePartnerDTO } from "./dto/partner.dto";
 /* Personal Libraries */
-const Sentry = require('@sentry/node');
+
 
 
 
@@ -21,7 +22,14 @@ export class PartnerController {
 		private logService: LogPetsService,
 		private twilioService : TwilioService
 	) {}
-
+	
+	@Get('test')
+	@UseGuards(AuthGuard())
+	testAuthRoute(){
+			return {
+					message: 'You did it!'
+			}
+	}
 	/*
 	  Endpoint to create a partner user
 	*/

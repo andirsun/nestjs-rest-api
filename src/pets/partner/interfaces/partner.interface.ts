@@ -24,7 +24,7 @@ export interface Partner extends Document {
     devices : [ "devices"]
     businessName: string,
     appName :string,
-    landline: number,
+    landLine: number,
     phone : number
     description : string,
     email: string,

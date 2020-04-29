@@ -1,5 +1,6 @@
 //File use for mongodb schemas
 import { Schema } from "mongoose"; 
+import * as bcrypt from 'bcrypt';
 import uniqueValidator = require("mongoose-unique-validator");
 //import mongoose = require('mongoose');
 //const AutoIncrement = require('mongoose-sequence')(mongoose);
@@ -13,8 +14,11 @@ import { DispersionSchema } from "./dispersion.schema";
 import { DeviceSchema } from "./device.schema";
 import { DiscountSchema } from "./discount.schema";
 import { CommentSchema } from "./comment.schema";
+/* Interfaces */
+import { Partner } from "../interfaces/partner.interface";
 
-export const PartnerSchema = new Schema({
+
+export const PartnerSchema: Schema = new Schema({
   id: {
 		type: Number,
 		require: [true, "EL id es necesario"],
@@ -35,7 +39,7 @@ export const PartnerSchema = new Schema({
 	},
 	password :{type:String},
 	businessName: {type: String,unique : true},
-	landline: {type: Number, unique :true},
+	landLine: {type: Number,},
   phoneToken:{type:String},
   updated: { type: String},
   appName: {type: String},
@@ -59,6 +63,45 @@ export const PartnerSchema = new Schema({
 	comments : [CommentSchema],
 });
 
+PartnerSchema.pre<Partner>('save', function(next){
+	console.log("llegue");
+	
+  let user = this;
+
+  // Make sure not to rehash the password if it is already hashed
+  if(!user.isModified('password')){
+		console.log("ya se habia modificado");
+		return next();
+	} 
+
+  // Generate a salt and use it to hash the user's password
+  // Store hash in your password DB.
+	bcrypt.genSalt(10, (err, salt) => {
+
+      if(err) return next(err);
+
+      bcrypt.hash(user.password, salt, (err, hash) => {
+
+          if(err) return next(err);
+          user.password = hash;
+          next();
+
+      });
+
+  });
+
+}); 
+
+// PartnerSchema.methods.checkPassword = function(attempt, callback){
+
+// 	let user = this;
+
+// 	bcrypt.compare(attempt, user.password, (err, isMatch) => {
+// 			if(err) return callback(err);
+// 			callback(null, isMatch);
+// 	});
+
+// };
 /*PLUGINS ZONE*/
 // Plugin to make unique validator
 PartnerSchema.plugin(uniqueValidator, { message: "{PATH} debe de ser único" });
