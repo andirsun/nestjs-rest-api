@@ -15,6 +15,8 @@ import { LogBarbersModule } from './barbers/log-barbers/log-barbers.module';
 import { LogPetsModule } from './pets/log-pets/log-pets.module';
 import { PartnerModule } from './pets/partner/partner.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { ProductsModule } from './pets/products/products.module';
+import { ServiceModule } from './pets/service/service.module';
 //Enviroment Variables
 require("dotenv").config();
 // ============================
@@ -66,6 +68,8 @@ if (process.env.ENVIROMENT === 'dev' || process.env.ENVIROMENT === 'local') {
     }),
     PartnerModule,
     AuthModule,
+    ProductsModule,
+    ServiceModule,
 
   ],
   controllers: [AppController],

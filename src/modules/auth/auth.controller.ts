@@ -7,7 +7,12 @@ export class AuthController {
   constructor(private authService: AuthService) {
 
   }
-
+  /*
+    This login method is only for partner
+    the function returns a JWT valid for 1 hour 
+    the front must to save the token and put in the
+    petitions headers
+  */
   @Post('/loginPartner') 
   async login(@Body() loginPartnerDto: LoginPartnerDto){
       return await this.authService.validatePartnerByPassword(loginPartnerDto);

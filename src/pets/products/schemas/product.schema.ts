@@ -1,3 +1,4 @@
+/* Import mongoose Schemas */
 import { Schema } from "mongoose"; 
 
 /* Aditional schemas */

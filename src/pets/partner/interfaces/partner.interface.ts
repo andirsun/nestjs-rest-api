@@ -2,7 +2,7 @@
 import { BankAccount } from "./bankAccount.interface";
 import { NequiAccount } from "./nequiAccount.interface";
 import { Comment } from "./comments.interface";
-import { Product } from "./product.interface";
+import { Product } from "../../products/interfaces/product.interface";
 import { Service } from "./service.interface";
 /* Mongoose dependencies */
 import { Document } from "mongoose";

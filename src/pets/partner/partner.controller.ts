@@ -55,7 +55,10 @@ export class PartnerController {
 				});
 			});
 	};
-
+	@Post('/pets/products/createProduct')
+	async createProduct(@Res() res, @Body() createPartnerDTO: CreatePartnerDTO) {
+		
+	};
 	@Post('/sendSms')
 	async sendSms(@Res() res){
 		this.twilioService.sendWhatsAppMessage(318875881,`Your verification code is 4564654`,871125)

@@ -6,13 +6,13 @@ import uniqueValidator = require("mongoose-unique-validator");
 //const AutoIncrement = require('mongoose-sequence')(mongoose);
 /*Aditional Required Schemas*/ 
 import { NequiSchema } from "./nequiAccount.schema";
-import { ProductSchema } from "./product.schema";
-import { ServiceSchema } from "./service.schema";
+import { ProductSchema } from "../../products/schemas/product.schema";
+import { ServiceSchema } from "../../service/schemas/service.schema";
 import { BankAccountSchema } from "./bankAccount.schema";
 import { PaymentSchema } from "./payment.schema";
 import { DispersionSchema } from "./dispersion.schema";
 import { DeviceSchema } from "./device.schema";
-import { DiscountSchema } from "./discount.schema";
+import { DiscountSchema } from "../../products/schemas/discount.schema";
 import { CommentSchema } from "./comment.schema";
 /* Interfaces */
 import { Partner } from "../interfaces/partner.interface";
