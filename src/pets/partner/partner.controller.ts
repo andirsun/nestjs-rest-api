@@ -102,6 +102,42 @@ export class PartnerController {
 				throw new Error(err);
 			});
 	};
+
+	@Get('/products/getProducts')
+	@UseGuards(AuthGuard())
+	async getProducts(@Res() res, @Query('phone') phone : number ) {
+		const user = await this.partnerService.getPartner(phone);
+		
+		if(!user){
+			return res.status(HttpStatus.OK).json({
+				response: 1,
+				content: {
+					message : "Ups, no encontramos ningun usuario con ese telefono"
+				}
+			});
+		}else{
+			const products : Product[]= await this.productService.getPartnerProducts(user._id);
+			this.logService.log("Un aliado consulto sus productos",user._id);
+			if(products.length > 0){
+				this.logService.log("Se retornaron los productos correctamente",user._id);
+				return res.status(HttpStatus.OK).json({
+					response: 2,
+					content: {
+						products
+					}
+				});
+			}else{
+				this.logService.log("Se retornaron los productos correctamente",user._id);
+				return res.status(HttpStatus.OK).json({
+					response: 1,
+					content: {
+						message : "El usuario no tiene productos aun"
+					}
+				});
+			}
+		}
+		
+	};
 	//Testing porpusses
 	@Post('/sendSms')
 	async sendSms(@Res() res){
