@@ -1,4 +1,31 @@
+/* Nest Js libraries */
 import { Injectable } from '@nestjs/common';
+/* Mongoose dependencies */
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+/* Dtos */
+import { CreateProductDTO } from "./dto/product.dto";
+/* Interfaces */
+import { Product } from "./interfaces/product.interface";
 
 @Injectable()
-export class ProductsService {}
+export class ProductsService {
+  
+  constructor(@InjectModel('Products') private readonly productModel : Model<Product>){}
+	
+	/*
+		This funcion create a product with a
+		basic info and the id of the owner partner
+	*/
+  async createProduct(partnerId : string,createProductDTO : CreateProductDTO) : Promise<Product>{
+		// Initialize the user with the data transfer object 
+		var product = new this.productModel(createProductDTO);
+		product.idPartner = partnerId;
+		//Return the insert query to be handle in the controller
+		return await product.save();
+	};
+
+	async getPartnerProducts(partnerId : string): Promise<Product[]>{
+		return await this.productModel.find({idPartner:partnerId});
+	}
+}

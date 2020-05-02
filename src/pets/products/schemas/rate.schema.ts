@@ -3,10 +3,11 @@ import { Schema } from "mongoose"
 
 
 export const RateSchema = new Schema({
-    id : Number,
-    date : String,
-    starts : Number,
-    comment : String ,
-    idUser : String , 
-    nameUser : String
-});
+    date :String,
+    id : Number ,
+    userId : Number,
+    nameUser : String,
+    comment : String, 
+    stars :Number,
+    img : String,
+})

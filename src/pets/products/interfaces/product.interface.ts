@@ -1,26 +1,33 @@
 /*Aditional interfaces */
 import { Rate } from "./rates.interface";
+import { Document } from "mongoose";
 
-export interface Product {
-    readonly id : number
-    readonly orders : number
-    readonly status :string, //available | unavailable | pending | rejected | archived |
-    readonly presentations : [Presentation], 
-    readonly descripcion : string,
-    readonly rateStars : number,
-    readonly typeTags : [string] //example ["food",cat food]
-    readonly usersRates : [Rate]
-    readonly favorites : number
+export interface Product extends Document {
+    id : number
+    idPartner : string
+    orders : number
+    status :string, //available | unavailable | pending | rejected | archived |
+    presentations : [Presentation], 
+    descripcion : string,
+    rateStars : number,
+    tags : [string], //example ["food",cat food]
+    usersRates : [Rate],
+    favorites : number,
+    characteristics : string,
+    img :string,
+    price : number
+    deliveryDays : number
+    benefits : String,
 };
 /* Aditional local interfaces*/
 interface Presentation  {
-    readonly id : number
-    readonly status :string // archived | outOfstock | available |unavailable 
-    readonly sizes : string,
-    readonly volume : string,
-    readonly weigth : string,
-    readonly stock : number
-    readonly description : string //could be color, taste or other caracteristic   
-    readonly price : number
-    readonly urlImg : string
+    id : number
+    status :string // archived | outOfstock | available |unavailable 
+    sizes : string,
+    volume : string,
+    weigth : string,
+    stock : number
+    description : string //could be color, taste or other caracteristic   
+    price : number
+    urlImg : string
 };
