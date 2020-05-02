@@ -5,8 +5,7 @@
 	info but the principal things
 */
 export class CreateProductDTO {
-  readonly id : number ;
-  readonly descripcion : string ;
+  readonly description : string ;
   readonly price : number;
   readonly benefits : string;
   readonly characteristics : string;

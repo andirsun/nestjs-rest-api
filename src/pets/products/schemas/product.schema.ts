@@ -6,11 +6,6 @@ import uniqueValidator = require("mongoose-unique-validator");
 
 /* Principal Schema to export */
 export const ProductSchema = new Schema({
-    id :{
-        type: Number,
-        unique : [true, "El id debe ser unico"],
-        default : 0
-    }, 
     idPartner : {
         type : String,
         required :[true, "El id del creador es necesario"]

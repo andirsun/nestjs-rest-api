@@ -3,7 +3,7 @@ import { Rate } from "./rates.interface";
 import { Document } from "mongoose";
 
 export interface Product extends Document {
-    id : number
+    
     idPartner : string
     orders : number
     status :string, //available | unavailable | pending | rejected | archived |
