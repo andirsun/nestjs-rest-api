@@ -30,6 +30,12 @@ export class PartnerService {
 		//Return the insert query to be handle in the controller
 		return await user.save();
 	}
+
+	async addProductToPartner(idPartner : string,idProduct : string) : Promise<Partner>{
+		//Return the insert query to be handle in the controller
+		return await this.partnerModel.findByIdAndUpdate(idPartner,{$push: {products: idProduct}},{new:true});
+	}
+	
 	async getPartner(phone : number) : Promise<Partner>{
 		
 		return await this.partnerModel.findOne({phone:phone});

@@ -8,6 +8,7 @@ import { PartnerSchema } from "./schemas/partner.schema";
 /* Extra modules importations */
 import { MongooseModule } from "@nestjs/mongoose";
 import { LogPetsModule } from '../log-pets/log-pets.module';
+import { ProductsModule } from '../products/products.module';
 import { TwilioModule } from 'src/modules/twilio/twilio.module';
 import { PassportModule } from "@nestjs/passport";
 @Module({
@@ -24,6 +25,7 @@ import { PassportModule } from "@nestjs/passport";
     // Other module is required need to import here
     LogPetsModule,
     TwilioModule,
+    ProductsModule,
     PassportModule.register({
       defaultStrategy :'jwt',
       session:false

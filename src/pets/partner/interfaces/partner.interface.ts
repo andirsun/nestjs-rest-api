@@ -18,7 +18,7 @@ export interface Partner extends Document {
     password : string,
     numOrders:number,
     phoneToken:string,
-    products: [Product],
+    products: [string],
     services: [Service],
     payments : ["debe tener estado pendiente - pagado"]
     devices : [ "devices"]

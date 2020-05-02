@@ -4,9 +4,13 @@ import { AuthGuard } from '@nestjs/passport';
 import { PartnerService } from "./partner.service";
 import { LogPetsService } from "../log-pets/log-pets.service";
 import { TwilioService } from "src/modules/twilio/twilio.service";
+import { ProductsService } from "../products/products.service";
 /* DTOs */
 import { CreatePartnerDTO } from "./dto/partner.dto";
-/* Personal Libraries */
+import { CreateProductDTO } from "../products/dto/product.dto";
+/* Interfaces */
+import { Product } from "../products/interfaces/product.interface";
+import { Partner } from "../partner/interfaces/partner.interface";
 
 
 
@@ -20,16 +24,11 @@ export class PartnerController {
 	constructor(
 		private partnerService: PartnerService,
 		private logService: LogPetsService,
-		private twilioService : TwilioService
+		private twilioService : TwilioService,
+		private productService : ProductsService
 	) {}
 	
-	@Get('test')
-	@UseGuards(AuthGuard())
-	testAuthRoute(){
-			return {
-					message: 'You did it!'
-			}
-	}
+	
 	/*
 	  Endpoint to create a partner user
 	*/
@@ -55,10 +54,55 @@ export class PartnerController {
 				});
 			});
 	};
-	@Post('/pets/products/createProduct')
-	async createProduct(@Res() res, @Body() createPartnerDTO: CreatePartnerDTO) {
-		
+	/*
+			This function create a product and associate 
+			this product with a partner
+			First : get the partner id with a phoneNumber
+			second : save in partner.product the id of the
+			product inserted
+	*/
+	@Post('/products/create')
+	@UseGuards(AuthGuard())
+	async createProduct(@Res() res, @Body() createProductDTO: CreateProductDTO) {
+		/* Search a partner with a phone number */
+		const partner : Partner = await this.partnerService.getPartner(createProductDTO.phone);
+		/*If the partner was not found */
+		if(!partner){
+			return res.status(HttpStatus.OK).json({
+				response: 1,
+				content: {
+					message : "Ups, no encontramos ningun usuario con ese telefono"
+				}
+			});
+		}
+		/*If the partner was found with this phone number */
+		await this.productService.createProduct(partner._id,createProductDTO)
+			.then((product : Product)=>{
+				this.logService.log("Se creo un nuevo producto",product._id);
+
+				/* Associate the product to the partner */
+				this.partnerService.addProductToPartner(partner._id,product._id)
+					.then((partner : Partner)=>{
+						this.logService.log("Se agrego un producto a un aliado",product._id);
+						return res.status(HttpStatus.OK).json({
+							response: 2,
+							content: {
+								partner
+							}
+						});
+					})
+					.catch((err)=>{
+						this.logService.error("Error al asociar un producto a un aliado",product._id);
+						throw new Error(err);
+					});
+			
+			})
+			.catch((err)=>{
+				this.logService.error("Ocurrio un error al tratar de guardar un nuevo producto","none");
+				throw new Error(err);
+			});
 	};
+	//Testing porpusses
 	@Post('/sendSms')
 	async sendSms(@Res() res){
 		this.twilioService.sendWhatsAppMessage(318875881,`Your verification code is 4564654`,871125)
@@ -71,5 +115,12 @@ export class PartnerController {
 				throw new Error(err);
 			});
 
-	}
+	};
+	@Get('test')
+	@UseGuards(AuthGuard())
+	testAuthRoute(){
+			return {
+					message: 'You did it!'
+			}
+	};
 }

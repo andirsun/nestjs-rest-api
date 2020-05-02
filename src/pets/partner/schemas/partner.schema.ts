@@ -53,7 +53,7 @@ export const PartnerSchema: Schema = new Schema({
 	idCardFile:{type: String,},
 	contractFile:{type: String,},
 	services : [ServiceSchema],
-	products : [ProductSchema],
+	products : [String],
 	nequiAccount : [NequiSchema],
 	bankAccount : BankAccountSchema,
 	payments : [PaymentSchema],
@@ -91,19 +91,6 @@ PartnerSchema.pre<Partner>('save', function(next){
   });
 
 }); 
-
-// PartnerSchema.methods.checkPassword = function(attempt, callback){
-
-// 	let user = this;
-
-// 	bcrypt.compare(attempt, user.password, (err, isMatch) => {
-// 			if(err) return callback(err);
-// 			callback(null, isMatch);
-// 	});
-
-// };
 /*PLUGINS ZONE*/
 // Plugin to make unique validator
 PartnerSchema.plugin(uniqueValidator, { message: "{PATH} debe de ser único" });
-
-//UserSchema.plugin(AutoIncrement, {inc_field: 'id'});
