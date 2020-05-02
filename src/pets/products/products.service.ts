@@ -24,8 +24,18 @@ export class ProductsService {
 		//Return the insert query to be handle in the controller
 		return await product.save();
 	};
-
+	/*
+		This function return a query of db with all
+		products found with a particular partnerId
+	*/
 	async getPartnerProducts(partnerId : string): Promise<Product[]>{
 		return await this.productModel.find({idPartner:partnerId});
+	}
+	/*
+		This function return a query of db with a
+		specific product
+	*/
+	async getProduct(productId : string): Promise<Product>{
+		return await this.productModel.findOne({_id:productId});
 	}
 }

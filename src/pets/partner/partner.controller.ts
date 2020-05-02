@@ -102,12 +102,16 @@ export class PartnerController {
 				throw new Error(err);
 			});
 	};
-
+	/*
+		This function returns all products of a partner
+		needs a phone number send by query params
+	*/
 	@Get('/products/getProducts')
 	@UseGuards(AuthGuard())
 	async getProducts(@Res() res, @Query('phone') phone : number ) {
+		/* Search user with phone */
 		const user = await this.partnerService.getPartner(phone);
-		
+		/* if the user wasnt found */
 		if(!user){
 			return res.status(HttpStatus.OK).json({
 				response: 1,
@@ -116,8 +120,12 @@ export class PartnerController {
 				}
 			});
 		}else{
+			/* User Found */
+			// Get partner products
 			const products : Product[]= await this.productService.getPartnerProducts(user._id);
+			/* Fetch products to db */
 			this.logService.log("Un aliado consulto sus productos",user._id);
+			/* If exists products */
 			if(products.length > 0){
 				this.logService.log("Se retornaron los productos correctamente",user._id);
 				return res.status(HttpStatus.OK).json({
@@ -136,6 +144,38 @@ export class PartnerController {
 				});
 			}
 		}
+		
+	};
+	/*
+		This function returns particular products of a partner
+		needs a idProduct send by query params
+	*/
+	@Get('/products/getProduct')
+	@UseGuards(AuthGuard())
+	async getProduct(@Res() res, @Query('idProduct') idProduct : string ) {
+		this.productService.getProduct(idProduct)
+			.then((product : Product)=>{
+				this.logService.log("Se consulto un producto",idProduct);
+				if(product){
+					return res.status(HttpStatus.OK).json({
+						response: 2,
+						content: {
+							product
+						}
+					});
+				}else{
+					return res.status(HttpStatus.OK).json({
+						response: 1,
+						content: {
+							message : "Ups no encontramos un producto con ese id"
+						}
+					});
+				}
+			})
+			.catch((err)=>{
+				this.logService.error("Ocurrio un error al tratar de consultar un producto",idProduct);
+				throw new Error(err);
+			})
 		
 	};
 	//Testing porpusses
