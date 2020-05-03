@@ -14,6 +14,10 @@ export const ProductSchema = new Schema({
         type :String, //available | unavailable | pending | rejected | archived |
         default  : "available"
     },
+    name : {
+        type : String,
+        required :[true,"El nombre es necesario"]
+    },
     characteristics : {
         type : String,
         required : [true,"Las caracteristicas son necesarias"]
@@ -33,6 +37,10 @@ export const ProductSchema = new Schema({
     description : {
         type : String,
         required : [true,"La descripcion es necesaria"]
+    },
+    reference : {
+        type : String,
+
     },
     orders : Number,
     benefits : String,

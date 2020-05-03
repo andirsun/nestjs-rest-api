@@ -2,6 +2,7 @@ import { Schema } from "mongoose";
 
 export const PresentationSchema = new Schema({
   id : Number,
+  reference : String,
   status :String, // archived | outOfstock | available |unavailable 
   sizes : String,
   volume : String,

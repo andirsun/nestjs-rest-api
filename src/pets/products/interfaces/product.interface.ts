@@ -4,8 +4,9 @@ import { Document } from "mongoose";
 
 export interface Product extends Document {
     
-    idPartner : string
-    orders : number
+    idPartner : string,
+    name : string,
+    orders : number,
     status :string, //available | unavailable | pending | rejected | archived |
     presentations : [Presentation], 
     descripcion : string,
@@ -15,19 +16,20 @@ export interface Product extends Document {
     favorites : number,
     characteristics : string,
     img :string,
-    price : number
-    deliveryDays : number
-    benefits : String,
+    price : number,
+    deliveryDays : number,
+    benefits : string,
 };
 /* Aditional local interfaces*/
 interface Presentation  {
-    id : number
-    status :string // archived | outOfstock | available |unavailable 
+    id : number,
+    reference : string,
+    status :string, // archived | outOfstock | available |unavailable 
     sizes : string,
     volume : string,
     weigth : string,
-    stock : number
-    description : string //could be color, taste or other caracteristic   
-    price : number
+    stock : number,
+    description : string, //could be color, taste or other caracteristic   
+    price : number,
     urlImg : string
 };
