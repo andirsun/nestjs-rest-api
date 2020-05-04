@@ -15,13 +15,19 @@ if(process.env.ENVIROMENT == 'local' || process.env.ENVIROMENT =='dev' ){
 }
 @Module({
   imports: [
+    /* Register the strategy to use */
     PassportModule.register({ defaultStrategy: 'jwt', session: false }),
+    /* Jwt module registration to define key and time expiration */
     JwtModule.register({
-      secret : secretKey,
+      secret : 'temporalFix',
       signOptions: {
-        expiresIn: 3600
+        expiresIn: 18000
       }
     }),
+    /* 
+      Need to import this module to use the auth 
+      strategy there
+    */
     PartnerModule
   ],
   controllers: [AuthController],
