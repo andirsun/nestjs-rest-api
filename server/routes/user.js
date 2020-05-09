@@ -907,7 +907,8 @@ app.post("/loginUser",async function(req,res){
             response: 2,
             content:{
               user : user,
-              code  : 2 //code 2 means that the number doesnt  need to be verified
+              code  : 2, //code 2 means that the number doesnt  need to be verified
+              newUser :false
             } 
           });
         }else{
@@ -922,12 +923,14 @@ app.post("/loginUser",async function(req,res){
                 response: 2,
                 content:{
                   user : response,
-                  code  : 1 //code 1 means that the number need to be verified
+                  code  : 1, //code 1 means that the number need to be verified
+                  newUser: false
                 } 
               });
           });
         }
       }else{
+        /* New user, then need to insert in db */
         // user to save in thedatabase
         let newUser = new User({
           phone,
@@ -944,7 +947,8 @@ app.post("/loginUser",async function(req,res){
                 response: 2,
                 content:{
                   user : resp,
-                  code  : 2 //code 1 means that the number need to be verified
+                  code  : 2, //code 1 means that the number need to be verified
+                  newUser : true
                 } 
               });
             }else{
@@ -955,7 +959,8 @@ app.post("/loginUser",async function(req,res){
                 response: 2,
                 content:{
                   user : resp,
-                  code  : 1 //code 1 means that the number need to be verified
+                  code  : 1,//code 1 means that the number need to be verified
+                  newUser: true
                 } 
               });
             }
