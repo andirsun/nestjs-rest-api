@@ -17,7 +17,7 @@ const fs = require('fs');
 app.get("/createCity",function(req,res){
     let city = new City();
     city.id = 1;
-    city.name = "Cali"
+    city.name = "Medellin"
     city.save((err,response)=>{
         if(err){
             console.log(err);
