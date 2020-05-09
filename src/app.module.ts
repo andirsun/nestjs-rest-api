@@ -18,6 +18,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { ProductsModule } from './pets/products/products.module';
 import { ServiceModule } from './pets/service/service.module';
 import { BarberModule } from './barbers/barber/barber.module';
+import { OrdersModule } from './barbers/orders/orders.module';
 //Enviroment Variables
 require("dotenv").config();
 // ============================
@@ -72,6 +73,7 @@ if (process.env.ENVIROMENT === 'dev' || process.env.ENVIROMENT === 'local') {
     ProductsModule,
     ServiceModule,
     BarberModule,
+    OrdersModule,
 
   ],
   controllers: [AppController],
