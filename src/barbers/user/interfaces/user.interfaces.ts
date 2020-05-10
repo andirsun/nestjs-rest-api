@@ -6,19 +6,19 @@ import { Document } from "mongoose";
 
 
 export interface User extends Document {
-    readonly id: number,
-    readonly phoneToken:string,
-    readonly updated: string,
-    readonly name: string,
-    readonly registrationCode :string,
-    readonly phone: string,
-    readonly birth: string,
-    readonly email: string,
-    readonly addresses : [Address],
-    readonly img: string,
-    readonly numServices:string,
-    readonly points: number,
-    readonly status: boolean,
-    readonly cards : [Card],
-    readonly publicityMethod:string
+    id: number,
+    phoneToken:string,
+    updated: string,
+    name: string,
+    registrationCode :string,
+    phone: string,
+    birth: string,
+    email: string,
+    addresses : [Address],
+    img: string,
+    numServices:string,
+    points: number,
+    status: boolean,
+    cards : [Card],
+    publicityMethod:string
 };

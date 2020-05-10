@@ -1,8 +1,8 @@
 export interface Address {
-    readonly city : string,
-    readonly address : string,
-    readonly favorite : boolean,
-    readonly description:string,
-    readonly lat : string,
-    readonly lng : string,  
+    city : string,
+    address : string,
+    favorite : boolean,
+    description:string,
+    lat : string,
+    lng : string,  
 };

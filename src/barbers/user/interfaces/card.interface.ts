@@ -1,13 +1,13 @@
 export interface Card {
-    readonly id:number,
-    readonly favorite : boolean,
-    readonly type: string,
-    readonly nameCard : string,
-    readonly lastName : string,
-    readonly cardNumber : string,
-    readonly monthExpiraton : string,
-    readonly yearExpiration : string,
-    readonly last4Numbers : string,
-    readonly cvc:string,
-    readonly franchise:string
+    id:number,
+    favorite : boolean,
+    type: string,
+    nameCard : string,
+    lastName : string,
+    cardNumber : string,
+    monthExpiraton : string,
+    yearExpiration : string,
+    last4Numbers : string,
+    cvc:string,
+    franchise:string
 };
