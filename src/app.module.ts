@@ -13,6 +13,7 @@ import { TwilioModule } from './modules/twilio/twilio.module';
 /** Logs modules */
 import { LogBarbersModule } from './barbers/log-barbers/log-barbers.module';
 import { LogPetsModule } from './pets/log-pets/log-pets.module';
+/* Extra modules */
 import { PartnerModule } from './pets/partner/partner.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ProductsModule } from './pets/products/products.module';
@@ -20,9 +21,6 @@ import { ServiceModule } from './pets/service/service.module';
 import { BarberModule } from './barbers/barber/barber.module';
 import { OrdersModule } from './barbers/orders/orders.module';
 import { BarberyServiceModule } from './barbers/barbery-service/barbery-service.module';
-import { BarberySeviceController } from './barbers/barbery-service/barbery-sevice.controller';
-
-//Enviroment Variables
 require("dotenv").config();
 // ============================
 //  Enviroment
@@ -48,15 +46,29 @@ if (process.env.ENVIROMENT === 'dev' || process.env.ENVIROMENT === 'local') {
 
 @Module({
   imports: [
-    //IMports All modules like Other routes, payment modules and other stuff
+
+    /* Barberos Modules */
     UserModule,
     UserPetsModule,
+    BarberModule,
+    BarberyServiceModule,
+    OrdersModule,
+    LogBarbersModule,
+    
+    /* Pets Modules */
+    PartnerModule,
+    ProductsModule,
+    ServiceModule,
+    LogPetsModule,
+    
+    /* EXTRA modules */
     //Twilio SMS notification and Calls MOdule
     TwilioModule,
-    //Logs modules
-    LogBarbersModule,
-    LogPetsModule,
-    //MOngoose Databases conections 
+
+    /* Autentication Modules */
+    AuthModule,
+    
+    /* Databases Modules */ 
     MongooseModule.forRoot(urlMongodbTimugoBarbers, {
       connectionName : 'BarbersMongoDb',
       useNewUrlParser: true,
@@ -71,16 +83,8 @@ if (process.env.ENVIROMENT === 'dev' || process.env.ENVIROMENT === 'local') {
       useUnifiedTopology: true,
       useFindAndModify: false
     }),
-    PartnerModule,
-    AuthModule,
-    ProductsModule,
-    ServiceModule,
-    BarberModule,
-    OrdersModule,
-    BarberyServiceModule,
-
   ],
-  controllers: [AppController, BarberySeviceController],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule { }
