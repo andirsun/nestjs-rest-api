@@ -15,4 +15,24 @@ export class OrdersController {
     private orderService : OrdersService
   ){}
 
+  @Get('/activeOrders')
+	async getActiveOrders(@Res() res){
+			await this.orderService.getActiveOrders()
+					.then((orders)=>{
+							console.log("Llegue positivo");
+							return res.status(HttpStatus.OK).json({
+									response: 2,
+									content: orders
+							});
+					})
+					.catch((err)=>{
+							console.log("llegue negativo");
+							return res.status(HttpStatus.BAD_REQUEST).json({
+									response: 3,
+									content: err
+							});
+					});   
+	}
+
+
 }

@@ -36,7 +36,11 @@ export const orderSchema = new Schema({
     type: String,
     require:[false]
   },
-  address :AddressSchema,
+  /* legacy version V1 anddress and city */
+  address :String,
+  city : String,
+  /* New Address format */
+  newAddress : AddressSchema,
   dateBeginOrder: {
     type: String,
     required: [true, "La fecha de inicio del pedido es necesaria"],
