@@ -21,6 +21,7 @@ import { ServiceModule } from './pets/service/service.module';
 import { BarberModule } from './barbers/barber/barber.module';
 import { OrdersModule } from './barbers/orders/orders.module';
 import { BarberyServiceModule } from './barbers/barbery-service/barbery-service.module';
+import { OrdersModule } from './pets/orders/orders.module';
 require("dotenv").config();
 // ============================
 //  Enviroment
