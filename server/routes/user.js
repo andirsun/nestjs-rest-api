@@ -1093,50 +1093,66 @@ app.post("/loginUserV2",async function(req,res){
       }else{
         /* New user, then need to insert in db */
         // user to save in thedatabase
-        let newUser = new User({
-          phone,
-          registerCity : city,
-          registrationCode : Math.floor(100000 + Math.random() * 900000).toString(),
-          email:phone.toString()+"@timugo.com" //temporal email before the people provide us the right email
-        });
-        /* Save the new User */
-        newUser.save((err,resp)=>{
+        User.find((err,records)=>{
           if (err) {return res.status(400).json({response: 3,content: err});}
-          if(resp){
-            if(!validCity){
-              return res.status(200).json({
-                response: 2,
-                content:{
-                  user : resp,
-                  code  : 2, //code 1 means that the number need to be verified
-                  newUser : true
-                } 
-              });
+          let id = 0 
+          if(records.length == 0){
+            //if no exists any records in the collection
+            id=1
+          }else{
+            console.log("El ultimo id del cliente es: "+records[records.length-1].id);
+            console.log("el siguiente es : "+ (records[records.length-1].id+1));
+            //if exists records then I take the last id of the last record and increment the value in 1
+            id=(records[records.length-1].id + 1);
+          }
+          let newUser = new User({
+            id,
+            phone,
+            registerCity : city,
+            registrationCode : Math.floor(100000 + Math.random() * 900000).toString(),
+            email:phone.toString()+"@timugo.com" //temporal email before the people provide us the right email
+          });
+          /* Save the new User */
+          newUser.save((err,resp)=>{
+            if (err) {return res.status(400).json({response: 3,content: err});}
+            if(resp){
+              if(!validCity){
+                return res.status(200).json({
+                  response: 2,
+                  content:{
+                    user : resp,
+                    code  : 2, //code 1 means that the number need to be verified
+                    newUser : true
+                  } 
+                });
+
+              }else{
+                let message = 'Your verification code is '+resp.registrationCode.toString();
+                //Send the message with the registration code
+                sendSMSMessage(resp.phone,message);
+                return res.status(200).json({
+                  response: 2,
+                  content:{
+                    user : resp,
+                    code  : 1,//code 1 means that the number need to be verified
+                    newUser: true
+                  } 
+                });
+              }
 
             }else{
-              let message = 'Your verification code is '+resp.registrationCode.toString();
-              //Send the message with the registration code
-              sendSMSMessage(resp.phone,message);
               return res.status(200).json({
-                response: 2,
+                response: 1,
                 content:{
-                  user : resp,
-                  code  : 1,//code 1 means that the number need to be verified
-                  newUser: true
+                  message : "No se pudo guardar al usuario",
                 } 
               });
             }
 
-          }else{
-            return res.status(200).json({
-              response: 1,
-              content:{
-                message : "No se pudo guardar al usuario",
-              } 
-            });
-          }
+          });
 
         });
+        
       }
 
     });
