@@ -637,7 +637,7 @@ app.post("/finishOrder",function(req,res){
             idBarber: tempOrder.idBarber,
             nameBarber : tempOrder.nameBarber,
             nameClient : tempOrder.nameClient,
-            address: tempOrder.address,
+            address: tempOrder.address || "sin direccion",
             dateBeginOrder : tempOrder.dateBeginOrder + " "+tempOrder.hourStart,
             dateFinishOrder : moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm"),
             duration : moment(moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")).diff(moment(tempOrder.dateBeginOrder + " "+tempOrder.hourStart), 'minutes'),
