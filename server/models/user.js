@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const uniqueValidator = require("mongoose-unique-validator");
 ///////autoincremental id's 
-const AutoIncrement = require('mongoose-sequence')(mongoose);
+//const AutoIncrement = require('mongoose-sequence')(mongoose);
 
 let rolesValidos = {
   values: ["USER_ROLE", "USER_VIP_ROLE"],
@@ -116,6 +116,6 @@ let usuarioSchema = new Schema({
 });
 
 usuarioSchema.plugin(uniqueValidator, { message: "{PATH} debe de ser único" });
-usuarioSchema.plugin(AutoIncrement, {inc_field: 'id'});
+//usuarioSchema.plugin(AutoIncrement, {inc_field: 'id'});
 
 module.exports = mongoose.model("User", usuarioSchema);
