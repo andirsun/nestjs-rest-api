@@ -17,8 +17,12 @@ let logPayment = new Schema({
 });
 
 let address  = new Schema({
-  address :String,
-  description : String 
+  city : String,
+  address : String,
+  favorite : Boolean,
+  description:String,
+  lat : String,
+  lng : String,
 });
 let temporalOrder = new Schema({
   id: {
@@ -46,12 +50,12 @@ let temporalOrder = new Schema({
     type: String,
     require:[false]
   },
-  //address: [address],
   /*
-    Temporal fix , the address in the V1.0 must be a 
-    string and in the version 2.0 of create order
-    must be a Addres Schema
-   */
+  Temporal fix , the address in the V1.0 must be a 
+  string and in the version 2.0 of create order
+  must be a Addres Schema
+  */
+  newAddress: address,
   address : {
     type : String
   },
