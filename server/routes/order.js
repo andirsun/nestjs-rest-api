@@ -843,6 +843,7 @@ app.post("/finishOrCancellOrder",function(req,res){
             nameBarber : tempOrder.nameBarber,
             nameClient : tempOrder.nameClient,
             newAddress: tempOrder.newAddress,
+            address : tempOrder.address,
             dateBeginOrder : tempOrder.dateBeginOrder + " "+tempOrder.hourStart,
             dateFinishOrder : moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm"),
             duration : moment(moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")).diff(moment(tempOrder.dateBeginOrder + " "+tempOrder.hourStart), 'minutes'),
