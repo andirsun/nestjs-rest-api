@@ -9,8 +9,17 @@ let validStatusTypes = {
   values: ["Cancelled", "Finished"],
   message: "{VALUE} no es un metodo de pago valido"
 };
-let Schema = mongoose.Schema;
 
+
+let Schema = mongoose.Schema;
+const address  = new Schema({
+  city : String,
+  address : String,
+  favorite : Boolean,
+  description:String,
+  lat : String,
+  lng : String,
+});
 let orderHistory = new Schema({
   id: {
     type: Number,
@@ -43,9 +52,11 @@ let orderHistory = new Schema({
     required:[false],
     default: "Sin asignar"
   },
+  /* New version of addres New API */
+  newAddress : address,
+  /* Deprecated version of address */
   address: {
-    type: String,
-    required: [true, "la direccion es necesaria"]
+    type: String
   },
   city:{
     type: String,

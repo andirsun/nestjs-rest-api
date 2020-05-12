@@ -16,7 +16,7 @@ let logPayment = new Schema({
   description : String
 });
 
-let address  = new Schema({
+const address  = new Schema({
   city : String,
   address : String,
   favorite : Boolean,
