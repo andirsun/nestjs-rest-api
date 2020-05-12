@@ -42,11 +42,11 @@ export interface Partner extends Document {
 */
 interface Discount {
     id : number,
-    cupon : string, //optional
+    code : string, //optional
     presentations : [PresentationsDiscount], 
     date : string, 
     status :string, // active , disabled
-    percetage  : number,
+    percentage  : number,
 };
 interface PresentationsDiscount {
     idPresentation : string,
