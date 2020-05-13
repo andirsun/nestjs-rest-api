@@ -8,7 +8,7 @@ import { CreateOrderDTO } from "./dto/order.dto";
 import { OrdersService } from './orders.service';
 
 
-@Controller('orders')
+@Controller('orders-barbers')
 export class OrdersController {
 
   constructor(
@@ -32,6 +32,24 @@ export class OrdersController {
 									content: err
 							});
 					});   
+	}
+	@Get('/activeOrdersByCity')
+	async getActiveOrdersByCity(@Res() res,@Query('city')city : string){
+		await this.orderService.getAtiveOrdersByCity(city)
+				.then((orders)=>{
+						console.log("Llegue positivo");
+						return res.status(HttpStatus.OK).json({
+								response: 2,
+								content: orders
+						});
+				})
+				.catch((err)=>{
+						console.log("llegue negativo");
+						return res.status(HttpStatus.BAD_REQUEST).json({
+								response: 3,
+								content: err
+						});
+				});   
 	}
 
 

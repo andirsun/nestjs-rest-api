@@ -11,7 +11,11 @@ export interface barberyOrder extends Document {
   idClient : string,
   nameClient : string,
   idBarber : number,
-  address : Address | string,
+  /* Retrocompatibility with old address */
+  city : string,
+  address : string,
+  /* New Address */
+  newAddress : Address,
   dateBeginOrder: string,
   dateArriveBarber: string,
   hourStart : string,

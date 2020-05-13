@@ -25,4 +25,4 @@ import { orderSchema } from './schemas/order.schema';
   providers: [OrdersService],
   exports : [OrdersService]
 })
-export class OrdersModule {}
+export class OrdersBarbersModule {}

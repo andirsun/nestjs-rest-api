@@ -22,4 +22,8 @@ export class OrdersService {
     console.log(ActiveOrders);
     return ActiveOrders;
   }
+  async getAtiveOrdersByCity(city : string): Promise<barberyOrder[]>{
+    const ActiveOrders = await this.ordersModel.find({status:true});
+    return ActiveOrders;
+  }
 }

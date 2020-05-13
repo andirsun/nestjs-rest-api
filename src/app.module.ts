@@ -19,9 +19,9 @@ import { AuthModule } from './modules/auth/auth.module';
 import { ProductsModule } from './pets/products/products.module';
 import { ServiceModule } from './pets/service/service.module';
 import { BarberModule } from './barbers/barber/barber.module';
-import { OrdersModule } from './barbers/orders/orders.module';
+import { OrdersBarbersModule } from './barbers/orders/orders.module';
 import { BarberyServiceModule } from './barbers/barbery-service/barbery-service.module';
-import { OrdersModule } from './pets/orders/orders.module';
+import { OrdersPetsModule } from './pets/orders/orders.module';
 require("dotenv").config();
 // ============================
 //  Enviroment
@@ -53,7 +53,8 @@ if (process.env.ENVIROMENT === 'dev' || process.env.ENVIROMENT === 'local') {
     UserPetsModule,
     BarberModule,
     BarberyServiceModule,
-    OrdersModule,
+    OrdersPetsModule,
+    OrdersBarbersModule,
     LogBarbersModule,
     
     /* Pets Modules */
