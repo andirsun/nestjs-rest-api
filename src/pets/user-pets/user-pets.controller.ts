@@ -9,14 +9,31 @@ import { LogPetsService } from "../log-pets/log-pets.service";
 @Controller('user-pets')
 export class UserPetsController {
 
-    constructor(
-        private userPetsServie : UserPetsService,
-        private logService : LogPetsService
-    ){}
+	constructor(
+		private userPetsServie : UserPetsService,
+		private logService : LogPetsService
+	){}
 
-    @Post('/createUserPets')
-    async createUser(@Res() res, @Body() createUserDTO : CreateUserPetsDTO){
-        
-        /** FUncion logic */
-    }
+	@Post('/new')
+	async createUser(@Res() res, @Body() createUserDTO : CreateUserPetsDTO){
+		this.userPetsServie.createUser(createUserDTO)
+			.then(user=>{
+				this.logService.log("Se creo un nuevo usuario",user._id);
+				return res.status(HttpStatus.OK).json({
+					response: 2,
+					content:{
+						user
+					}
+				});
+			})
+			.catch(err=>{
+				res.status(HttpStatus.OK).json({
+					response: 1,
+					content:{
+						err
+					}
+				});
+				throw new Error(err);
+			})
+	}
 }

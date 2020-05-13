@@ -17,11 +17,6 @@ let rolesValidos = {
 };
 
 export const UserPetsSchema = new Schema({
-  id: {
-      type: Number,
-      require: [true, "EL id es necesario"],
-      default: 0
-  },
   phoneToken:{
     type:String,
     default:"none"
@@ -36,7 +31,6 @@ export const UserPetsSchema = new Schema({
   },
   registrationCode :{
     type : String,
-    require: [true,"Es necesario el mismo"]
   },
   phone: {
     type: Number,
