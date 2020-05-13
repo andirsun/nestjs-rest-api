@@ -243,6 +243,80 @@ app.post("/getCurrentOrder",function(req,res){
     }
   });
 });
+app.post("/getCurrentOrderV2",function(req,res){
+  let body = req.body;
+  let phoneClient = body.phoneClient;
+  /* Search the user Info in the database */
+  user.findOne({phone:phoneClient},(err,user)=>{
+    if (err) {return res.status(400).json({response: 3,content: err})};
+    /* If the user exists */
+    if(user){
+      temporalOrder.findOne({idClient:user.id,status:true},function(err,temporalOrderDB){
+        if (err) {return res.status(400).json({response: 3,content: err});}
+        if(temporalOrderDB){
+          let temporal = temporalOrderDB.toJSON();
+    
+          if(temporal.idBarber != 0){
+            barber.findOne({id:temporal.idBarber},function(err,barberDB){
+              if (err) {
+                return res.status(500).json({
+                  response: 3,
+                  content: err
+                });
+              }
+              if(barberDB){
+                let temporalBarber = barberDB.toJSON();
+                temporal.nameBarber = temporalBarber.name;
+                temporal.urlImgBarber = temporalBarber.urlImg;
+                return res.status(200).json({
+                  response: 2,
+                  content: {
+                    order:temporal,
+                  }
+                });
+              }else{
+                return res.status(200).json({
+                  response: 1,
+                  content:{
+                    message: "NO hemos encontrado ningun barbero con ese id asociado a la orden"
+                  }
+                });
+              }
+            });
+          }else{
+            temporal.nameBarber = "Sin asignar";
+            temporal.urlImgBarber = "null";
+            return res.status(200).json({
+              response: 2,
+              content: {
+                order:temporal,
+              }
+            });
+          }
+        }else{
+          return res.status(200).json({
+            response: 1,
+            content: {
+              message: "No tienes ninguna order en proceso."
+            }
+          });
+        }
+      });
+    }else{
+      return res.status(200).json({
+        response: 1,
+        content:{
+          message: "No encontramos a un usuario con ese celular"
+        }
+      });
+
+    }
+  })
+  
+});
+/*
+  Legacy version of create version, dont modify 
+*/
 app.post("/createOrder", function (req, res) {
   let body = req.body;
   temporalOrder.find(function (err, temporalOrderDB) {//this query is to know the number of documents
@@ -411,27 +485,23 @@ app.post("/createOrder", function (req, res) {
 app.post("/createTemporalOrder",function(req,res){
   //diferenciar si el metodo de pago es efectivo entonces el pendiente lo pongo en false y creo la orden sin que notifique a los barberos pero a nosotros si
   let body = req.body;
+  let idClient = body.idClient;
   let currentHour  = moment().tz('America/Bogota').format("HH");
   //Only accept orders in the hours : 8 am to 9 pm
-  if(parseInt(currentHour) > 21 /*|| parseInt(currentHour) < 8*/){
+  if(!true/*parseInt(currentHour) > 20 /*|| parseInt(currentHour) < 8*/){
     //out of service
     return res.status(400).json({
       response: 1,
       content:{
-        message: "Ups, Recuerda nuestro horario de servicio es de 8:00 am - 9:00 pm",
+        message: "Ups, Recuerda nuestro horario de servicio es de 9:00 am - 8:00 pm",
         code:1
       }
     });
   }else {
     //CREATE THE ORDER NORMALLY          
-    temporalOrder.find(function (err, temporalOrderDB) {//this query is to know the number of documents
-      if (err) {
-        return res.status(500).json({
-          response: 3,
-          content: err
-        });
-      }
-     
+    /* This query is to know the number of documents */
+    temporalOrder.find(function (err, temporalOrderDB) {
+      if (err) {return res.status(400).json({response: 3,content: err});}
       let id = 0
       if(temporalOrderDB.length == 0){
         //if no exists any order
@@ -439,16 +509,16 @@ app.post("/createTemporalOrder",function(req,res){
       }else{
         id=temporalOrderDB[temporalOrderDB.length-1].id + 1;
       }
-      //////////////////////////////////////
-      temporalOrder.findOne({idClient:body.idClient,status:true},function(err,orden){
-        //THIS query is to know is the user has a current order in progress
+      /* THIS query is to know is the user has a current order in progress */
+      temporalOrder.findOne({idClient:idClient,status:true},function(err,orden){
         if (err) {//Handlinf error in the query
           return res.status(500).json({
             response: 3,
             content: err
           });
         }
-        if(orden){//If exists a orden in progress i need to return this response
+        //If exists a orden in progress i need to return this response
+        if(orden){
           return res.status(200).json({
             response: 1,
             content: {
@@ -457,7 +527,7 @@ app.post("/createTemporalOrder",function(req,res){
           });
         }else{
           //If the user dont have a order in progress we need to create and save the temporal order
-          user.findOne({id:body.idClient},function(err,client){
+          user.findOne({id:idClient},function(err,client){
             //searching the user to have his name
             if (err) {//Handling error in qeury
               return res.status(500).json({
@@ -480,6 +550,14 @@ app.post("/createTemporalOrder",function(req,res){
               services.forEach(element => {
                 price = price + (element.price*element.quantity);
               });
+              let address = body.address;
+              /* Search the address with all info */
+              client.addresses.forEach(element =>{
+                if(element.address == body.address){
+                  console.log(element);
+                  address = element;
+                }
+              });
               //Create the new Order
               let order = new temporalOrder({//creating the order to save in database
                 id,
@@ -487,10 +565,7 @@ app.post("/createTemporalOrder",function(req,res){
                 idClient : body.idClient,
                 idBarber : body.idBarber || 0,
                 nameClient: client.name,
-                address :{
-                  address:  body.address,
-                  description : body.addressDescription || ""
-                },
+                newAddress : address,
                 dateBeginOrder :  moment().tz('America/Bogota').format("YYYY-MM-DD"),
                 hourStart :  moment().tz('America/Bogota').format("HH:mm"),
                 city : body.city,
@@ -501,26 +576,18 @@ app.post("/createTemporalOrder",function(req,res){
               });
               //in service
               order.save((err, response) => {
-                if (err) {//handling the query error
-                  return res.status(400).json({
-                    response: 1,
-                    content:{
-                      err,
-                      message:"Error al guardar la orden, contacta con el administrador"
-                    }
-                  });
-                }
+                if (err) return res.status(400).json({response: 1,content:{err,message:"Error al guardar la orden, contacta con el administrador"}});
                 if (response) {
                   //console.log("order Details : "+response);
-                  let orderMessage = "Detalle: id:"+response.id
-                                  +",nombre: "+response.nameClient
+                  let orderMessage = "Nombre: "+response.nameClient
                                   +",celular: "+client.phone
-                                  +",dir: "+response.address
+                                  +",dir: "+response.newAddress.address + response.newAddress.description 
                                   + ", Valor: " + response.price ;
-
+                  /* Build the message to send trhow Twillio */
                   let finalMessage = "Your appointment is coming up on "+"NUEVA ORDEN"+" at "+ orderMessage;
-                  //sendWhatsAppMessage(3162452663,finalMessage);
-                  //sendWhatsAppMessage(3106838163,finalMessage);
+                  /* Sending the message throw twillio */
+                  sendWhatsAppMessage(3162452663,finalMessage);
+                  sendWhatsAppMessage(3106838163,finalMessage);
                   console.log("Nueva Orden: " + finalMessage);
                   //Sending New Order to all Barbers if the order is pay with cash and is active
                   if(pending == false){
@@ -531,14 +598,13 @@ app.post("/createTemporalOrder",function(req,res){
                           //need to be connected to recieve the notification of the new order
                           if(resp[i].connected == true){
                             console.log("envie mensaje a un barbero");
-                            //sendPushMessageBarber(resp[i].phoneToken,"NUEVA ORDEN ",resp[i].name + "! Tenemos una nueva orden para ti!!");
+                            sendPushMessageBarber(resp[i].phoneToken,"NUEVA ORDEN ",resp[i].name + "! Tenemos una nueva orden para ti!!");
                           }
                         }
                       }
                       
-  
                       //Here goes the emit function ***
-                      global.socketServer.emit('newOrder', {});
+                      //global.socketServer.emit('newOrder', {});
                       
                       return res.status(200).json({
                         response: 2,
@@ -548,34 +614,48 @@ app.post("/createTemporalOrder",function(req,res){
                         }
                       });
                     });
+                  }else {
+                    return res.status(200).json({
+                      response: 2,
+                      content: {
+                        orderDB:response,
+                        message: "Genial, Se creo la orden pero falta pagar"
+                      }
+                    });
                   }
                 }else{
                   //If the order doesnt save return the error
-                  res.status(200).json({
+                  return res.status(200).json({
                     response: 1,
                     content: {
                       message: "Upss, No se guardardo la orden, contacta con el administrador."
                     }
                   });
+
                 }
               });
+
             }else{
               res.status(200).json({
                 response: 1,
                 content: "Ups, no hemos podido encontrar ese cliente para crear la orden"
               });
             }
+
           });
         }
+
       });
     });
   }
+
 });
+/* Legacy version of Finish Order */
 app.post("/finishOrder",function(req,res){
   let body = req.body;
   let idOrder = parseInt(body.idOrder);
   let comment = body.comment || "Sin comentarios";
-  let status = body.status;
+  let status = body.status; /* "Finished | Cancelled" */
   temporalOrder.findOneAndUpdate({id:idOrder,status:true},{status:false,updated: moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")},function(err,temporalOrderDB){
     if (err) {
       return res.status(500).json({
@@ -638,6 +718,132 @@ app.post("/finishOrder",function(req,res){
             nameBarber : tempOrder.nameBarber,
             nameClient : tempOrder.nameClient,
             address: tempOrder.address || "sin direccion",
+            dateBeginOrder : tempOrder.dateBeginOrder + " "+tempOrder.hourStart,
+            dateFinishOrder : moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm"),
+            duration : moment(moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")).diff(moment(tempOrder.dateBeginOrder + " "+tempOrder.hourStart), 'minutes'),
+            comments : comment,
+            price : tempOrder.price,
+            services: tempOrder.services,
+            status: status,
+            payMethod:"cash",
+            city: tempOrder.city,
+            bonusCode: "none",
+            card: "none",
+            commission : tempOrder.price * 0.30,
+            updated: moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")
+          });
+          orderSave.save((err,orderDb)=>{
+            if (err) {
+              return res.status(500).json({
+                response: 1,
+                content: err
+              });
+            }
+            if(orderDb){
+              res.status(200).json({
+                response: 2,
+                content:{
+                  orderDb,
+                  message: "Se guardo la orden en el historial y se desactivo de las ordenes activas"
+                }
+              });
+            }else{
+              res.status(200).json({
+                response: 1,
+                content:{
+                  message: "Upss. N pudimos enviar la orden al historial"
+                }
+              });
+            }
+          });
+        }else{
+          res.status(200).json({
+            response: 1,
+            content:{
+              message: "NO SE PUDIERON ENCONTRAR LAS ORDENES"
+            }
+          });
+        }
+      });
+    }else{
+      res.status(200).json({
+        response: 1,
+        content:{
+          message: "Upss. No concontramos esa orden o esta desactivada"
+        }
+      });
+    }
+  });
+});
+/* Finish Order V2 */
+app.post("/finishOrCancellOrder",function(req,res){
+  let body = req.body;
+  let idOrder = parseInt(body.idOrder);
+  let comment = body.comment || "Sin comentarios";
+  let status = body.status; /* "Finished | Cancelled" */
+  temporalOrder.findOneAndUpdate({id:idOrder,status:true},{status:false,updated: moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")},function(err,temporalOrderDB){
+    if (err) {
+      return res.status(500).json({
+        response: 1,
+        content: err
+      });
+    }
+    if(temporalOrderDB){
+      let tempOrder = temporalOrderDB.toJSON();
+      if(status =="Finished"){
+        let orderPrice = tempOrder.price;
+        // 30% of commission
+        let orderCommission = orderPrice * 0.30;
+        barber.findOneAndUpdate({id:tempOrder.idBarber},{$inc:{points:50},$inc:{balance:-orderCommission}},function(err,barberDb){//updating points to a barber
+          if (err) {
+            return res.status(500).json({
+              response: 3,
+              content: err
+            });
+          }
+          if(barberDb){
+            console.log("se sumaron los puntos al barbero");
+          }else{
+            console.log("No se le sumaron los puntos al barbero");
+          }
+        });
+        user.findOneAndUpdate({id:tempOrder.idClient},{$inc:{points:50}},function(err,userDb){//updating points to a barber
+          if (err) {
+            return res.status(500).json({
+              response: 3,
+              content: err
+            });
+          }
+          if(userDb){
+            console.log("Se sumaron los punto al usuario");
+          }else{
+            console.log("No se le sumaron los puntos al usuario");
+          }
+        });
+      }
+      order.find(function(err,ordersDB){
+        if (err) {
+          return res.status(500).json({
+            response: 1,
+            content: err
+          });
+        }
+        if(ordersDB){
+          let id = 0
+          if(ordersDB.length == 0){
+            //if no exists any order
+            id=1
+          }else{
+            id=ordersDB[ordersDB.length-1].id + 1;
+          }
+          let orderSave = new order({
+            id : id, //autoincremental id
+            idClient : tempOrder.idClient,
+            idBarber: tempOrder.idBarber,
+            nameBarber : tempOrder.nameBarber,
+            nameClient : tempOrder.nameClient,
+            newAddress: tempOrder.newAddress,
+            address : tempOrder.address,
             dateBeginOrder : tempOrder.dateBeginOrder + " "+tempOrder.hourStart,
             dateFinishOrder : moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm"),
             duration : moment(moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")).diff(moment(tempOrder.dateBeginOrder + " "+tempOrder.hourStart), 'minutes'),
@@ -803,7 +1009,6 @@ app.put("/editOrder",function(req,res){
     }
   });
 });
-
 app.put("/assignBarberToOrder",function(req,res){
   let body = req.body;
   let idOrder = parseInt(body.idOrder);
