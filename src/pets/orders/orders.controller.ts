@@ -25,10 +25,14 @@ export class OrdersController {
   @Post('/newOrder')
 	async createNewOrder(@Res() res,@Body() order : OrderPetsInterface){
     /* Search the Info and build the order */
-    let user : UserPets;
     this.userPetsService.getUser(order.phoneClient)
       .then(user=>{
-        user = user;
+        
+        // Search partner
+        // Search Product Partner to get pricess 
+        // Build the Order DTO and create Order
+
+      
       })
       .catch(err=>{
          /* Send response */
@@ -41,7 +45,6 @@ export class OrdersController {
         /* Send Error to Sentry report */
         throw new Error(err);
       })
-    console.log(user);
     // this.orderService.createOrder()
     //   .then(order =>{
     //     /* Log register */
