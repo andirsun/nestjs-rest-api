@@ -23,7 +23,7 @@ export class OrdersService {
     return ActiveOrders;
   }
   async getAtiveOrdersByCity(city : string): Promise<barberyOrder[]>{
-    const ActiveOrders = await this.ordersModel.find({status:true});
+    const ActiveOrders = await this.ordersModel.find({status:true,"newAddress.city":city});
     return ActiveOrders;
   }
 }
