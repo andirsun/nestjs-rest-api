@@ -222,10 +222,10 @@ module.exports = {
             message="ACCEPTED";
             description="Ya enviamos tu pago, confirmalo en Nequi";
             codeQR = resp.ResponseMessage.ResponseBody.any.unregisteredPaymentRS.transactionId;
-          } else if (status=="1") {
+          } /*else if (status=="1") {
             message="APPROVED";
             description="Listo, ¡realizaste tu compra exitosamente!";
-          }
+          }*/
         } else {
           message = "NEQUI_ERROR";
           responseCode = 3;
@@ -250,7 +250,7 @@ module.exports = {
             description : "Hemos tenido un inconveniente, ¡Intentalo de nuevo!",
           }
         }
-        res.status(200).json(response);
+        return res.status(200).json(response);
     });
   },
   nequiCheckPushPayment : function(codeQR, messageID, clientID, res){
