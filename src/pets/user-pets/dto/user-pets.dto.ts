@@ -4,7 +4,7 @@ export class CreateUserPetsDTO {
     readonly updated: string;
     readonly name: string;
     readonly registrationCode :string;
-    readonly phone: string;
+    readonly phone: number;
     readonly birth: string;
     readonly email: string;
     readonly img: string;

@@ -24,6 +24,7 @@ import { LogPetsModule } from 'src/pets/log-pets/log-pets.module';
       LogPetsModule
   ],
   providers: [UserPetsService],
-  controllers: [UserPetsController]
+  controllers: [UserPetsController],
+  exports :[UserPetsService]
 })
 export class UserPetsModule {}

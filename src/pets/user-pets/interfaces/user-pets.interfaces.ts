@@ -6,19 +6,19 @@ import { Document } from "mongoose";
 
 
 export interface UserPets extends Document {
-    readonly id: number,
-    readonly phoneToken:string,
-    readonly updated: string,
-    readonly name: string,
-    readonly registrationCode :string,
-    readonly phone: string,
-    readonly birth: string,
-    readonly email: string,
-    readonly addresses : [Address],
-    readonly img: string,
-    readonly numOrders:number,
-    readonly points: number,
-    readonly status: boolean,
-    readonly cards : [Card],
-    readonly publicityMethod:string
+    _id: string,
+    phone: number ,
+    phoneToken:string,
+    updated: string,
+    name: string,
+    registrationCode :string,
+    birth: string,
+    email: string,
+    addresses : [Address],
+    img: string,
+    numOrders:number,
+    points: number,
+    status: boolean,
+    cards : [Card],
+    publicityMethod:string
 };

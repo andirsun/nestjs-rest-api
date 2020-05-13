@@ -16,6 +16,22 @@ export class UserPetsService {
     constructor(@InjectModel('UserPets') private readonly userPetsModel : Model<UserPets>){}
 
     /** Queries to the database */
+    /*
+        This function save an user in the DB
+    */
+    async createUser(createUserPetsDTO:CreateUserPetsDTO) : Promise<UserPets>{
+        const user = new this.userPetsModel(createUserPetsDTO);
+        return await user.save();
+    }
+    /*
+        This function returns an user from the database
+    */
+    async getUser(phone:number) : Promise<UserPets>{
+        const user = await this.userPetsModel.findOne({phone:phone});
+        return user;
+    }
+
+
 
 
 }
