@@ -7,10 +7,11 @@ import { CommentInterface } from "./comment.interface";
 import { PaymentMethodInterface } from "./paymentMethod.interface";
 
 export interface OrderPetsInterface extends Document {
-  _id : number,
+  _id : string,
   status : string,
   updated : string,
   idClient : string,
+  phoneClient : number,
   nameClient : string,
   idPartner : number,
   namePartner : string,
