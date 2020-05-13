@@ -214,7 +214,7 @@ module.exports = {
         let message = "REJECTED";
         let codeQR = undefined;
         var responseCode = 2;
-        console.log(resp.toString());
+        console.log(JSON.stringify(resp));
         if ( resp.ResponseMessage ){
           status = resp.ResponseMessage.ResponseHeader.Status.StatusCode;
           description = resp.ResponseMessage.ResponseHeader.Status.StatusDesc;
@@ -268,7 +268,7 @@ module.exports = {
         let description="";
         let message = "REJECTED";
         var responseCode = 2;
-        console.log(resp.toString());
+        console.log(JSON.stringify(resp));
         if(resp.ResponseMessage){
           
           status = resp.ResponseMessage.ResponseHeader.Status.StatusCode;
