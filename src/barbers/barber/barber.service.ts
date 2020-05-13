@@ -10,5 +10,9 @@ export class BarberService {
 
   constructor(@InjectModel('barbers') private readonly barberModel : Model<BarberInterface>){}
 
+  async getBarbersByCity(city : string): Promise<BarberInterface[]>{
+    const Barbers = await this.barberModel.find({city:city});
+    return Barbers;
+  }
   
 }
