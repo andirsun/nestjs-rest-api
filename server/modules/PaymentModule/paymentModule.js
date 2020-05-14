@@ -264,7 +264,7 @@ module.exports = {
       'POST', headers, body,
       (statusCode, resp) => {
         //Do somenthing with the response
-        //let status="-1";
+        let status="-1";
         let description="";
         let message = "REJECTED";
         var responseCode = 2;
