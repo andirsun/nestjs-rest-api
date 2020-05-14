@@ -272,7 +272,7 @@ module.exports = {
         if(resp.ResponseMessage){
           
           //status = resp.ResponseMessage.ResponseHeader.Status.StatusCode;
-          status = resp.ResponseMessage.ResponseBody.any.getStatusPaymentRS.status;
+          status = resp.ResponseMessage.ResponseBody["any"]["getStatusPaymentRS"]["status"];
           description = resp.ResponseMessage.ResponseHeader.Status.StatusDesc;
           /* Status definition are gave by Nequi Conecta APi */
           if(status == "33"){
