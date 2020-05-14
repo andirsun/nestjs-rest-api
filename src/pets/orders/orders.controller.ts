@@ -11,6 +11,7 @@ import { CreateOrderPetsDTO } from './dto/order.dto';
 /* Services */
 import { UserPetsService } from '../user-pets/user-pets.service';
 import { ProductsModule } from '../products/products.module';
+import { PartnerService } from '../partner/partner.service';
 
 @Controller('orders-pets')
 export class OrdersController {
@@ -19,6 +20,7 @@ export class OrdersController {
     private logService: LogPetsService,
     private orderService : OrdersService,
     private userPetsService : UserPetsService,
+    private partnerService : PartnerService
     //private productServices : ProductsModule
   ){}
 
@@ -28,7 +30,25 @@ export class OrdersController {
     this.userPetsService.getUser(order.phoneClient)
       .then(user=>{
         
-        // Search partner
+        this.partnerService.getPartnerById(order.idPartner)
+          .then(partner=>{
+            
+            
+
+          })
+          .catch(err=>{
+            /* Send response */
+            res.status(HttpStatus.OK).json({
+             response: 1,
+             content:{
+               err
+             }
+           });
+           /* Send Error to Sentry report */
+           throw new Error(err);
+          });
+        
+        
         // Search Product Partner to get pricess 
         // Build the Order DTO and create Order
 

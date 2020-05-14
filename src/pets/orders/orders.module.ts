@@ -6,6 +6,7 @@ import { OrderPetsSchema } from './schemas/order.schema';
 import { LogPetsModule } from '../log-pets/log-pets.module';
 import { UserPetsModule } from '../user-pets/user-pets.module';
 import { ProductsModule } from '../products/products.module';
+import { PartnerModule } from '../partner/partner.module';
 
 @Module({
   imports:[
@@ -22,7 +23,8 @@ import { ProductsModule } from '../products/products.module';
     // Other module is required need to import here
     LogPetsModule,
     UserPetsModule,
-    ProductsModule
+    ProductsModule,
+    PartnerModule
   ],
   controllers: [OrdersController],
   providers: [OrdersService],
