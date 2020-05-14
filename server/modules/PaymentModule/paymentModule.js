@@ -275,6 +275,10 @@ module.exports = {
           if( resp.ResponseMessage.ResponseHeader.Status.StatusCode == "10-455"){
             /* Make description with cancelation message */
             description = resp.ResponseMessage.ResponseHeader.Status.StatusDesc;
+            /* Order expired time exceded minutes  */
+          } else if( resp.ResponseMessage.ResponseHeader.Status.StatusCode == "10-454") {
+            /* Description */
+            description = resp.ResponseMessage.ResponseHeader.Status.StatusDesc;
           } else {
             /* Order Active */
             /* Status definition are gave by Nequi Conecta APi */
@@ -288,7 +292,9 @@ module.exports = {
               message = "APPROVED";
               description="Listo, ¡Validamos tu pago exitosamente!";
             }  
+
           }
+          
           
         } else{
           message = "NEQUI_ERROR";

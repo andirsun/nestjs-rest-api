@@ -146,3 +146,27 @@
     }
   }
 }
+// Payment Check ( time expire)
+{
+  "ResponseMessage": {
+    "ResponseHeader": {
+      "Channel": "PNP04-C001",
+      "ResponseDate": "2020-05-14T18:52:06.978Z",
+      "Status": {
+        "StatusCode": "10-454",
+        "StatusDesc": "La transacción ya caducó"
+      },
+      "MessageID": "482323276",
+      "ClientID": "3116021602",
+      "Destination": {
+        "ServiceName": "PaymentsService",
+        "ServiceOperation": "getStatusPayment",
+        "ServiceRegion": "C001",
+        "ServiceVersion": "1.0.0"
+      }
+    },
+    "ResponseBody": {
+      "any": {}
+    }
+  }
+}
