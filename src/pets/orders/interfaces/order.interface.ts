@@ -13,7 +13,7 @@ export interface OrderPetsInterface extends Document {
   idClient : string,
   phoneClient : number,
   nameClient : string,
-  idPartner : number,
+  idPartner : string,
   namePartner : string,
   commision : number,
   address : Address,
