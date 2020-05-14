@@ -268,27 +268,28 @@ module.exports = {
         let description="";
         let message = "REJECTED";
         var responseCode = 2;
-        console.log("Respuesta al checkear el estado del pago: ",JSON.stringify(resp));
+        //console.log("Respuesta al checkear el estado del pago: ",JSON.stringify(resp));
         if(resp.ResponseMessage){
-          
-          //status = resp.ResponseMessage.ResponseHeader.Status.StatusCode;
-          status = resp.ResponseMessage.ResponseBody["any"]["getStatusPaymentRS"]["status"];
-          description = resp.ResponseMessage.ResponseHeader.Status.StatusDesc;
-          /* Status definition are gave by Nequi Conecta APi */
-          if(status == "33"){
-            message="ACCEPTED";
-            description="Por favor, confirma tu pago en Nequi";
-          } else if (status == "35") {
-            message = "APPROVED";
-            description="Listo, ¡Validamos tu pago exitosamente!";
+          console.log("testando la respuesta : ",JSON.stringify(resp))
+          /* Cancelled order by User */          
+          if( resp.ResponseMessage.ResponseHeader.Status.StatusCode == "10-455"){
+            /* Make description with cancelation message */
+            description = resp.ResponseMessage.ResponseHeader.Status.StatusDesc;
+          } else {
+            /* Order Active */
+            /* Status definition are gave by Nequi Conecta APi */
+            status = resp.ResponseMessage.ResponseBody.any.getStatusPaymentRS.status;
+            /* Order Pending */
+            if(status == "33"){
+              message="ACCEPTED";
+              description="Por favor, confirma tu pago en Nequi";
+              /*Order Acepted by User */
+            } else if (status == "35") {
+              message = "APPROVED";
+              description="Listo, ¡Validamos tu pago exitosamente!";
+            }  
           }
-          // if(status=="0"){
-          //   message="ACCEPTED";
-          //   description="Por favor, confirma tu pago en Nequi";
-          // } else if(status=="1"){
-          //   message="APPROVED";
-          //   description="Listo, ¡realizaste tu compra exitosamente!";
-          // }
+          
         } else{
           message = "NEQUI_ERROR";
           responseCode = 3;
