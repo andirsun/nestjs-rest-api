@@ -214,7 +214,7 @@ module.exports = {
         let message = "REJECTED";
         let codeQR = undefined;
         var responseCode = 2;
-        console.log(resp.toString());
+        console.log("Respuesta al hacer crear el pago: ",JSON.stringify(resp));
         if ( resp.ResponseMessage ){
           status = resp.ResponseMessage.ResponseHeader.Status.StatusCode;
           description = resp.ResponseMessage.ResponseHeader.Status.StatusDesc;
@@ -222,10 +222,10 @@ module.exports = {
             message="ACCEPTED";
             description="Ya enviamos tu pago, confirmalo en Nequi";
             codeQR = resp.ResponseMessage.ResponseBody.any.unregisteredPaymentRS.transactionId;
-          } else if (status=="1") {
+          } /*else if (status=="1") {
             message="APPROVED";
             description="Listo, ¡realizaste tu compra exitosamente!";
-          }
+          }*/
         } else {
           message = "NEQUI_ERROR";
           responseCode = 3;
@@ -250,7 +250,7 @@ module.exports = {
             description : "Hemos tenido un inconveniente, ¡Intentalo de nuevo!",
           }
         }
-        res.status(200).json(response);
+        return res.status(200).json(response);
     });
   },
   nequiCheckPushPayment : function(codeQR, messageID, clientID, res){
@@ -268,18 +268,34 @@ module.exports = {
         let description="";
         let message = "REJECTED";
         var responseCode = 2;
-        console.log(resp.toString());
+        //console.log("Respuesta al checkear el estado del pago: ",JSON.stringify(resp));
         if(resp.ResponseMessage){
-          
-          status = resp.ResponseMessage.ResponseHeader.Status.StatusCode;
-          description = resp.ResponseMessage.ResponseHeader.Status.StatusDesc;
-          if(status=="0"){
-            message="ACCEPTED";
-            description="Por favor, confirma tu pago en Nequi";
-          } else if(status=="1"){
-            message="APPROVED";
-            description="Listo, ¡realizaste tu compra exitosamente!";
+          console.log("testando la respuesta : ",JSON.stringify(resp))
+          /* Cancelled order by User */          
+          if( resp.ResponseMessage.ResponseHeader.Status.StatusCode == "10-455"){
+            /* Make description with cancelation message */
+            description = resp.ResponseMessage.ResponseHeader.Status.StatusDesc;
+            /* Order expired time exceded minutes  */
+          } else if( resp.ResponseMessage.ResponseHeader.Status.StatusCode == "10-454") {
+            /* Description */
+            description = resp.ResponseMessage.ResponseHeader.Status.StatusDesc;
+          } else {
+            /* Order Active */
+            /* Status definition are gave by Nequi Conecta APi */
+            status = resp.ResponseMessage.ResponseBody.any.getStatusPaymentRS.status;
+            /* Order Pending */
+            if(status == "33"){
+              message="ACCEPTED";
+              description="Por favor, confirma tu pago en Nequi";
+              /*Order Acepted by User */
+            } else if (status == "35") {
+              message = "APPROVED";
+              description="Listo, ¡Validamos tu pago exitosamente!";
+            }  
+
           }
+          
+          
         } else{
           message = "NEQUI_ERROR";
           responseCode = 3;
