@@ -26,10 +26,6 @@ export const ProductSchema = new Schema({
         type : String,
         required : [true,"la imagen es necesaria"]
     },
-    price : {
-        type : Number,
-        required : [true,"El precio es necesario"]
-    },
     deliveryDays : {
         type : Number,
         required : [true,"EL tiempo de delivery es necesario "]
@@ -40,7 +36,6 @@ export const ProductSchema = new Schema({
     },
     reference : {
         type : String,
-
     },
     orders : Number,
     benefits : String,

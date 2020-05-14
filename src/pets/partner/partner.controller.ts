@@ -11,6 +11,7 @@ import { CreateProductDTO } from "../products/dto/product.dto";
 /* Interfaces */
 import { Product } from "../products/interfaces/product.interface";
 import { Partner } from "../partner/interfaces/partner.interface";
+import { CreateProductPresentationDTO } from '../products/dto/productPresentation.dto';
 
 
 
@@ -99,6 +100,31 @@ export class PartnerController {
 			})
 			.catch((err)=>{
 				this.logService.error("Ocurrio un error al tratar de guardar un nuevo producto","none");
+				throw new Error(err);
+			});
+	};
+	/*
+		This function create a presentation of the certain product
+	*/
+	@Post('/products/presentations/new')
+	async createProductPresentation(@Res() res,@Query('idProduct')idProduct : string, @Body() createProductPresentationDTO: CreateProductPresentationDTO) {
+		await this.productService.createProductPresentation(idProduct,createProductPresentationDTO)
+			.then(productPresentation=>{
+				this.logService.log("Se creo una presentacion de un producto",productPresentation._id);
+				return res.status(HttpStatus.OK).json({
+					response: 2,
+					content: {
+						productPresentation
+					}
+				});
+			})
+			.catch((err)=>{
+				// res.status(HttpStatus.OK).json({
+				// 	response: 1,
+				// 	content: {
+				// 		err
+				// 	}
+				// });
 				throw new Error(err);
 			});
 	};
