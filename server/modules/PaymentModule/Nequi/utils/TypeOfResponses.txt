@@ -1,0 +1,148 @@
+/******** NEQUI PUSH PAYMENT METHODS **********/
+// Payment Creation
+{
+  "RequestMessage": {
+    "RequestHeader": {
+      "Channel": "PNP04-C001",
+      "RequestDate": "2020-05-14T16:31:49.819Z",
+      "MessageID": "473909815",
+      "ClientID": "3162452663",
+      "Destination": {
+        "ServiceName": "PaymentsService",
+        "ServiceOperation": "unregisteredPayment",
+        "ServiceRegion": "C001",
+        "ServiceVersion": "1.0.0"
+      }
+    },
+    "RequestBody": {
+      "any": {
+        "unregisteredPaymentRQ": {
+          "phoneNumber": "3162452663",
+          "code": "NIT_1",
+          "value": "20000",
+          "reference1": "reference1",
+          "reference3": "recarga de saldo timugo"
+        }
+      }
+    }
+  }
+} {
+  "ResponseMessage": {
+    "ResponseHeader": {
+      "Channel": "PNP04-C001",
+      "ResponseDate": "2020-05-14T16:31:53.861Z",
+      "Status": {
+        "StatusCode": "0",
+        "StatusDesc": "SUCCESS"
+      },
+      "MessageID": "473909815",
+      "ClientID": "3162452663",
+      "Destination": {
+        "ServiceName": "PaymentsService",
+        "ServiceOperation": "unregisteredPayment",
+        "ServiceRegion": "C001",
+        "ServiceVersion": "1.0.0"
+      }
+    },
+    "ResponseBody": {
+      "any": {
+        "unregisteredPaymentRS": {
+          "transactionId": "350-3162452663-13647-473909815"
+        }
+      }
+    }
+  }
+}
+// Payment Check (pending payment)
+{
+  "ResponseMessage": {
+    "ResponseHeader": {
+      "Channel": "PNP04-C001",
+      "ResponseDate": "2020-05-14T16:33:29.427Z",
+      "Status": {
+        "StatusCode": "0",
+        "StatusDesc": "SUCCESS"
+      },
+      "MessageID": "474007090",
+      "ClientID": "3116021602",
+      "Destination": {
+        "ServiceName": "PaymentsService",
+        "ServiceOperation": "getStatusPayment",
+        "ServiceRegion": "C001",
+        "ServiceVersion": "1.0.0"
+      }
+    },
+    "ResponseBody": {
+      "any": {
+        "getStatusPaymentRS": {
+          "date": "Mayo 14 - 2020 | 11:31 AM",
+          "trnId": "350-3162452663-13647-473909815",
+          "originMoney": [],
+          "name": "EL RANCHERO",
+          "ipAddress": "N/A",
+          "value": "20000",
+          "status": "33"
+        }
+      }
+    }
+  }
+}
+// Payment check (accepted payment)
+{
+  "ResponseMessage": {
+    "ResponseHeader": {
+      "Channel": "PNP04-C001",
+      "ResponseDate": "2020-05-14T16:35:25.961Z",
+      "Status": {
+        "StatusCode": "0",
+        "StatusDesc": "SUCCESS"
+      },
+      "MessageID": "474124991",
+      "ClientID": "3116021602",
+      "Destination": {
+        "ServiceName": "PaymentsService",
+        "ServiceOperation": "getStatusPayment",
+        "ServiceRegion": "C001",
+        "ServiceVersion": "1.0.0"
+      }
+    },
+    "ResponseBody": {
+      "any": {
+        "getStatusPaymentRS": {
+          "date": "2020-05-14 11:31:52",
+          "trnId": "M40",
+          "phoneNumber": "3162452663",
+          "originMoney": [{}],
+          "name": "EL RANCHERO",
+          "ipAddress": "N/A",
+          "value": "20000",
+          "status": "35"
+        }
+      }
+    }
+  }
+}
+//Payment Check (Cancel)
+{
+  "ResponseMessage": {
+    "ResponseHeader": {
+      "Channel": "PNP04-C001",
+      "ResponseDate": "2020-05-14T17:13:43.218Z",
+      "Status": {
+        "StatusCode": "10-455",
+        "StatusDesc": "La transacción esta cancelada"
+      },
+      "MessageID": "476422051",
+      "ClientID": "3116021602",
+      "Destination": {
+        "ServiceName": "PaymentsService",
+        "ServiceOperation": "getStatusPayment",
+        "ServiceRegion": "C001",
+        "ServiceVersion": "1.0.0"
+      }
+    },
+    "ResponseBody": {
+      "any": {}
+    }
+  }
+}
