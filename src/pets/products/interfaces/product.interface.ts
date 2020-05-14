@@ -16,13 +16,11 @@ export interface Product extends Document {
     favorites : number,
     characteristics : string,
     img :string,
-    price : number,
     deliveryDays : number,
     benefits : string,
 };
 /* Aditional local interfaces*/
-interface Presentation  {
-    id : number,
+export interface Presentation extends Document {
     reference : string,
     status :string, // archived | outOfstock | available |unavailable 
     sizes : string,
