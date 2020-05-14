@@ -214,7 +214,7 @@ module.exports = {
         let message = "REJECTED";
         let codeQR = undefined;
         var responseCode = 2;
-        console.log(JSON.stringify(resp));
+        console.log("Respuesta al hacer crear el pago: ",JSON.stringify(resp));
         if ( resp.ResponseMessage ){
           status = resp.ResponseMessage.ResponseHeader.Status.StatusCode;
           description = resp.ResponseMessage.ResponseHeader.Status.StatusDesc;
@@ -264,22 +264,31 @@ module.exports = {
       'POST', headers, body,
       (statusCode, resp) => {
         //Do somenthing with the response
-        let status="-1";
+        //let status="-1";
         let description="";
         let message = "REJECTED";
         var responseCode = 2;
-        console.log(JSON.stringify(resp));
+        console.log("Respuesta al checkear el estado del pago: ",JSON.stringify(resp));
         if(resp.ResponseMessage){
           
-          status = resp.ResponseMessage.ResponseHeader.Status.StatusCode;
+          //status = resp.ResponseMessage.ResponseHeader.Status.StatusCode;
+          status = resp.ResponseMessage.ResponseBody.any.getStatusPaymentRS.status;
           description = resp.ResponseMessage.ResponseHeader.Status.StatusDesc;
-          if(status=="0"){
+          /* Status definition are gave by Nequi Conecta APi */
+          if(status == "33"){
             message="ACCEPTED";
             description="Por favor, confirma tu pago en Nequi";
-          } else if(status=="1"){
-            message="APPROVED";
-            description="Listo, ¡realizaste tu compra exitosamente!";
+          } else if (status == "35") {
+            message = "APPROVED";
+            description="Listo, ¡Validamos tu pago exitosamente!";
           }
+          // if(status=="0"){
+          //   message="ACCEPTED";
+          //   description="Por favor, confirma tu pago en Nequi";
+          // } else if(status=="1"){
+          //   message="APPROVED";
+          //   description="Listo, ¡realizaste tu compra exitosamente!";
+          // }
         } else{
           message = "NEQUI_ERROR";
           responseCode = 3;
