@@ -16,7 +16,7 @@ export class AuthService {
   */
   async validatePartnerByPassword(loginAttempt: LoginPartnerDto) {
     // This will be used for the initial login
-    let userToAttempt = await this.partnerService.getPartner(loginAttempt.phone);
+    let userToAttempt = await this.partnerService.getPartnerByPhone(loginAttempt.phone);
 
     return new Promise((resolve) => {
         // Check the supplied password against the hash stored for this email address
@@ -36,7 +36,7 @@ export class AuthService {
   */
   async validateUserByJwt(payload: JwtPayload) { 
     // This will be used when the user has already logged in and has a JWT
-    let user = await this.partnerService.getPartner(payload.phone);
+    let user = await this.partnerService.getPartnerByPhone(payload.phone);
     if(user){
         return this.createJwtPayloadPartner(user);
     } else {

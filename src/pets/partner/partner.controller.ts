@@ -65,7 +65,7 @@ export class PartnerController {
 	@UseGuards(AuthGuard())
 	async createProduct(@Res() res, @Body() createProductDTO: CreateProductDTO) {
 		/* Search a partner with a phone number */
-		const partner : Partner = await this.partnerService.getPartner(createProductDTO.phone);
+		const partner : Partner = await this.partnerService.getPartnerByPhone(createProductDTO.phone);
 		/*If the partner was not found */
 		if(!partner){
 			return res.status(HttpStatus.OK).json({
@@ -110,7 +110,7 @@ export class PartnerController {
 	@UseGuards(AuthGuard())
 	async getProducts(@Res() res, @Query('phone') phone : number ) {
 		/* Search user with phone */
-		const user = await this.partnerService.getPartner(phone);
+		const user = await this.partnerService.getPartnerByPhone(phone);
 		/* if the user wasnt found */
 		if(!user){
 			return res.status(HttpStatus.OK).json({

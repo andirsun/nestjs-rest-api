@@ -36,10 +36,12 @@ export class PartnerService {
 		return await this.partnerModel.findByIdAndUpdate(idPartner,{$push: {products: idProduct}},{new:true});
 	}
 	
-	async getPartner(phone : number) : Promise<Partner>{
-		
+	async getPartnerByPhone(phone : number) : Promise<Partner>{
 		return await this.partnerModel.findOne({phone:phone});
 	}
+	async getPartnerById(id : string) : Promise<Partner>{
+		return await this.partnerModel.findById(id);
+	} 
 
 	async checkPassword(partner:Partner, password : string){
 		
