@@ -1,5 +1,6 @@
 /* Mongoose dependencies */
 import { Schema } from "mongoose";
+import uniqueValidator = require("mongoose-unique-validator");
 /* Schemas */
 import { AddressSchema } from "./address.schema";
 import { CommentPetOrder } from "./comment.schema";
@@ -24,7 +25,7 @@ export const OrderPetsSchema = new Schema<OrderPetsInterface>({
     required:[true,"EL nombre del cliente es necesario"]
   },
   idClient: {
-    type: Number,
+    type: String,
     required: [true, "El id del cliente es necesario"]
   },
   idPartner:{
@@ -71,3 +72,4 @@ export const OrderPetsSchema = new Schema<OrderPetsInterface>({
   discountCode: DiscountCodeSchema,
   logPayment : [String]
 });
+OrderPetsSchema.plugin(uniqueValidator, { message: "{PATH} debe de ser único" });

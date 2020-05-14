@@ -2,9 +2,9 @@
 import { Document } from "mongoose";
 /* Interfaces */
 import { Address } from "./address.interface";
-import { Product } from "../../products/interfaces/product.interface";
 import { CommentInterface } from "./comment.interface";
 import { PaymentMethodInterface } from "./paymentMethod.interface";
+import { ProductInterfaceOrder } from "./productOrder.interface";
 
 export interface OrderPetsInterface extends Document {
   _id : string,
@@ -23,7 +23,7 @@ export interface OrderPetsInterface extends Document {
   rate : number,
   comment : CommentInterface
   orderDuration : number,
-  products : [Product],
+  products : [ProductInterfaceOrder],
   totalAmount : number,
   paymentStatus : boolean,
   paymentMethod : PaymentMethodInterface

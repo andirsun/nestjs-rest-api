@@ -1,17 +1,22 @@
 /* Interfaces */
-import { Product } from "src/pets/products/interfaces/product.interface";
+import { ProductInterfaceOrder } from "../interfaces/productOrder.interface";
 import { Address } from "../interfaces/address.interface";
+import { PaymentMethodInterface } from "../interfaces/paymentMethod.interface";
 
 export class CreateOrderPetsDTO{
   //readonly status : boolean;
-  idClient : string;
-  nameClient : string;
-  idPartner : string;
-  namePartner : string;
-  address : Address;
-  dateBeginOrder: string;
-  hourStart : string;
-  products : [Product];
-  totalAmount : number;
-  commission : number;
+  readonly status : string; // to define
+  readonly updated : string;
+  readonly idClient :string;
+  readonly phoneClient : number;
+  readonly nameClient : string;
+  readonly idPartner : string;
+  readonly namePartner : string;
+  readonly commission : number;
+  readonly address : Address;
+  readonly dateBeginOrder : string;
+  readonly hourStart : string;
+  readonly products : [ProductInterfaceOrder];
+  readonly totalAmount : number;
+  readonly paymentMethod : PaymentMethodInterface
 }

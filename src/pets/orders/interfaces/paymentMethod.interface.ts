@@ -1,4 +1,4 @@
 export interface PaymentMethodInterface {
-  id : string,
+  _id : string,
   type : string, // Nequi | Card | Cash | PSE | Bancolombia
 }
