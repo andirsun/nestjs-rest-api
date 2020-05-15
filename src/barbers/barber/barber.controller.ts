@@ -21,10 +21,11 @@ export class BarberController {
 				})
 				.catch((err)=>{
 						console.log("llegue negativo");
-						return res.status(HttpStatus.BAD_REQUEST).json({
-								response: 3,
-								content: err
-						});
+						throw new Error(err);
+						// return res.status(HttpStatus.BAD_REQUEST).json({
+						// 		response: 3,
+						// 		content: err
+						// });
 				});   
 	}
 }
