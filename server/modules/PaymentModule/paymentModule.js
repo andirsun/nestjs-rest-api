@@ -13,8 +13,9 @@ const NEQUI_PUSH_HOST = 'api.sandbox.nequi.com';
 const NEQUI_PUSH_SEND_PATH = '/payments/v1/-services-paymentservice-unregisteredpayment';
 const NEQUI_PUSH_CHECK_PAYMENT_PATH='/payments/v1/-services-paymentservice-getstatuspayment';
 const NEQUI_PUSH_CANCEL_PAYMENT_PATH='/payments/v1/-services-paymentservice-cancelunregisteredpayment';
-
 const payUrl = 'https://sandbox.api.payulatam.com/payments-api/4.0/service.cgi';
+/* IMport axios to make request to server */
+const axios = require('axios').default;
 
 module.exports = {
   /*********************PAy U ************************************ */
@@ -253,7 +254,7 @@ module.exports = {
         return res.status(200).json(response);
     });
   },
-  nequiCheckPushPayment : function(codeQR, messageID, clientID, res){
+  nequiCheckPushPayment : async function(codeQR, messageID, clientID, res){
     const builder = require('./Nequi/checkPaymentBuilder');
     var checkPayment = builder.createCheckStatusPayment(codeQR, messageID, clientID);
 
@@ -270,7 +271,7 @@ module.exports = {
         var responseCode = 2;
         //console.log("Respuesta al checkear el estado del pago: ",JSON.stringify(resp));
         if(resp.ResponseMessage){
-          console.log("testando la respuesta : ",JSON.stringify(resp))
+          //console.log("testando la respuesta : ",JSON.stringify(resp))
           /* Cancelled order by User */          
           if( resp.ResponseMessage.ResponseHeader.Status.StatusCode == "10-455"){
             /* Make description with cancelation message */
@@ -289,26 +290,67 @@ module.exports = {
               description="Por favor, confirma tu pago en Nequi";
               /*Order Acepted by User */
             } else if (status == "35") {
+              
               message = "APPROVED";
               description="Listo, ¡Validamos tu pago exitosamente!";
             }  
-
           }
-          
           
         } else{
           message = "NEQUI_ERROR";
           responseCode = 3;
           description = "Un error ha ocurrido, intenta más tarde";
         }
-        var response = {
-          response : responseCode,
-          content : {
-            message : message,
-            description : description
+        /* If the charge was proved then make a charge */
+        if(message == "APPROVED"){
+          let config = { 
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          };
+          let body ={
+            idBarber: "5e418194e7925574c51aa362",
+            amount : parseInt(resp.ResponseMessage.ResponseBody.any.getStatusPaymentRS.value),
+            paymentId : resp.ResponseMessage.ResponseBody.any.getStatusPaymentRS.trnId,
+            phoneBarber : parseInt(resp.ResponseMessage.ResponseBody.any.getStatusPaymentRS.phoneNumber)
           }
+          let url = `https://sandboxv2.timugo.com/barber/payments/chargeBalance`;
+          axios.post(url,body,config)
+            .then(resp=>{
+              if(resp.data.response == 2){
+                var response = {
+                  response : responseCode,
+                  content : {
+                    message : message,
+                    description : description
+                  }
+                }
+                res.status(200).json(response);
+              }
+            })
+            .catch(err=>{
+              console.log(err);
+              var response = {
+                response : 1,
+                content : {
+                  message : "Error al tratar de recargarle el saldo al barbero",
+                  description : description,
+                  err
+                }
+              }
+              res.status(200).json(response);
+            })
+        
+          }else {
+          var response = {
+            response : responseCode,
+            content : {
+              message : message,
+              description : description
+            }
+          }
+          res.status(200).json(response);
         }
-        res.status(200).json(response);
       },
       (err) => {
         //Do somenthing with the error response
