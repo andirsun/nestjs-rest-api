@@ -1,5 +1,5 @@
 /* Nest js dependencies */
-import { Controller, Get, Res, HttpStatus, Body, Post } from '@nestjs/common';
+import { Controller, Get, Res, HttpStatus, Body, Post, Put, Query, Ip } from '@nestjs/common';
 /* Services */
 import { LogPetsService } from '../log-pets/log-pets.service';
 import { OrdersService } from 'src/pets/orders/orders.service';
@@ -12,6 +12,7 @@ import { UserPetsService } from '../user-pets/user-pets.service';
 import { PartnerService } from '../partner/partner.service';
 /* Time zone handler plugin */
 import * as momentZone from 'moment-timezone';
+import { OrderChangeDTO } from './dto/changeOrder.dto';
 @Controller('orders-pets')
 export class OrdersController {
 
@@ -22,7 +23,11 @@ export class OrdersController {
     private partnerService : PartnerService
     //private productServices : ProductsModule
   ){}
-
+  
+  /*
+    This function Create a new Order
+    recieve a bofy with Structure of OrderPetsInterface
+  */
   @Post('/newOrder')
 	async createNewOrder(@Res() res,@Body() order : OrderPetsInterface){
     /* Search the Info and build the order */
@@ -96,5 +101,26 @@ export class OrdersController {
         /* Send Error to Sentry report */
         throw new Error(err);
       })    
-	}
+  }
+  /*
+    This function Modify the state of order
+  */
+ @Put('/changeStatus')
+ async changeOrderStatus(@Res() res,@Ip() ip : string,@Body() body : OrderChangeDTO){
+   this.orderService.changeOrderStatus(body.idOrder,body.status, ip)
+    .then(order =>{
+      this.logService.log("Se cambio el estado de una orden", body.idOrder);
+      return res.status(HttpStatus.OK).json({
+        response: 2,
+        content:{
+          message : "Genial, se modifico el estado de la orden",
+          order
+        }
+      });
+    })
+    .catch(err=>{
+      throw new Error(err);
+    })
+
+ }
 }
