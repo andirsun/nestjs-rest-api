@@ -9,6 +9,7 @@ import { DiscountCodeSchema } from "./discountCode.schema";
 import { PaymentMethodSchema } from "./paymentMethod.schema";
 /* Interface */
 import { OrderPetsInterface } from "../interfaces/order.interface";
+import { OrderHistorySchema } from "./historyOrder.schema";
 
 
 export const OrderPetsSchema = new Schema<OrderPetsInterface>({
@@ -70,6 +71,7 @@ export const OrderPetsSchema = new Schema<OrderPetsInterface>({
   },
   paymentMethod: PaymentMethodSchema,
   discountCode: DiscountCodeSchema,
+  history : [OrderHistorySchema],
   logPayment : [String]
 });
 OrderPetsSchema.plugin(uniqueValidator, { message: "{PATH} debe de ser único" });

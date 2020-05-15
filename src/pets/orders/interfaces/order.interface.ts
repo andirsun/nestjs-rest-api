@@ -5,6 +5,7 @@ import { Address } from "./address.interface";
 import { CommentInterface } from "./comment.interface";
 import { PaymentMethodInterface } from "./paymentMethod.interface";
 import { ProductInterfaceOrder } from "./productOrder.interface";
+import { OrderHistoryInterface } from "./historyOrder.interface";
 
 export interface OrderPetsInterface extends Document {
   _id : string,
@@ -26,6 +27,7 @@ export interface OrderPetsInterface extends Document {
   products : [ProductInterfaceOrder],
   totalAmount : number,
   paymentStatus : boolean,
+  history : [OrderHistoryInterface],
   paymentMethod : PaymentMethodInterface
   logPayment : [string],
 }
