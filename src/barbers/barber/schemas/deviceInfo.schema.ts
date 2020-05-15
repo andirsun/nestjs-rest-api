@@ -1,6 +1,8 @@
 import { Schema } from "mongoose";
+/* Interface */
+import { DeviceInfoInterface } from "../interfaces/deviceInfo.interface";
 
-export const DeviceInfoSchema = new Schema({
+export const DeviceInfoSchema = new Schema<DeviceInfoInterface>({
   // The current bundle build of the app
   appBuild : String,
   // The current bundle verison of the app
