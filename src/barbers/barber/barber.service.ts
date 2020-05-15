@@ -18,6 +18,13 @@ export class BarberService {
     return Barbers;
   }
   /*
+    This function charge amount of money to a barber
+    account balance
+  */
+  async makePaymentCharge(idBarber : string, amount:number): Promise<BarberInterface>{
+    return this.barberModel.findByIdAndUpdate(idBarber,{$inc : {balance : amount}},{new:true});
+  }
+  /*
     This function create a payment log for barbers
   */
   async addPaymentLog(idBarber : string, amount : number, paymentId : string,ip:string) : Promise<BarberInterface>{
