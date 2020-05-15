@@ -2,8 +2,8 @@ import { Schema } from "mongoose";
 
 export const PaymentSchema = new Schema({
   date : String,
-  type : String, //Payment  | Dispersion
+  type : String, //PAYMENT  | DISPERSION
   amount : Number,
-  paymentId : Number
-
+  paymentId : String, // Nequi Payment reference
+  ip : String
 })

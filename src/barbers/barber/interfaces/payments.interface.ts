@@ -1,6 +1,7 @@
 export interface BarbersPaymentsInterface{
   date : string,
-  type : string, //Payment  | Dispersion
+  type : string, //PAYMENT | DISPERSION
   amount : number,
-  paymentId : number
+  paymentId : string,//Nequi reference code
+  ip : string,
 }
