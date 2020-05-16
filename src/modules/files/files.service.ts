@@ -36,27 +36,28 @@ export class FilesService {
     Public : The file can be accesed from any person with link
     Private : Need the keys or full URL to see the file 
   */
-  async uploadFile(file : string,name : any, visibility : string){
+  async uploadFile(path : string,fileName : string,fileBuffer : any, visibility : string){
     //Assing remote name according to
     var date = new Date();
     /*BUild the URL */
-    const remoteFile = file.substring(0, file.length-4)+date.toISOString().replace(/\W/g, '')+file.substring(file.length-4, file.length);
-    this.keyFile = remoteFile;
+    const remoteURLFile : string =path+fileName.substring(0, fileName.length-4)+date.toISOString()
+                        .replace(/\W/g, '')+fileName.substring(fileName.length-4, fileName.length);
+    this.keyFile = remoteURLFile;
     /*
     Set the visibility, if the propertie is "PUBLIC"
     the file doesnt need permission to see and download
     in other case the files will be PRIVATE
     */
-    let acl = undefined;
+    let acl : string = undefined;
     if(visibility=='PUBLIC'){
       acl = 'public-read';
     }
     /* Build the object to sign */
     let params = {
       Bucket : bucket,
-      Body:name,
+      Body : fileBuffer,
       //Body : fs.readFileSync(mainFolder+file),
-      Key : remoteFile,
+      Key : remoteURLFile,
       ACL : acl
     }
     /* The type of return must to be a promise to handle te upload time */

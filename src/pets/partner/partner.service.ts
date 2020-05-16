@@ -12,6 +12,7 @@ import * as bcrypt from 'bcrypt';
 import { CreatePartnerDTO } from "./dto/partner.dto";
 /* Schemas */
 import { PartnerSchema } from "./schemas/partner.schema";
+import { Product } from '../products/interfaces/product.interface';
 
 @Injectable()
 export class PartnerService {

@@ -59,4 +59,16 @@ export class ProductsService {
 	async getProductsByTag(tag : string): Promise<Product[]>{
 		return await this.productModel.find({tags : {$in : [tag]}});
 	}
+	/*
+		This function associate a url to product
+	*/
+	async addUrlImgToProduct(idProduct : string,urlImg : string) :Promise<Product>{
+		return await this.productModel.findOneAndUpdate({_id : idProduct},{img : urlImg});
+	}
+	/*
+		Add Tag to Product
+	*/
+	async addTagToProduct(idProduct : string,tag : string) :Promise<Product>{
+		return await this.productModel.findOneAndUpdate({_id : idProduct},{$push :{tags: tag}});
+	}
 }

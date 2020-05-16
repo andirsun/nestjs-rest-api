@@ -24,7 +24,6 @@ export const ProductSchema = new Schema({
     },
     img : {
         type : String,
-        required : [true,"la imagen es necesaria"]
     },
     deliveryDays : {
         type : Number,

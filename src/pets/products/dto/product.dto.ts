@@ -10,7 +10,7 @@ export class CreateProductDTO {
   readonly reference : string;
   readonly benefits : string;
   readonly characteristics : string;
-  readonly img : string;
   readonly deliveryDays : string;
   readonly phone : number 
+  readonly tags : string;
 }

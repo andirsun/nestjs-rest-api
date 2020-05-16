@@ -67,8 +67,9 @@ export class PartnerController {
 			product inserted
 	*/
 	@Post('/products/create')
-	@UseGuards(AuthGuard())
-	async createProduct(@Res() res, @Body() createProductDTO: CreateProductDTO) {
+	//@UseGuards(AuthGuard())
+	@UseInterceptors(FileInterceptor('file'))
+	async createProduct(@Res() res, @Body() createProductDTO: CreateProductDTO,@UploadedFile() file : FileInterface) {
 		/* Search a partner with a phone number */
 		const partner : Partner = await this.partnerService.getPartnerByPhone(createProductDTO.phone);
 		/*If the partner was not found */
@@ -80,21 +81,53 @@ export class PartnerController {
 				}
 			});
 		}
+		
 		/*If the partner was found with this phone number */
 		await this.productService.createProduct(partner._id,createProductDTO)
 			.then((product : Product)=>{
 				this.logService.log("Se creo un nuevo producto",product._id);
-
 				/* Associate the product to the partner */
 				this.partnerService.addProductToPartner(partner._id,product._id)
 					.then((partner : Partner)=>{
 						this.logService.log("Se agrego un producto a un aliado",product._id);
-						return res.status(HttpStatus.OK).json({
-							response: 2,
-							content: {
-								partner
-							}
-						});
+						
+						/* Upload the Img to spaces ssd server */
+						let remotePath : string = `Pets/Products/${partner._id}/${product._id}/`;
+						this.filesService.uploadFile(remotePath,file.originalname,file.buffer,"PUBLIC")
+							.then((response : any)=>{
+
+								/* Asociate the Url of the inserted img to product */
+								this.productService.addUrlImgToProduct(product._id,this.filesService.getURL())
+									.then(resp =>{
+										return res.status(HttpStatus.OK).json({
+											response : 2,
+											content : {
+												message : 'UPLOADED',
+												description : '¡Archivo subido exitosiamente!',
+												remoteFilename : this.filesService.getRemoteFileName(),
+												url : this.filesService.getURL(),
+												urlFull : this.filesService.getURLParams(),
+												//params : spacesUtils.getParams(spacesUtils.getRemoteFileName())
+												product
+											}
+										});
+									})
+									.catch(err=>{
+										throw new Error(err);
+									})
+								
+							})
+							.catch((err : Error)=>{
+								return res.status(HttpStatus.BAD_REQUEST).json({
+									response : 1,
+									content : {
+										message : 'ERROR',
+										description : '¡Ups, tuvimos un problema!',
+										error : 'FILE CORRUPTED OR NOT FOUND IN BACKEND'
+									}
+								});
+							});
+	
 					})
 					.catch((err)=>{
 						this.logService.error("Error al asociar un producto a un aliado",product._id);
@@ -111,7 +144,10 @@ export class PartnerController {
 		This function create a presentation of the certain product
 	*/
 	@Post('/products/presentations/new')
-	async createProductPresentation(@Res() res,@Query('idProduct')idProduct : string, @Body() createProductPresentationDTO: CreateProductPresentationDTO) {
+	@UseInterceptors(FileInterceptor('file'))
+	async createProductPresentation(@Res() res,@Query('idProduct')idProduct : string,
+																	@Body() createProductPresentationDTO: CreateProductPresentationDTO,
+																	@UploadedFile() file : FileInterface) {
 		await this.productService.createProductPresentation(idProduct,createProductPresentationDTO)
 			.then(productPresentation=>{
 				this.logService.log("Se creo una presentacion de un producto",productPresentation._id);
@@ -236,7 +272,7 @@ export class PartnerController {
 		let fileName : string = "logob.png";
 		let visibility : string = "PUBLIC";
 		this.filesService.setRemoteFileName(fileName);
-		this.filesService.uploadFile(file.originalname,file.buffer,visibility)
+		this.filesService.uploadFile("",file.originalname,file.buffer,visibility)
 			.then((response : any)=>{
 				return res.status(HttpStatus.OK).json({
 					response : 2,
