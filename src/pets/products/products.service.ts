@@ -52,4 +52,11 @@ export class ProductsService {
 	async getProduct(productId : string): Promise<Product>{
 		return await this.productModel.findOne({_id:productId});
 	}
+	/*
+		This function return a query of db with a
+		products under specific tag
+	*/
+	async getProductsByTag(tag : string): Promise<Product[]>{
+		return await this.productModel.find({tags : {$in : [tag]}});
+	}
 }

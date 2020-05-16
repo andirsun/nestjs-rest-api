@@ -7,11 +7,12 @@ import { UserPetsService } from './user-pets.service';
 /* Extra modules importations */
 import { MongooseModule } from "@nestjs/mongoose";
 import { LogPetsModule } from 'src/pets/log-pets/log-pets.module';
+import { ProductsModule } from '../products/products.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature(
-       /*
+      /*
         Fist paremeter : array with the schemas to save in the database
         the second parameter : name database 
       */
@@ -21,7 +22,8 @@ import { LogPetsModule } from 'src/pets/log-pets/log-pets.module';
         
       ],'PetsMongoDb'),
       // Other module is required need to import here
-      LogPetsModule
+      LogPetsModule,
+      ProductsModule,
   ],
   providers: [UserPetsService],
   controllers: [UserPetsController],
