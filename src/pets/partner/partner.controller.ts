@@ -1,4 +1,5 @@
-import { Controller,Get,Post,Put,Delete,Res,HttpStatus,Body, Query, Redirect, UseGuards} from '@nestjs/common';
+import { Controller,Get,Post,Put,Delete,Res,HttpStatus,Body, Query, Redirect, UseGuards, UseInterceptors, UploadedFile} from '@nestjs/common';
+import { FileInterceptor } from "@nestjs/platform-express";
 import { AuthGuard } from '@nestjs/passport';
 /* Services */
 import { PartnerService } from "./partner.service";
@@ -13,6 +14,7 @@ import { Product } from "../products/interfaces/product.interface";
 import { Partner } from "../partner/interfaces/partner.interface";
 import { CreateProductPresentationDTO } from '../products/dto/productPresentation.dto';
 import { FilesService } from 'src/modules/files/files.service';
+import { FileInterface } from 'src/modules/files/file.interface';
 
 
 
@@ -228,11 +230,13 @@ export class PartnerController {
 			}
 	};
 	@Post('/uploadFile')
-	async uploadFile(@Res() res){
-		let fileName : string = "ander.JPG";
+	@UseInterceptors(FileInterceptor('file'))
+	async uploadFile(@Res() res,@UploadedFile() file : FileInterface){
+			//console.log(file);
+		let fileName : string = "logob.png";
 		let visibility : string = "PUBLIC";
 		this.filesService.setRemoteFileName(fileName);
-		this.filesService.uploadFile(fileName, visibility)
+		this.filesService.uploadFile(file.originalname,file.buffer,visibility)
 			.then((response : any)=>{
 				return res.status(HttpStatus.OK).json({
 					response : 2,

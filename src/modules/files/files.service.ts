@@ -36,7 +36,7 @@ export class FilesService {
     Public : The file can be accesed from any person with link
     Private : Need the keys or full URL to see the file 
   */
-  async uploadFile(file : string, visibility : string){
+  async uploadFile(file : string,name : any, visibility : string){
     //Assing remote name according to
     var date = new Date();
     /*BUild the URL */
@@ -54,11 +54,13 @@ export class FilesService {
     /* Build the object to sign */
     let params = {
       Bucket : bucket,
-      Body : fs.readFileSync(mainFolder+file),
+      Body:name,
+      //Body : fs.readFileSync(mainFolder+file),
       Key : remoteFile,
       ACL : acl
     }
-    return await s3.putObject(params);
+    /* The type of return must to be a promise to handle te upload time */
+    return await s3.putObject(params).promise();
   };
   deleteFile(remoteFilename : string){
     let params = {
