@@ -8,6 +8,7 @@ import uniqueValidator = require("mongoose-unique-validator");
 import { AddressSchema } from "./address.schema";
 import { CardSchema } from "./card.schema";
 import { NequiSchema } from "./nequi.schema";
+import { ShoppingCartPetsSchema } from "./shoppingCart.schema";
 
 
 
@@ -71,6 +72,7 @@ export const UserPetsSchema = new Schema({
     type: Boolean,
     default: true
   },
+  //shoppingCart : [ShoppingCartPetsSchema],
   publicityMethod:{
     type: String,
     default: "none"

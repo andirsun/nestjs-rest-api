@@ -12,7 +12,7 @@ import { Document } from "mongoose";
     to be used in the parter.service like a model
 */
 export interface Partner extends Document {
-    id: number,
+    _id: string,
     status: boolean,
     idNumber : number,
     password : string,
@@ -41,7 +41,7 @@ export interface Partner extends Document {
     Aditional local  interfaces 
 */
 interface Discount {
-    id : number,
+    _id : string,
     code : string, //optional
     presentations : [PresentationsDiscount], 
     date : string, 
@@ -49,6 +49,7 @@ interface Discount {
     percentage  : number,
 };
 interface PresentationsDiscount {
+    _id : string,
     idPresentation : string,
     percentage : number, 
 };
