@@ -41,7 +41,11 @@ export const OrderPetsSchema = new Schema<OrderPetsInterface>({
     type : Number,
     required : [true,"La comision es necesaria"]
   },
-  address: AddressSchema,
+  //address: AddressSchema, //Address V2 
+  address : {
+    type: String,
+    required : [true, "La Direccion es necesaria"]
+  },
   dateBeginOrder: {
     type: String,
     required: [true, "La fecha de inicio del pedido es necesaria"]

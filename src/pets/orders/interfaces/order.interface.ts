@@ -17,7 +17,8 @@ export interface OrderPetsInterface extends Document {
   idPartner : string,
   namePartner : string,
   commision : number,
-  address : Address,
+  //address : Address, //address v2.0
+  address : string, //addres V1.0
   dateBeginOrder: string,
   hourStart : string,
   dateFinishOrder : string,

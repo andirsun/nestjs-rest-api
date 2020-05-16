@@ -29,66 +29,72 @@ export class OrdersController {
     recieve a bofy with Structure of OrderPetsInterface
   */
   @Post('/newOrder')
-	async createNewOrder(@Res() res,@Body() order : OrderPetsInterface){
+	async createNewOrder(@Res() res,@Body() order : CreateOrderPetsDTO){
     /* Search the Info and build the order */
     this.userPetsService.getUser(order.phoneClient)
       .then(user=>{
         
-        this.partnerService.getPartnerById(order.idPartner)
-          .then(partner=>{
+        order.shoppingCart.forEach((orderByPartner,index) => {
+          
+          //console.log(index,orderByPartner);
+          this.partnerService.getPartnerById(orderByPartner.idPartner)
+            .then(partner=>{
+              
+              //console.log("PARTNER NUMERO",index,partner);
+              /*Build the CreateOrderpets DTO */
+              let newOrder : CreateOrderPetsDTO ={
+                status : "ACTIVE",
+                updated :  momentZone().tz('America/Bogota').format("YYYY-MM-DD"),
+                idClient : user._id,
+                phoneClient : user.phone,
+                nameClient : user.name,
+                idPartner : partner._id,
+                namePartner : partner.businessName,
+                commission : 10,
+                address : order.address,
+                dateBeginOrder :  momentZone().tz('America/Bogota').format("YYYY-MM-DD"),
+                hourStart :  momentZone().tz('America/Bogota').format("HH:mm"),
+                //shoppingCart : orderByPartner.products,
+                products : orderByPartner.products,
+                totalAmount : orderByPartner.totalAmount,
+                paymentMethod : order.paymentMethod
+              };
+              
 
-            /*Build the CreateOrderpets DTO */
-            let newOrder : CreateOrderPetsDTO ={
-              status : "ACTIVE",
-              updated :  momentZone().tz('America/Bogota').format("YYYY-MM-DD"),
-              idClient : user._id,
-              phoneClient : user.phone,
-              nameClient : user.name,
-              idPartner : partner._id,
-              namePartner : partner.businessName,
-              commission : 10,
-              address : order.address,
-              dateBeginOrder :  momentZone().tz('America/Bogota').format("YYYY-MM-DD"),
-              hourStart :  momentZone().tz('America/Bogota').format("HH:mm"),
-              products : order.products,
-              totalAmount : order.totalAmount,
-              paymentMethod : order.paymentMethod
-            };
-            /* Use the orders services to create the order */
-            this.orderService.createOrder(newOrder)
-              .then(order=>{
-                this.logService.log("Se creo una nueva orden",order._id);
-                return res.status(HttpStatus.OK).json({
-                  response: 2,
-                  content:{
-                    message : "Genial, se creo tu orden correctamente",
-                    order
-                  }
+              //console.log(newOrder);
+              /* Use the orders services to create the order */
+              this.orderService.createOrder(newOrder)
+                .then(order=>{
+                  this.logService.log("Se creo una nueva orden",order._id);
+                })
+                .catch(err=>{
+                  return new Error(err)
                 });
-              })
-              .catch(err=>{
-                throw new Error(err)
-                return res.status(HttpStatus.OK).json({
-                  response: 1,
-                  content:{
-                    err
-                  }
-                });
-              });
 
-          })
-          .catch(err=>{
-            /* Send response */
-            res.status(HttpStatus.OK).json({
-             response: 1,
-             content:{
-               err
-             }
-           });
-           /* Send Error to Sentry report */
-           throw new Error(err);
-          });
+            })
+            .catch(err=>{
+              /* Send response */
+              res.status(HttpStatus.OK).json({
+               response: 1,
+               content:{
+                 err
+               }
+             });
+             /* Send Error to Sentry report */
+             throw new Error(err);
+            });
+        });
 
+        /* 
+          If after map function the code pass here
+          Means that all orders create Correctly
+        */
+        return res.status(HttpStatus.OK).json({
+          response: 2,
+          content:{
+            message : "Genial, se creo la orden",
+          }
+        });
       })
       .catch(err=>{
          /* Send response */

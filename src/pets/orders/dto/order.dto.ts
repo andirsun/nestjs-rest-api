@@ -2,6 +2,7 @@
 import { ProductInterfaceOrder } from "../interfaces/productOrder.interface";
 import { Address } from "../interfaces/address.interface";
 import { PaymentMethodInterface } from "../interfaces/paymentMethod.interface";
+import { ShoppingCartPetsOrderInterface } from "../interfaces/shoppingCartOrder.interface";
 
 export class CreateOrderPetsDTO{
   //readonly status : boolean;
@@ -13,10 +14,12 @@ export class CreateOrderPetsDTO{
   readonly idPartner : string;
   readonly namePartner : string;
   readonly commission : number;
-  readonly address : Address;
+  //readonly address : Address;
+  readonly address : string;
   readonly dateBeginOrder : string;
   readonly hourStart : string;
-  readonly products : [ProductInterfaceOrder];
+  readonly shoppingCart? : [ShoppingCartPetsOrderInterface]; //Used only to recieve order from frontend
+  readonly products : [ProductInterfaceOrder]
   readonly totalAmount : number;
   readonly paymentMethod : PaymentMethodInterface
 }
