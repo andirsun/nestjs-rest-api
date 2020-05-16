@@ -11,6 +11,7 @@ import { LogPetsModule } from '../log-pets/log-pets.module';
 import { ProductsModule } from '../products/products.module';
 import { TwilioModule } from 'src/modules/twilio/twilio.module';
 import { PassportModule } from "@nestjs/passport";
+import { FilesModule } from 'src/modules/files/files.module';
 @Module({
   imports: [
     MongooseModule.forFeature(
@@ -26,6 +27,7 @@ import { PassportModule } from "@nestjs/passport";
     LogPetsModule,
     TwilioModule,
     ProductsModule,
+    FilesModule,
     PassportModule.register({
       defaultStrategy :'jwt',
       session:false

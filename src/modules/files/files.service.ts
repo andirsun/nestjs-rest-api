@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-
 require('dotenv').config();
 const AWS = require('aws-sdk');
 const fs = require('fs');
@@ -8,20 +7,18 @@ const url = require('url');
 const mainFolder = process.env.FILES_MAIN_FOLDER || "";
 const bucket = 'data-timugo';
 const spacesEndpoint = new AWS.Endpoint('nyc3.digitaloceanspaces.com');
+
 const s3 = new AWS.S3({
   endpoint: spacesEndpoint,
   accessKeyId : process.env.S3_ACCESS_KEY,
   secretAccessKey : process.env.S3_SECRET_KEY
 });
-
 @Injectable()
 export class FilesService {
-
-  constructor(fileName : string){
-    this.keyFile = fileName;
-  }
   /* Class properties */
-  keyFile:string = undefined;
+  /* file url */
+  private keyFile:string = undefined;
+  
 
   /* Class functions */
   /*
@@ -39,7 +36,7 @@ export class FilesService {
     Public : The file can be accesed from any person with link
     Private : Need the keys or full URL to see the file 
   */
-  uploadFile(file : string, visibility : string){
+  async uploadFile(file : string, visibility : string){
     //Assing remote name according to
     var date = new Date();
     /*BUild the URL */
@@ -61,7 +58,7 @@ export class FilesService {
       Key : remoteFile,
       ACL : acl
     }
-    return s3.putObject(params).promise();
+    return await s3.putObject(params);
   };
   deleteFile(remoteFilename : string){
     let params = {

@@ -12,6 +12,7 @@ import { CreateProductDTO } from "../products/dto/product.dto";
 import { Product } from "../products/interfaces/product.interface";
 import { Partner } from "../partner/interfaces/partner.interface";
 import { CreateProductPresentationDTO } from '../products/dto/productPresentation.dto';
+import { FilesService } from 'src/modules/files/files.service';
 
 
 
@@ -26,7 +27,8 @@ export class PartnerController {
 		private partnerService: PartnerService,
 		private logService: LogPetsService,
 		private twilioService : TwilioService,
-		private productService : ProductsService
+		private productService : ProductsService,
+		private filesService : FilesService
 	) {}
 	
 	
@@ -224,5 +226,35 @@ export class PartnerController {
 			return {
 					message: 'You did it!'
 			}
+	};
+	@Post('/uploadFile')
+	async uploadFile(@Res() res){
+		let fileName : string = "ander.JPG";
+		let visibility : string = "PUBLIC";
+		this.filesService.setRemoteFileName(fileName);
+		this.filesService.uploadFile(fileName, visibility)
+			.then((response : any)=>{
+				return res.status(HttpStatus.OK).json({
+					response : 2,
+					content : {
+						message : 'UPLOADED',
+						description : '¡Archivo subido exitosiamente!',
+						remoteFilename : this.filesService.getRemoteFileName(),
+						url : this.filesService.getURL(),
+						urlFull : this.filesService.getURLParams(),
+						//params : spacesUtils.getParams(spacesUtils.getRemoteFileName())
+					}
+				});
+			}).catch((err : Error)=>{
+				return res.status(HttpStatus.BAD_REQUEST).json({
+					response : 1,
+					content : {
+						message : 'ERROR',
+						description : '¡Ups, tuvimos un problema!',
+						error : 'FILE CORRUPTED OR NOT FOUND IN BACKEND'
+					}
+				});
+			});
+
 	};
 }
