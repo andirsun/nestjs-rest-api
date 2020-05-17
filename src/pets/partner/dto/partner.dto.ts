@@ -5,7 +5,6 @@
 	info but the principal things
 */
 export class CreatePartnerDTO {
-	readonly id: number;
 	readonly appName: string;
 	readonly phone: string;
 	readonly email: string;

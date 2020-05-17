@@ -19,11 +19,6 @@ import { Partner } from "../interfaces/partner.interface";
 
 
 export const PartnerSchema: Schema = new Schema({
-  id: {
-		type: Number,
-		require: [true, "EL id es necesario"],
-		default: 0
-  },
   status: {
     type: Boolean,
     default: false
@@ -53,7 +48,7 @@ export const PartnerSchema: Schema = new Schema({
 	idCardFile:{type: String,},
 	contractFile:{type: String,},
 	services : [ServiceSchema],
-	products : [String],
+	products : [ProductSchema],
 	nequiAccount : [NequiSchema],
 	bankAccount : BankAccountSchema,
 	payments : [PaymentSchema],
@@ -64,7 +59,6 @@ export const PartnerSchema: Schema = new Schema({
 });
 
 PartnerSchema.pre<Partner>('save', function(next){
-	console.log("llegue");
 	
   let user = this;
 
