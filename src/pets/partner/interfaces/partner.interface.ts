@@ -18,7 +18,7 @@ export interface Partner extends Document {
     password : string,
     numOrders:number,
     phoneToken:string,
-    products: [Product],
+    products: [string], //must to be string array, because only save products ids 
     services: [Service],
     payments : ["debe tener estado pendiente - pagado"]
     devices : [ "devices"]

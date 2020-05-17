@@ -6,7 +6,6 @@ import uniqueValidator = require("mongoose-unique-validator");
 //const AutoIncrement = require('mongoose-sequence')(mongoose);
 /*Aditional Required Schemas*/ 
 import { NequiSchema } from "./nequiAccount.schema";
-import { ProductSchema } from "../../products/schemas/product.schema";
 import { ServiceSchema } from "../../service/schemas/service.schema";
 import { BankAccountSchema } from "./bankAccount.schema";
 import { PaymentSchema } from "./payment.schema";
@@ -48,7 +47,7 @@ export const PartnerSchema: Schema = new Schema({
 	idCardFile:{type: String,},
 	contractFile:{type: String,},
 	services : [ServiceSchema],
-	products : [ProductSchema],
+	products : [String],//onli products is are saved here no schemas
 	nequiAccount : [NequiSchema],
 	bankAccount : BankAccountSchema,
 	payments : [PaymentSchema],
