@@ -7,5 +7,4 @@ export class CreateProductPresentationDTO {
   readonly stock : number;
   readonly description : string; //could be color, taste or other caracteristic   
   readonly price : number;
-  readonly urlImg : string;
 }

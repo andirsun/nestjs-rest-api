@@ -66,6 +66,18 @@ export class ProductsService {
 		return await this.productModel.findOneAndUpdate({_id : idProduct},{img : urlImg});
 	}
 	/*
+		This function associate a url to product presentation
+	*/
+	async addUrlImgToPresentation(idProduct : string,urlImg : string):Promise<Product>{
+		/* Select the product to get presentations */
+		let product : Product = await this.productModel.findOne({_id : idProduct});
+		/* If the product exits, then add url img to the last presentation created */
+		if(product){
+			product.presentations[product.presentations.length-1].urlImg = urlImg;
+		}
+		return await product.save();
+	}
+	/*
 		Add Tag to Product
 	*/
 	async addTagToProduct(idProduct : string,tag : string) :Promise<Product>{

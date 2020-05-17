@@ -6,14 +6,14 @@ import { PartnerService } from "./partner.service";
 import { LogPetsService } from "../log-pets/log-pets.service";
 import { TwilioService } from "src/modules/twilio/twilio.service";
 import { ProductsService } from "../products/products.service";
+import { FilesService } from 'src/modules/files/files.service';
 /* DTOs */
 import { CreatePartnerDTO } from "./dto/partner.dto";
 import { CreateProductDTO } from "../products/dto/product.dto";
+import { CreateProductPresentationDTO } from '../products/dto/productPresentation.dto';
 /* Interfaces */
 import { Product } from "../products/interfaces/product.interface";
 import { Partner } from "../partner/interfaces/partner.interface";
-import { CreateProductPresentationDTO } from '../products/dto/productPresentation.dto';
-import { FilesService } from 'src/modules/files/files.service';
 import { FileInterface } from 'src/modules/files/file.interface';
 
 
@@ -146,25 +146,56 @@ export class PartnerController {
 	@Post('/products/presentations/new')
 	@UseInterceptors(FileInterceptor('file'))
 	async createProductPresentation(@Res() res,@Query('idProduct')idProduct : string,
+																	@Query('idPartner')idPartner : string,
 																	@Body() createProductPresentationDTO: CreateProductPresentationDTO,
 																	@UploadedFile() file : FileInterface) {
-		await this.productService.createProductPresentation(idProduct,createProductPresentationDTO)
-			.then(productPresentation=>{
-				this.logService.log("Se creo una presentacion de un producto",productPresentation._id);
-				return res.status(HttpStatus.OK).json({
-					response: 2,
-					content: {
-						productPresentation
-					}
-				});
+		/* First add product presentation to product */
+		this.productService.createProductPresentation(idProduct,createProductPresentationDTO)
+			.then(product=>{
+				
+				/* Create log with product presentation inserted */
+				this.logService.log("Se creo una presentacion de un producto",product.presentations[product.presentations.length-1]._id);
+				
+				/* Build the remote path to upload presentation img  */
+				let remotePath : string = `Pets/Products/${idPartner}/${idProduct}/Presentations/`;
+				/* Upload the product presentation image */
+				this.filesService.uploadFile(remotePath,file.originalname,file.buffer,"PUBLIC")
+					.then((response : any)=>{
+
+						/* Asociate the Url of the inserted img to product */
+						this.productService.addUrlImgToPresentation(idProduct,this.filesService.getURL())
+							.then(resp =>{
+								return res.status(HttpStatus.OK).json({
+									response : 2,
+									content : {
+										message : 'UPLOADED',
+										description : '¡Archivo subido exitosiamente!',
+										remoteFilename : this.filesService.getRemoteFileName(),
+										url : this.filesService.getURL(),
+										urlFull : this.filesService.getURLParams(),
+										//params : spacesUtils.getParams(spacesUtils.getRemoteFileName()),
+										product : resp
+									}
+								});
+							})
+							.catch(err=>{
+								throw new Error(err);
+							})
+						
+					})
+					.catch((err : Error)=>{
+						return res.status(HttpStatus.BAD_REQUEST).json({
+							response : 1,
+							content : {
+								message : 'ERROR',
+								description : '¡Ups, tuvimos un problema!',
+								error : 'FILE CORRUPTED OR NOT FOUND IN BACKEND'
+							}
+						});
+					});
+				
 			})
 			.catch((err)=>{
-				// res.status(HttpStatus.OK).json({
-				// 	response: 1,
-				// 	content: {
-				// 		err
-				// 	}
-				// });
 				throw new Error(err);
 			});
 	};
