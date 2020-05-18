@@ -74,6 +74,7 @@ export class PartnerController {
 		const partner : Partner = await this.partnerService.getPartnerByPhone(createProductDTO.phone);
 		/*If the partner was not found */
 		if(!partner){
+			
 			return res.status(HttpStatus.OK).json({
 				response: 1,
 				content: {
@@ -81,7 +82,7 @@ export class PartnerController {
 				}
 			});
 		}
-		
+
 		/*If the partner was found with this phone number */
 		await this.productService.createProduct(partner._id,createProductDTO)
 			.then((product : Product)=>{
