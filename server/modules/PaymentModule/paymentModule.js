@@ -202,12 +202,12 @@ module.exports = {
   },
   nequiPushPayment : function(phoneNumber, value, messageID, clientID, references, res){
     const builder = require('./Nequi/pushPaymentBuilder');
+    /* Create the Payment structure */
     var pushPayment = builder.createPushPaymentRequest(phoneNumber, value, messageID, clientID, references);
-
     var headers = { 'content-type' : 'application/json' };
     var body = pushPayment.getRequest();
     console.log(JSON.stringify(body));
-
+    /* Make the request */
     signer.makeSignedRequest(NEQUI_PUSH_HOST, NEQUI_PUSH_SEND_PATH,'POST', headers, body,
       (statusCode, resp) => {
         let status="-1";
@@ -269,7 +269,7 @@ module.exports = {
         let description="";
         let message = "REJECTED";
         var responseCode = 2;
-        //console.log("Respuesta al checkear el estado del pago: ",JSON.stringify(resp));
+        console.log("Respuesta al checkear el estado del pago: ",JSON.stringify(resp));
         if(resp.ResponseMessage){
           //console.log("testando la respuesta : ",JSON.stringify(resp))
           /* Cancelled order by User */          

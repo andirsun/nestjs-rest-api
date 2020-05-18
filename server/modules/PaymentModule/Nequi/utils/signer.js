@@ -40,6 +40,7 @@ function makeSignedRequest(host, path, method, headers, body, onSuccess, onError
     //custom aws4 signature module
     //ACCES_KEY_ SECRET_KEY and API_KEY are provide by Nequi Conecta API
     options = aws4.sign(options, {accessKeyId: ACCESS_KEY, secretAccessKey: SECRET_KEY});
+    console.log("Request: ",options);
     callback = function(response) {
         delete headers['X-Amz-Date'];
         delete headers['Host'];
