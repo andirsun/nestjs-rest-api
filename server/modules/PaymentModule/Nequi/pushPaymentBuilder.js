@@ -1,4 +1,12 @@
+/*
+  This file create the structure to make a request
+  to push payment nequi conecta APi
+*/
 module.exports = {
+  /*
+    This function create the structure of endpoint to
+    send push payment notification
+  */
   createPushPaymentRequest : function(phoneNumber, value, messageID, clientID, references){
     const NequiSendPush = require('./classes/NequiSendPush');
     var nequiPushPayment = new NequiSendPush();
