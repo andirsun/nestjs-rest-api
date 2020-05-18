@@ -142,6 +142,27 @@ app.post('/payment/nequi/pushPayment', function(req, res) {
   console.log(phoneNumber, value, messageID, clientID, references);
   paymentModule.nequiPushPayment(phoneNumber, value, messageID, clientID, references, res);
 });
+app.post('/payment/nequi/pushPayment/reverse', function(req, res) {
+  /* Body must be like
+    {
+      phoneNumber : '3116021602', //phone USER
+      messageID : '123456789', //optional,
+      value: 14900
+      clientID : '1234567890', //optional
+    }
+  */
+  let body = req.body;
+  var phoneNumber = body.phoneNumber;
+  var value = body.value;
+  var messageID = new Date().getTime().toString();
+  if(!body.messageID){
+    messageID = messageID.substring(messageID.length-9);
+  } else{
+    messageID = body.messageID;
+  }
+  var clientID = body.clientID || phoneNumber;
+  paymentModule.nequiReversePushPayment(phoneNumber, value, messageID, clientID, res);
+});
 app.post('/payment/nequi/checkPushPayment', function(req, res){
   /*Body must be like
     {

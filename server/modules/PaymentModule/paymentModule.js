@@ -364,6 +364,58 @@ module.exports = {
         }
         return res.status(200).json(response);
     });
+  },
+  nequiReversePushPayment : function(phoneNumber, value, messageID, clientID, res){
+    const builder = require('./Nequi/reversePushPaymentBuilder');
+    /* Create the Payment structure */
+    var pushPayment = builder.reversePushPaymentRequest(phoneNumber, value, messageID, clientID);
+    var headers = { 'content-type' : 'application/json' };
+    var body = pushPayment.getRequest();
+    //console.log(JSON.stringify(body));
+    /* Make the request */
+    signer.makeSignedRequest(NEQUI_PUSH_HOST, NEQUI_PUSH_SEND_PATH,'POST', headers, body,(statusCode, resp) => {
+      /* Defaulta Values */
+      let status="-1";
+      let description="";
+      let message = "REJECTED";
+      var responseCode = 2;
+      console.log("Response del peticion reverso: ",JSON.stringify(resp));
+      // if ( resp.ResponseMessage ){
+      //   status = resp.ResponseMessage.ResponseHeader.Status.StatusCode;
+      //   description = resp.ResponseMessage.ResponseHeader.Status.StatusDesc;
+      //   if ( status=="0" ) {
+      //     message="ACCEPTED";
+      //     description="Ya enviamos tu pago, confirmalo en Nequi";
+      //     codeQR = resp.ResponseMessage.ResponseBody.any.unregisteredPaymentRS.transactionId;
+      //   } 
+      // } else {
+      //   message = "NEQUI_ERROR";
+      //   responseCode = 3;
+      //   description = resp.message;
+      // }
+      // var response = {
+      //   response : responseCode,
+      //   content : {
+      //     message : message,
+      //     description : description,
+      //     codeQR : codeQR
+      //   }
+      // }
+      //res.status(200).json(response);
+    },
+    (err) => {
+      //Do somenthing with the error response
+      var response = {
+        response : 1,
+        content : {
+          message : "ERROR",
+          description : "Hemos tenido un inconveniente, ¡Intentalo de nuevo!",
+        }
+      }
+      return res.status(200).json(response);
+    });
+
+
   }
 }
 
