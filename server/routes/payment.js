@@ -130,6 +130,7 @@ app.post('/payment/nequi/pushPayment', function(req, res) {
   let body = req.body;
   var phoneNumber = body.phoneNumber;
   var value = body.value;
+  /* Transaction identifier must to be unique for every new transaction */
   var messageID = new Date().getTime().toString();
   if(!body.messageID){
     messageID = messageID.substring(messageID.length-9);
@@ -154,32 +155,24 @@ app.post('/payment/nequi/pushPayment/reverse', function(req, res) {
   let body = req.body;
   var phoneNumber = body.phoneNumber;
   var value = body.value;
-  var messageID = new Date().getTime().toString();
-  if(!body.messageID){
-    messageID = messageID.substring(messageID.length-9);
-  } else{
-    messageID = body.messageID;
-  }
+  /* This messageID is the same of payment to reverse */
+  var messageID = body.messageID;
   var clientID = body.clientID || phoneNumber;
   paymentModule.nequiReversePushPayment(phoneNumber, value, messageID, clientID, res);
 });
 app.post('/payment/nequi/checkPushPayment', function(req, res){
   /*Body must be like
     {
-      codeQR : 'transactionId',
-      messageID : 'messageID',
-      clientID : 'clientID'
+      codeQR : 'transactionId', //mandatory
+      messageID : 'messageID', //MUST BE UNIQUE
+      clientID : 'clientID' //could be optional
     }
   */
   let body = req.body;
   var codeQR = body.codeQR;
-  var messageID = new Date().getTime().toString();
-  if (!body.messageID){
-    messageID = messageID.substring(messageID.length-9);
-  } else{
-    messageID = body.messageID;
-  }
-  var clientID = body.clientID || '3116021602';
+  /* Id of transaction */
+  var messageID = body.messageID;
+  var clientID = body.clientID || phoneNumber;
   paymentModule.nequiCheckPushPayment(codeQR, messageID, clientID, res);
 });
 /********************************************************** */
