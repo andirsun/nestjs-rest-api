@@ -13,6 +13,8 @@ const NEQUI_PUSH_HOST = 'api.sandbox.nequi.com';
 const NEQUI_PUSH_SEND_PATH = '/payments/v1/-services-paymentservice-unregisteredpayment';
 const NEQUI_PUSH_CHECK_PAYMENT_PATH='/payments/v1/-services-paymentservice-getstatuspayment';
 const NEQUI_PUSH_CANCEL_PAYMENT_PATH='/payments/v1/-services-paymentservice-cancelunregisteredpayment';
+const NEQUI_PUSH_REVERSE_PAYMENT_PATH=`/payments/v1/-services-reverseservices-reversetransaction`
+
 const payUrl = 'https://sandbox.api.payulatam.com/payments-api/4.0/service.cgi';
 /* IMport axios to make request to server */
 const axios = require('axios').default;
@@ -373,35 +375,34 @@ module.exports = {
     var body = pushPayment.getRequest();
     //console.log(JSON.stringify(body));
     /* Make the request */
-    signer.makeSignedRequest(NEQUI_PUSH_HOST, NEQUI_PUSH_SEND_PATH,'POST', headers, body,(statusCode, resp) => {
+    signer.makeSignedRequest(NEQUI_PUSH_HOST, NEQUI_PUSH_REVERSE_PAYMENT_PATH,'POST', headers, body,(statusCode, resp) => {
       /* Defaulta Values */
       let status="-1";
       let description="";
       let message = "REJECTED";
       var responseCode = 2;
       console.log("Response del peticion reverso: ",JSON.stringify(resp));
-      // if ( resp.ResponseMessage ){
-      //   status = resp.ResponseMessage.ResponseHeader.Status.StatusCode;
-      //   description = resp.ResponseMessage.ResponseHeader.Status.StatusDesc;
-      //   if ( status=="0" ) {
-      //     message="ACCEPTED";
-      //     description="Ya enviamos tu pago, confirmalo en Nequi";
-      //     codeQR = resp.ResponseMessage.ResponseBody.any.unregisteredPaymentRS.transactionId;
-      //   } 
-      // } else {
-      //   message = "NEQUI_ERROR";
-      //   responseCode = 3;
-      //   description = resp.message;
-      // }
-      // var response = {
-      //   response : responseCode,
-      //   content : {
-      //     message : message,
-      //     description : description,
-      //     codeQR : codeQR
-      //   }
-      // }
-      //res.status(200).json(response);
+      if ( resp.ResponseMessage ){
+        status = resp.ResponseMessage.ResponseHeader.Status.StatusCode;
+        description = resp.ResponseMessage.ResponseHeader.Status.StatusDesc;
+        if ( status=="0" & description=="SUCCESS") {
+          message="APPROVED";
+          description="Se reverso el pago correctamente.";
+        }
+      } else {
+        message = "NEQUI_ERROR";
+        responseCode = 3;
+        description = resp.message;
+      }
+      var response = {
+        response : responseCode,
+        content : {
+          message : message,
+          description : description,
+          codeQR : codeQR
+        }
+      }
+      res.status(200).json(response);
     },
     (err) => {
       //Do somenthing with the error response
