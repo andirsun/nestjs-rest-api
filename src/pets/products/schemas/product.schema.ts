@@ -10,6 +10,10 @@ export const ProductSchema = new Schema({
         type : String,
         required :[true, "El id del creador es necesario"]
     },
+    namePartner : {
+        type : String,
+        default : "",
+    },
     status :{
         type :String, //available | unavailable | pending | rejected | archived |
         default  : "available"

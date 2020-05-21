@@ -5,6 +5,7 @@ import { Document } from "mongoose";
 export interface Product extends Document {
     
     idPartner : string,
+    namePartner : string,
     name : string,
     orders : number,
     status :string, //available | unavailable | pending | rejected | archived |

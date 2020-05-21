@@ -8,6 +8,7 @@ import { UserPetsService } from './user-pets.service';
 import { MongooseModule } from "@nestjs/mongoose";
 import { LogPetsModule } from 'src/pets/log-pets/log-pets.module';
 import { ProductsModule } from '../products/products.module';
+import { PartnerModule } from '../partner/partner.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ProductsModule } from '../products/products.module';
       // Other module is required need to import here
       LogPetsModule,
       ProductsModule,
+      PartnerModule
   ],
   providers: [UserPetsService],
   controllers: [UserPetsController],
