@@ -1,4 +1,4 @@
-import { Controller,Get,Post,Put,Delete,Res,HttpStatus,Body, Query, Redirect, UseGuards, UseInterceptors, UploadedFile} from '@nestjs/common';
+import { Controller,Get,Post,Put,Delete,Res,HttpStatus,Body, Query, Redirect, UseGuards, UseInterceptors, UploadedFile, Req} from '@nestjs/common';
 import { FileInterceptor } from "@nestjs/platform-express";
 import { AuthGuard } from '@nestjs/passport';
 /* Services */
@@ -147,7 +147,7 @@ export class PartnerController {
 	@Post('/products/presentations/new')
 	@UseInterceptors(FileInterceptor('file'))
 	async createProductPresentation(@Res() res,@Query('idProduct')idProduct : string,
-																	@Query('idPartner')idPartner : string,
+																	@Query('idPartner')idPartner : string,@Req() req,
 																	@Body() createProductPresentationDTO: CreateProductPresentationDTO,
 																	@UploadedFile() file : FileInterface) {
 		/* First add product presentation to product */

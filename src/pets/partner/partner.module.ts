@@ -1,5 +1,5 @@
 /* Nest js Dependencies */
-import { Module } from '@nestjs/common';
+import { Module, HttpException, HttpStatus } from '@nestjs/common';
 /* Services */
 import { PartnerService } from './partner.service';
 import { PartnerController } from './partner.controller';
@@ -12,6 +12,18 @@ import { ProductsModule } from '../products/products.module';
 import { TwilioModule } from 'src/modules/twilio/twilio.module';
 import { PassportModule } from "@nestjs/passport";
 import { FilesModule } from 'src/modules/files/files.module';
+import { extname } from 'path';
+import { MulterModule } from '@nestjs/platform-express';
+
+/* This filter  only accepts certains file types */
+const imageFilter = (req,file,cb) =>{
+  console.log("llegue al filtro");
+  //Filter the image formats
+  if(!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+    cb( new HttpException(`Unsuported file type ${extname(file.originalname)}`,HttpStatus.BAD_REQUEST),false);
+  }
+  cb(null,true)
+};
 @Module({
   imports: [
     MongooseModule.forFeature(
@@ -31,6 +43,12 @@ import { FilesModule } from 'src/modules/files/files.module';
     PassportModule.register({
       defaultStrategy :'jwt',
       session:false
+    }),
+    /* File upload module */
+    MulterModule.registerAsync({
+      useFactory:()=>({
+        fileFilter : imageFilter 
+      })
     }),
     
   ],
