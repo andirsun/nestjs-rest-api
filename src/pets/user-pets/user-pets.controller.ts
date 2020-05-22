@@ -7,6 +7,7 @@ import { UserPetsService } from "./user-pets.service";
 import { LogPetsService } from "../log-pets/log-pets.service";
 import { ProductsService } from '../products/products.service';
 import { PartnerService } from "../partner/partner.service";
+import { Product } from '../products/interfaces/product.interface';
 
 @Controller('user-pets')
 export class UserPetsController {
@@ -54,29 +55,40 @@ export class UserPetsController {
 				}else{
 					/* Make a loop to search the name partner to add every product*/ 
 					let loop = new Promise((resolve,reject)=>{
+						var productsObjectArray = [];
 						products.forEach((element,index) => {
 							/* Search the partner by id to obtain the name */
 							this.partnerService.getPartnerById(element.idPartner)
 								.then(partner=>{
+									/* This is neccesary to add properties to a mongoose object */
+									var elementObj = element.toObject();
 									/* Set the namePartner propertie */
-									element.namePartner = partner.appName;
-									/* If is the end of the loop, then resolve the primise to return the reponse*/
-									if (index === products.length -1) resolve();
+									elementObj.namePartner = partner.appName;
+									/* Delete unused properties for frontend */
+									delete elementObj.rates;
+									delete elementObj.usersRates;
+									delete elementObj.tags;
+									delete elementObj.__v;
+									/* Push the element to return array*/
+									productsObjectArray.push(elementObj);
 								})
 								.catch(err=>{
 									reject();
 									throw new Error(err);
 								})
+								.finally(()=>{
+									/* If is the end of the loop, then resolve the primise to return the reponse*/
+									if (index === products.length -1) resolve(productsObjectArray);
+								})
 						});
 						
 					});
 					/* When the loop ends then resolve the prmose and return the response */
-					loop.then(()=>{
-						console.log("legue");
+					loop.then((productsModified)=>{
 						return res.status(HttpStatus.OK).json({
 							response: 2,
 							content:{
-								products : products
+								products : productsModified
 							}
 						});
 					});
