@@ -30,6 +30,13 @@ export class UserPetsService {
         const user = await this.userPetsModel.findOne({phone:phone});
         return user;
     }
+    /*
+        This function check if users exists with this email
+    */
+   async checkUserByEmail(email: string): Promise<UserPets>{
+       const user = await this.userPetsModel.findOne({email:email});
+       return user;
+   } 
 
 
 

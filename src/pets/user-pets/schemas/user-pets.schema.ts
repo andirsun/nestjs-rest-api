@@ -36,7 +36,7 @@ export const UserPetsSchema = new Schema({
   phone: {
     type: Number,
     unique: true,
-    required: [true, "Es necesario el numero de celular"]
+    //required: [true, "Es necesario el numero de celular"]
   },
   birth: {
     type: Date,
@@ -76,6 +76,9 @@ export const UserPetsSchema = new Schema({
   publicityMethod:{
     type: String,
     default: "none"
+  },
+  registerMethod :{
+    type : String,
   }
 });
 /*PLUGINS ZONE*/
