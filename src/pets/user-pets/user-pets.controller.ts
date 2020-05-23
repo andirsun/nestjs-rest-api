@@ -8,6 +8,9 @@ import { LogPetsService } from "../log-pets/log-pets.service";
 import { ProductsService } from '../products/products.service';
 import { PartnerService } from "../partner/partner.service";
 import { Product } from '../products/interfaces/product.interface';
+import { LoginUserDTO } from './dto/loginUser.dto';
+import { UserPets } from './interfaces/user-pets.interfaces';
+
 
 @Controller('user-pets')
 export class UserPetsController {
@@ -40,6 +43,68 @@ export class UserPetsController {
 				});
 				throw new Error(err);
 			})
+	}
+	@Get('/check')
+	async checkUser(@Res()res, @Query('phone')phone :number){
+		/* Check id the user exists in the db with this phone */ 
+		this.userPetsServie.getUser(phone)
+		.then(user=>{
+			this.logService.log("Se consulto si existe un usuario",phone.toString());
+			if(user){
+				/* User Registered */
+				return res.status(HttpStatus.OK).json({
+					response: 2,
+					content:{
+						message : 'El usuario ya esta registrado'
+					}
+				});
+			}else{
+				/* If the user doesnt exists */
+				return res.status(HttpStatus.OK).json({
+						response: 1,
+						content:{
+							message : 'El usuario es nuevo'
+						}
+					});
+				}
+			})
+			.catch(err=>{
+				throw new Error(err);
+			})
+	}
+	@Post('/login')
+	async loginUser(@Res()res,@Body() loginUserDTO : LoginUserDTO){
+		/* Check is user already Exists */
+		const user : UserPets = await this.userPetsServie.checkUserByEmail(loginUserDTO.email); 
+		/* User registered */
+		if(user){
+			return res.status(HttpStatus.OK).json({
+				response: 2,
+				content:{
+					message : 'El usuario ya esta registrado',
+					code : 1,
+				}
+			});
+		}else{
+			/* If is new User, then need to register */
+			let newUser : CreateUserPetsDTO = loginUserDTO;
+			/* Analitical porpuses */
+			newUser.registerMethod = loginUserDTO.method;
+			/* If the user have phone */
+			this.userPetsServie.createUser(newUser)
+				.then(user =>{
+					return res.status(HttpStatus.OK).json({
+						response: 2,
+						content:{
+							user,
+							code : 2 //means need to redirect home
+						}
+					});
+				})
+				.catch(err =>{
+					console.log(err);
+				})
+		}
 	}
 	@Get('/products/getByTag')
 	async getProductsByTag(@Res() res, @Query('tag') tag : string ) {
