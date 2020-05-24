@@ -28,23 +28,23 @@ export const UserPetsSchema = new Schema({
   },
   name: {
     type: String,
-    required: false
-  },
-  registrationCode :{
-    type : String,
+    required: [true,"El nombre es necesario"]
   },
   phone: {
     type: String,
     unique: true,
-    //required: [true, "Es necesario el numero de celular"]
-  },
-  birth: {
-    type: Date,
-    required: false
+    required: [true, "Es necesario el numero de celular"]
   },
   email: {
     type: String,
-    required: false
+    unique : true,
+    required: [true,"El email es necesario"]
+  },
+  birth: {
+    type: Date,
+  },
+  registrationCode :{
+    type : String,
   },
   addresses : [AddressSchema],
   cards : [CardSchema],
