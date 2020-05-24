@@ -1,5 +1,5 @@
 export class LoginUserDTO {
-  readonly phone : number;
+  readonly phone : string;
   readonly email : string;
   readonly name : string;
   readonly img : string;

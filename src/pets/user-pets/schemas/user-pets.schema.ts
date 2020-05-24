@@ -34,7 +34,7 @@ export const UserPetsSchema = new Schema({
     type : String,
   },
   phone: {
-    type: Number,
+    type: String,
     unique: true,
     //required: [true, "Es necesario el numero de celular"]
   },
