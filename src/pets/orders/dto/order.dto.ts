@@ -9,7 +9,7 @@ export class CreateOrderPetsDTO{
   readonly status : string; // to define
   readonly updated : string;
   readonly idClient :string;
-  readonly phoneClient : number;
+  readonly phoneClient : string;
   readonly nameClient : string;
   readonly idPartner : string;
   readonly namePartner : string;

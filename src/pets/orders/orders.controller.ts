@@ -31,7 +31,7 @@ export class OrdersController {
   @Post('/newOrder')
 	async createNewOrder(@Res() res,@Body() order : CreateOrderPetsDTO){
     /* Search the Info and build the order */
-    this.userPetsService.getUser(order.phoneClient)
+    this.userPetsService.getUser(parseInt(order.phoneClient))
       .then(user=>{
         
         order.shoppingCart.forEach((orderByPartner,index) => {
@@ -46,7 +46,7 @@ export class OrdersController {
                 status : "ACTIVE",
                 updated :  momentZone().tz('America/Bogota').format("YYYY-MM-DD"),
                 idClient : user._id,
-                phoneClient : user.phone,
+                phoneClient : user.phone.toString(),
                 nameClient : user.name,
                 idPartner : partner._id,
                 namePartner : partner.businessName,
@@ -109,10 +109,63 @@ export class OrdersController {
       })    
   }
   /*
+    Endpoint to get available orders with a phone number of partner
+  */
+  @Get('/getAvailableOrders')
+  async getAvailableOrders(@Res() res,@Query('phone')phone :number ){
+    this.orderService.getAvailableOrders(phone)
+      .then(orders=>{
+        return res.status(HttpStatus.OK).json({
+          response: 2,
+          content:{
+            orders
+          }
+        });
+      })
+      .catch(err=>{
+        /* Send response */
+        res.status(HttpStatus.OK).json({
+          response: 1,
+          content:{
+            err
+          }
+        });
+        /* Send Error to Sentry report */
+        throw new Error(err);
+      })
+  }
+  /*
+    Endpoint to get available orders with a phone number of partner
+  */
+  @Get('/getTakenOrders')
+  async getTakenOrders(@Res() res,@Query('phone')phone :number ){
+    this.orderService.getTakenOrders(phone)
+      .then(orders=>{
+        return res.status(HttpStatus.OK).json({
+          response: 2,
+          content:{
+            orders
+          }
+        });
+      })
+      .catch(err=>{
+        /* Send response */
+        res.status(HttpStatus.OK).json({
+          response: 1,
+          content:{
+            err
+          }
+        });
+        /* Send Error to Sentry report */
+        throw new Error(err);
+      })
+    }
+
+  /*
     This function Modify the state of order
   */
- @Put('/changeStatus')
- async changeOrderStatus(@Res() res,@Ip() ip : string,@Body() body : OrderChangeDTO){
+  @Put('/changeStatus')
+  async changeOrderStatus(@Res() res,@Ip() ip : string,@Body() body : OrderChangeDTO){
    this.orderService.changeOrderStatus(body.idOrder,body.status, ip)
     .then(order =>{
       this.logService.log("Se cambio el estado de una orden", body.idOrder);

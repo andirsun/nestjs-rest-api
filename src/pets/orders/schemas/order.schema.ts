@@ -13,7 +13,7 @@ import { OrderHistorySchema } from "./historyOrder.schema";
 
 
 export const OrderPetsSchema = new Schema<OrderPetsInterface>({
-  status: {
+  status: { //ACTIVE | PREPARING | DISPATCHED | RECIEVED | FINALIZED
     type: String,
     default: true,
   },
@@ -24,6 +24,9 @@ export const OrderPetsSchema = new Schema<OrderPetsInterface>({
   nameClient:{
     type: String,
     required:[true,"EL nombre del cliente es necesario"]
+  },
+  phoneClient:{
+    type: String,
   },
   idClient: {
     type: String,

@@ -9,7 +9,7 @@ import { OrderHistoryInterface } from "./historyOrder.interface";
 
 export interface OrderPetsInterface extends Document {
   _id : string,
-  status : string,
+  status : string, //ACTIVE | PREPARING | DISPATCHED | RECIEVED | FINALIZED
   updated : string,
   idClient : string,
   phoneClient : number,
