@@ -9,8 +9,8 @@ export class BarberController {
   constructor(
 		private barberServices : BarberService,
 		private logService : LogBarbersService
-  ){}
-  @Get('/getByCity')
+	){}
+	@Get('/getByCity')
 	async getActiveOrdersByCity(@Res() res,@Query('city')city : string){
 		await this.barberServices.getBarbersByCity(city)
 				.then((barbers)=>{
