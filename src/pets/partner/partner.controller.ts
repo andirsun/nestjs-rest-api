@@ -205,7 +205,7 @@ export class PartnerController {
 		needs a phone number send by query params
 	*/
 	@Get('/products/getProducts')
-	@UseGuards(AuthGuard())
+	//@UseGuards(AuthGuard())
 	async getProducts(@Res() res, @Query('phone') phone : number ) {
 		/* Search user with phone */
 		const user = await this.partnerService.getPartnerByPhone(phone);

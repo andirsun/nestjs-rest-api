@@ -60,7 +60,8 @@ export class AuthService {
         response : 2,
         content : {
           expiresIn: 18000,
-          token: jwt            
+          token: jwt,
+          phone : user.phone            
 
         }
     }

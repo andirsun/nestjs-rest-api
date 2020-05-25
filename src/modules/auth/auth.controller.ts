@@ -17,4 +17,5 @@ export class AuthController {
   async login(@Body() loginPartnerDto: LoginPartnerDto){
       return await this.authService.validatePartnerByPassword(loginPartnerDto);
   }
+  
 }
