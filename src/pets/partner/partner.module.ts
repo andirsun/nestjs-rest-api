@@ -16,14 +16,14 @@ import { extname } from 'path';
 import { MulterModule } from '@nestjs/platform-express';
 
 /* This filter  only accepts certains file types */
-const imageFilter = (req,file,cb) =>{
-  console.log("llegue al filtro");
-  //Filter the image formats
-  if(!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
-    cb( new HttpException(`Unsuported file type ${extname(file.originalname)}`,HttpStatus.BAD_REQUEST),false);
-  }
-  cb(null,true)
-};
+// const imageFilter = (req,file,cb) =>{
+//   console.log("llegue al filtro");
+//   //Filter the image formats
+//   if(!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+//     cb( new HttpException(`Unsuported file type ${extname(file.originalname)}`,HttpStatus.BAD_REQUEST),false);
+//   }
+//   cb(null,true)
+// };
 @Module({
   imports: [
     MongooseModule.forFeature(
@@ -45,11 +45,11 @@ const imageFilter = (req,file,cb) =>{
       session:false
     }),
     /* File upload module */
-    MulterModule.registerAsync({
-      useFactory:()=>({
-        fileFilter : imageFilter 
-      })
-    }),
+    // MulterModule.registerAsync({
+    //   useFactory:()=>({
+    //     fileFilter : imageFilter 
+    //   })
+    // }),
     
   ],
   providers: [PartnerService],
