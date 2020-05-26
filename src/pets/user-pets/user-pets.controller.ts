@@ -55,7 +55,8 @@ export class UserPetsController {
 				return res.status(HttpStatus.OK).json({
 					response: 2,
 					content:{
-						message : 'El usuario ya esta registrado'
+						message : 'El usuario ya esta registrado',
+						userEmail : user.email
 					}
 				});
 			}else{

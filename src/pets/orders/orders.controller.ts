@@ -86,24 +86,30 @@ export class OrdersController {
   @Post('/newOrder')
   async createNewOrder(@Res() res,@Body() order : CreateOrderPetsDTO){
     /* Search the Info and build the order */
-    this.userPetsService.getUser(parseInt(order.phoneClient))
+    this.userPetsService.checkUserByEmail(order.emailClient)
       .then(user=>{
-        
+        /* email provided from frontend */
+        let phoneUser:string ="";
+        /* Check if user have a define phone or its the same email */
+        if(user.email == user.phone){
+          phoneUser = order.phoneClient
+        }else{
+          phoneUser = user.phone
+        }
+        /* Create Every order for every partner in the shopping cart */
         order.shoppingCart.forEach((orderByPartner,index) => {
-          
-          //console.log(index,orderByPartner);
           this.partnerService.getPartnerById(orderByPartner.idPartner)
             .then(partner=>{
-              
               //console.log("PARTNER NUMERO",index,partner);
               /*Build the CreateOrderpets DTO */
               let newOrder : CreateOrderPetsDTO ={
                 status : "ACTIVE",
                 updated :  momentZone().tz('America/Bogota').format("YYYY-MM-DD"),
                 idClient : user._id,
-                phoneClient : user.phone.toString(),
+                phoneClient : phoneUser,
                 nameClient : user.name,
                 idPartner : partner._id,
+                emailClient : order.emailClient,
                 namePartner : partner.businessName,
                 commission : 10,
                 address : order.address,
@@ -114,8 +120,6 @@ export class OrdersController {
                 totalAmount : orderByPartner.totalAmount,
                 paymentMethod : order.paymentMethod
               };
-              
-
               //console.log(newOrder);
               /* Use the orders services to create the order */
               this.orderService.createOrder(newOrder)

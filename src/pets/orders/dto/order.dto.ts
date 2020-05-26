@@ -10,6 +10,7 @@ export class CreateOrderPetsDTO{
   readonly updated : string;
   readonly idClient :string;
   readonly phoneClient : string;
+  readonly emailClient : string;
   readonly nameClient : string;
   readonly idPartner : string;
   readonly namePartner : string;

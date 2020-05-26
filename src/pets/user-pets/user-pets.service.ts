@@ -27,7 +27,7 @@ export class UserPetsService {
         This function returns an user from the database
     */
     async getUser(phone:number) : Promise<UserPets>{
-        const user = await this.userPetsModel.findOne({phone:phone});
+        const user = await this.userPetsModel.findOne({phone:phone.toString()});
         return user;
     }
     /*

@@ -7,7 +7,7 @@ import { Document } from "mongoose";
 
 export interface UserPets extends Document {
     _id: string,
-    phone: number ,
+    phone: string,
     phoneToken:string,
     updated: string,
     name: string,
