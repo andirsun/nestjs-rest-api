@@ -1,19 +1,18 @@
 /* Nest js Dependencies */
-import { Module, HttpException, HttpStatus } from '@nestjs/common';
+import { Module, HttpException, HttpStatus, forwardRef } from '@nestjs/common';
+import { PassportModule } from "@nestjs/passport";
+import { MongooseModule } from "@nestjs/mongoose";
 /* Services */
 import { PartnerService } from './partner.service';
 import { PartnerController } from './partner.controller';
 /* Schemas */
 import { PartnerSchema } from "./schemas/partner.schema";
 /* Extra modules importations */
-import { MongooseModule } from "@nestjs/mongoose";
 import { LogPetsModule } from '../log-pets/log-pets.module';
 import { ProductsModule } from '../products/products.module';
 import { TwilioModule } from 'src/modules/twilio/twilio.module';
-import { PassportModule } from "@nestjs/passport";
 import { FilesModule } from 'src/modules/files/files.module';
-import { extname } from 'path';
-import { MulterModule } from '@nestjs/platform-express';
+
 
 /* This filter  only accepts certains file types */
 // const imageFilter = (req,file,cb) =>{

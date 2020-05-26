@@ -1,4 +1,20 @@
-import { Controller,Get,Post,Put,Delete,Res,HttpStatus,Body, Query, Redirect, UseGuards, UseInterceptors, UploadedFile, Req} from '@nestjs/common';
+import {
+	Controller,
+	Get,
+	Post,
+	Put,
+	Res,
+	HttpStatus,
+	Body, 
+	Query, 
+	UseGuards,
+	UseInterceptors,
+	UploadedFile, 
+	Req, 
+	Ip,
+	forwardRef,
+	Inject
+} from '@nestjs/common';
 import { FileInterceptor } from "@nestjs/platform-express";
 import { AuthGuard } from '@nestjs/passport';
 /* Services */
@@ -7,10 +23,12 @@ import { LogPetsService } from "../log-pets/log-pets.service";
 import { TwilioService } from "src/modules/twilio/twilio.service";
 import { ProductsService } from "../products/products.service";
 import { FilesService } from 'src/modules/files/files.service';
+import { OrdersService } from '../orders/orders.service';
 /* DTOs */
 import { CreatePartnerDTO } from "./dto/partner.dto";
 import { CreateProductDTO } from "../products/dto/product.dto";
 import { CreateProductPresentationDTO } from '../products/dto/productPresentation.dto';
+import { OrderChangeDTO } from '../orders/dto/changeOrder.dto';
 /* Interfaces */
 import { Product } from "../products/interfaces/product.interface";
 import { Partner } from "../partner/interfaces/partner.interface";
@@ -26,11 +44,13 @@ export class PartnerController {
 		, schemas etc to be injected
 	*/
 	constructor(
+		/* Own Service */
 		private partnerService: PartnerService,
+		/* External services from other modules */
 		private logService: LogPetsService,
-		private twilioService : TwilioService,
 		private productService : ProductsService,
-		private filesService : FilesService
+		private filesService : FilesService,
+		
 	) {}
 	
 	
@@ -249,7 +269,7 @@ export class PartnerController {
 		needs a idProduct send by query params
 	*/
 	@Get('/products/getProduct')
-	@UseGuards(AuthGuard())
+	//@UseGuards(AuthGuard())
 	async getProduct(@Res() res, @Query('idProduct') idProduct : string ) {
 		this.productService.getProduct(idProduct)
 			.then((product : Product)=>{
@@ -275,27 +295,6 @@ export class PartnerController {
 				throw new Error(err);
 			})
 		
-	};
-	//Testing porpusses
-	@Post('/sendSms')
-	async sendSms(@Res() res){
-		this.twilioService.sendWhatsAppMessage(318875881,`Your verification code is 4564654`,871125)
-			.then((message)=>{
-				this.logService.log(`Se en envio un mensaje de twilio exitosamente '${""}' al numero ${""}`,message.sid)
-			})
-			.catch((err)=>{
-				this.logService.error("Ocurrio un error al tratar de enviar el mensaje '${'}' al usuario ${'} ","none");
-				/* Interceptor send to sentry service */
-				throw new Error(err);
-			});
-
-	};
-	@Get('test')
-	@UseGuards(AuthGuard())
-	testAuthRoute(){
-			return {
-					message: 'You did it!'
-			}
 	};
 	@Post('/uploadFile')
 	@UseInterceptors(FileInterceptor('file'))

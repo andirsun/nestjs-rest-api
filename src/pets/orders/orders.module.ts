@@ -7,6 +7,7 @@ import { LogPetsModule } from '../log-pets/log-pets.module';
 import { UserPetsModule } from '../user-pets/user-pets.module';
 import { ProductsModule } from '../products/products.module';
 import { PartnerModule } from '../partner/partner.module';
+import { TwilioModule } from 'src/modules/twilio/twilio.module';
 
 @Module({
   imports:[
@@ -21,10 +22,11 @@ import { PartnerModule } from '../partner/partner.module';
         
       ],'PetsMongoDb'),
     // Other module is required need to import here
+    TwilioModule,
     LogPetsModule,
     UserPetsModule,
     ProductsModule,
-    PartnerModule
+    PartnerModule,
   ],
   controllers: [OrdersController],
   providers: [OrdersService],
