@@ -10,6 +10,7 @@ import { PartnerService } from "../partner/partner.service";
 import { Product } from '../products/interfaces/product.interface';
 import { LoginUserDTO } from './dto/loginUser.dto';
 import { UserPets } from './interfaces/user-pets.interfaces';
+import { OrdersService } from '../orders/orders.service';
 
 
 @Controller('user-pets')
@@ -19,31 +20,11 @@ export class UserPetsController {
 		private userPetsServie : UserPetsService,
 		private logService : LogPetsService,
 		private productService : ProductsService,
-		private partnerService  : PartnerService
-	){}
-
-	@Post('/new')
-	async createUser(@Res() res, @Body() createUserDTO : CreateUserPetsDTO){
-		this.userPetsServie.createUser(createUserDTO)
-			.then(user=>{
-				this.logService.log("Se creo un nuevo usuario",user._id);
-				return res.status(HttpStatus.OK).json({
-					response: 2,
-					content:{
-						user
-					}
-				});
-			})
-			.catch(err=>{
-				res.status(HttpStatus.OK).json({
-					response: 1,
-					content:{
-						err
-					}
-				});
-				throw new Error(err);
-			})
-	}
+		private partnerService  : PartnerService,
+		
+		
+		){}
+	
 	@Get('/check')
 	async checkUser(@Res()res, @Query('phone')phone :number){
 		/* Check id the user exists in the db with this phone */ 
@@ -72,40 +53,6 @@ export class UserPetsController {
 			.catch(err=>{
 				throw new Error(err);
 			})
-	}
-	@Post('/login')
-	async loginUser(@Res()res,@Body() loginUserDTO : LoginUserDTO){
-		/* Check is user already Exists */
-		const user : UserPets = await this.userPetsServie.checkUserByEmail(loginUserDTO.email); 
-		/* User registered */
-		if(user){
-			return res.status(HttpStatus.OK).json({
-				response: 2,
-				content:{
-					message : 'El usuario ya esta registrado',
-					code : 1,
-				}
-			});
-		}else{
-			/* If is new User, then need to register */
-			let newUser : CreateUserPetsDTO = loginUserDTO;
-			/* Analitical porpuses */
-			newUser.registerMethod = loginUserDTO.method;
-			/* If the user have phone */
-			this.userPetsServie.createUser(newUser)
-				.then(user =>{
-					return res.status(HttpStatus.OK).json({
-						response: 2,
-						content:{
-							user,
-							code : 2 //means need to redirect home
-						}
-					});
-				})
-				.catch(err =>{
-					console.log(err);
-				})
-		}
 	}
 	@Get('/products/getByTag')
 	async getProductsByTag(@Res() res, @Query('tag') tag : string ) {
@@ -164,4 +111,61 @@ export class UserPetsController {
 				throw new Error(err);
 			})
 	}
+	@Post('/new')
+	async createUser(@Res() res, @Body() createUserDTO : CreateUserPetsDTO){
+		this.userPetsServie.createUser(createUserDTO)
+			.then(user=>{
+				this.logService.log("Se creo un nuevo usuario",user._id);
+				return res.status(HttpStatus.OK).json({
+					response: 2,
+					content:{
+						user
+					}
+				});
+			})
+			.catch(err=>{
+				res.status(HttpStatus.OK).json({
+					response: 1,
+					content:{
+						err
+					}
+				});
+				throw new Error(err);
+			})
+	}
+	@Post('/login')
+	async loginUser(@Res()res,@Body() loginUserDTO : LoginUserDTO){
+		/* Check is user already Exists */
+		const user : UserPets = await this.userPetsServie.checkUserByEmail(loginUserDTO.email); 
+		/* User registered */
+		if(user){
+			return res.status(HttpStatus.OK).json({
+				response: 2,
+				content:{
+					message : 'El usuario ya esta registrado',
+					code : 1,
+				}
+			});
+		}else{
+			/* If is new User, then need to register */
+			let newUser : CreateUserPetsDTO = loginUserDTO;
+			/* Analitical porpuses */
+			newUser.registerMethod = loginUserDTO.method;
+			/* If the user have phone */
+			this.userPetsServie.createUser(newUser)
+				.then(user =>{
+					return res.status(HttpStatus.OK).json({
+						response: 2,
+						content:{
+							user,
+							code : 2 //means need to redirect home
+						}
+					});
+				})
+				.catch(err =>{
+					console.log(err);
+				})
+		}
+	}
+	
 }

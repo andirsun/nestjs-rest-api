@@ -80,6 +80,41 @@ export class OrdersController {
       })
   }
   /*
+   Get user current order
+  */
+  @Get('users/getCurrentOrders')
+	async getUserCurrentOrders(@Res() res, @Query('email') email : string ){
+		this.orderService.getUserCurrentOrders(email)
+			.then(orders =>{
+        /* If the user doesnt have any orders */
+        if(!orders.length){
+          return res.status(HttpStatus.BAD_REQUEST).json({
+            response: 1,
+            content:{
+              message: "EL usuario no tiene ordenes en curso"
+            }
+          });  
+        }else{
+          return res.status(HttpStatus.OK).json({
+            response: 2,
+            content:{
+              orders
+            }
+          });
+
+        }
+			})
+			.catch(err=>{
+				res.status(HttpStatus.BAD_REQUEST).json({
+					response: 1,
+					content:{
+						message: "Ocurrio un error"
+					}
+				});
+				throw new Error(err);
+			})
+	}
+  /*
     This function Create a new Order
     recieve a bofy with Structure of OrderPetsInterface
   */
@@ -167,6 +202,7 @@ export class OrdersController {
         throw new Error(err);
       })    
   }
+  
   /*
     This function Modify the state of order
   */

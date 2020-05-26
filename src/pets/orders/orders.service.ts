@@ -55,6 +55,13 @@ export class OrdersService {
     return await this.ordersModel.find({idPartner: partner._id,status:'ACTIVE'});
   }
   /*
+    This Function fetch current user orders
+    from database  
+  */
+  async getUserCurrentOrders(email : string):Promise<OrderPetsInterface[]>{
+    return await this.ordersModel.find({emailClient:email,status:{$in :['ACTIVE','PREPARING','DISPATCHED']}});
+  }
+  /*
     This Function fetch avaible orders for partner
     from database  
   */

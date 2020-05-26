@@ -28,6 +28,10 @@ export const OrderPetsSchema = new Schema<OrderPetsInterface>({
   phoneClient:{
     type: String,
   },
+  emailClient:{
+    type: String,
+    required:[true,"EL correo del cliente es necesario"]
+  },
   idClient: {
     type: String,
     required: [true, "El id del cliente es necesario"]

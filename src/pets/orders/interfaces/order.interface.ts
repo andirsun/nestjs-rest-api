@@ -13,6 +13,7 @@ export interface OrderPetsInterface extends Document {
   updated : string,
   idClient : string,
   phoneClient : number,
+  emailClient :string,
   nameClient : string,
   idPartner : string,
   namePartner : string,
