@@ -61,7 +61,8 @@ export class AuthService {
         content : {
           expiresIn: 18000,
           token: jwt,
-          phone : user.phone            
+          phone : user.phone,    
+          id: user._id        
 
         }
     }
