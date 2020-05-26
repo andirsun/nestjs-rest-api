@@ -22,21 +22,21 @@ const client = new Twilio(twilioID, twilioToken);
 
 @Injectable()
 export class TwilioService {
-    /* Auxiliarie Functions*/
-    sendSMSMessage(numberDestiny : number,message : string, countryCode : number){
-        return client.messages.create({
-          from:'+14403974927',
-          to: `+${countryCode}${numberDestiny}`,
-          body : message
-        });
-       
-    }
-    //The message need to have a format accord to twilio documentation ask to admin for more info about formats
-    sendWhatsAppMessage(numberDestiny :number,message:string,countryCode : number){
-        return client.messages.create({
-          from:'whatsapp:+14155238886',
-          to:`whatsapp:+${countryCode}${numberDestiny}`,
-          body : message
-        });
-    }
+	/* Auxiliarie Functions*/
+	sendSMSMessage(numberDestiny : number,message : string, countryCode : number){
+		return client.messages.create({
+			from:'+14403974927',
+			to: `+${countryCode}${numberDestiny}`,
+			body : message
+		});
+			
+	}
+	//The message need to have a format accord to twilio documentation ask to admin for more info about formats
+	sendWhatsAppMessage(numberDestiny :number,message:string,countryCode : number){
+		return client.messages.create({
+			from:'whatsapp:+14155238886',
+			to:`whatsapp:+${countryCode}${numberDestiny}`,
+			body : message
+		});
+	}
 }
