@@ -21,8 +21,6 @@ export class UserPetsController {
 		private logService : LogPetsService,
 		private productService : ProductsService,
 		private partnerService  : PartnerService,
-		
-		
 		){}
 	
 	@Get('/check')
@@ -51,6 +49,12 @@ export class UserPetsController {
 				}
 			})
 			.catch(err=>{
+				res.status(HttpStatus.BAD_REQUEST).json({
+					response: 1,
+					content:{
+						err
+					}
+				});
 				throw new Error(err);
 			})
 	}
@@ -166,6 +170,41 @@ export class UserPetsController {
 					console.log(err);
 				})
 		}
+	}
+	@Put('/savePhoneToken')
+	async savePhoneToken(@Res()res,@Query('phoneToken')phoneToken : string,@Query('emailUser')emailUser : string){
+		/* Seatch the user to obtaim the id */
+		this.userPetsServie.checkUserByEmail(emailUser)
+			.then(user=>{
+				/* With the user, then update the phone token with id and phone token */
+				this.userPetsServie.updatePhoneToken(phoneToken,user._id)
+					.then(response=>{
+						return res.status(HttpStatus.OK).json({
+							response: 2,
+							content:{
+								message : `se actualizo el phone token: ${phoneToken}`
+							}
+						});
+					})
+					.catch(err=>{
+						res.status(HttpStatus.BAD_REQUEST).json({
+							response: 1,
+							content:{
+								message : 'No se pudo actualizar el phone token',
+							}
+						});
+						throw new Error(err)
+					})		
+			})
+			.catch(err=>{
+				res.status(HttpStatus.BAD_REQUEST).json({
+					response: 1,
+					content:{
+						message : 'No existe usuario con ese email',
+					}
+				});
+				throw new Error(err)
+			})
 	}
 	
 }

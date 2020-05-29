@@ -20,23 +20,29 @@ export class UserPetsService {
         This function save an user in the DB
     */
     async createUser(createUserPetsDTO:CreateUserPetsDTO) : Promise<UserPets>{
-        const user = new this.userPetsModel(createUserPetsDTO);
-        return await user.save();
+			const user = new this.userPetsModel(createUserPetsDTO);
+			return await user.save();
     }
     /*
         This function returns an user from the database
     */
     async getUser(phone:number) : Promise<UserPets>{
-        const user = await this.userPetsModel.findOne({phone:phone.toString()});
-        return user;
+			const user = await this.userPetsModel.findOne({phone:phone.toString()});
+			return user;
     }
     /*
         This function check if users exists with this email
     */
-   async checkUserByEmail(email: string): Promise<UserPets>{
-       const user = await this.userPetsModel.findOne({email:email});
-       return user;
-   } 
+		async checkUserByEmail(email: string): Promise<UserPets>{
+			const user = await this.userPetsModel.findOne({email:email});
+			return user;
+		} 
+   	/*
+			Update Phone Token
+		*/
+		async updatePhoneToken(phoneToken : string, idUser :string){
+			return await this.userPetsModel.findOneAndUpdate({_id:idUser},{phoneToken:phoneToken});
+		}
 
 
 
