@@ -9,6 +9,7 @@ import { ProductsController } from './products.controller';
 /* Schemas */
 import { ProductSchema } from './schemas/product.schema';
 import { PresentationSchema } from "./schemas/presentation.schema";
+import { QuerySchema } from './schemas/query.schema';
 /* Modules */
 import { PassportModule } from '@nestjs/passport';
 
@@ -22,8 +23,8 @@ import { PassportModule } from '@nestjs/passport';
      [
        //If we need more schemas for user module can import here
        {name:"Products",schema : ProductSchema},
-       {name: "productPresentation",schema : PresentationSchema}
-
+       {name:"productPresentation",schema : PresentationSchema},
+       {name:"Query",schema : QuerySchema},
      ],'PetsMongoDb'),
      /* Defines de Auth Method to use in this module */
      PassportModule.register({

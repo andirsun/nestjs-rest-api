@@ -9,13 +9,16 @@ import { CreateProductPresentationDTO } from './dto/productPresentation.dto';
 /* Interfaces */
 import { Product } from "./interfaces/product.interface";
 import { Presentation } from "./interfaces/product.interface";
+import { QueryRepository } from './interfaces/query.interface';
+import { CreateQueryDTO } from './dto/query.dto';
 
 @Injectable()
 export class ProductsService {
   
   constructor(
 		@InjectModel('Products') private readonly productModel : Model<Product>,
-		@InjectModel('productPresentation') private readonly productPresentationModel : Model<Presentation>
+		@InjectModel('productPresentation') private readonly productPresentationModel : Model<Presentation>,
+		@InjectModel('Query') private readonly queryModel : Model<QueryRepository>
 		){}
 	
 	/*
@@ -82,5 +85,13 @@ export class ProductsService {
 	*/
 	async addTagToProduct(idProduct : string,tag : string) :Promise<Product>{
 		return await this.productModel.findOneAndUpdate({_id : idProduct},{$push :{tags: tag}});
+	}
+	/*
+	 Function to search products
+	*/
+	async searchProductsOrServices(createQueryDto : CreateQueryDTO):Promise<QueryRepository>{
+		/** Create a new query */
+		let query = new this.queryModel(createQueryDto);
+		return await query.save();
 	}
 }
