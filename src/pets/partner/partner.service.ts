@@ -43,6 +43,9 @@ export class PartnerService {
 	async getPartnerById(id : string) : Promise<Partner>{
 		return await this.partnerModel.findById(id);
 	} 
+	async getPartnerByEmail(email : string) : Promise<Partner>{
+		return await this.partnerModel.findOne({email:email});
+	} 
 
 	async checkPassword(partner:Partner, password : string){
 		

@@ -11,6 +11,7 @@ export class CreateProductDTO {
   readonly benefits : string;
   readonly characteristics : string;
   readonly deliveryDays : string;
-  readonly phone : number 
+  readonly phone : number;
+  readonly email : string;
   readonly tags : string;
 }

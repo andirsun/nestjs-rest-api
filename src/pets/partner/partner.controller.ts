@@ -91,14 +91,14 @@ export class PartnerController {
 	@UseInterceptors(FileInterceptor('file'))
 	async createProduct(@Res() res, @Body() createProductDTO: CreateProductDTO,@UploadedFile() file : FileInterface) {
 		/* Search a partner with a phone number */
+		console.log(createProductDTO,file);
 		const partner : Partner = await this.partnerService.getPartnerByPhone(createProductDTO.phone);
 		/*If the partner was not found */
 		if(!partner){
-			
 			return res.status(HttpStatus.OK).json({
 				response: 1,
 				content: {
-					message : "Ups, no encontramos ningun usuario con ese telefono"
+					message : "Ups, no encontramos ningun usuario con ese numero"
 				}
 			});
 		}
