@@ -16,28 +16,9 @@ export class UserController {
 							private userService : UserService,
 							private logService : LogBarbersService
 							){}
-	//This endopoint can be accesed with url/user/createNewUser
-	@Post('/createUser')
-	async createUser(@Res() res, @Body() createUserDTO : CreateUserDTO){
-			await this.userService.createUser(createUserDTO)
-					.then((user)=>{
-							console.log("Llegue positivo");
-							return res.status(HttpStatus.OK).json({
-									response: 2,
-									content: user
-							});
-					})
-					.catch((err)=>{
-							console.log("llegue negativo");
-							return res.status(HttpStatus.BAD_REQUEST).json({
-									response: 3,
-									content: err
-							});
-					});   
-	}
 
 	/*
-			This endpoint return all users
+		This endpoint return all users
 	*/
 	@Get('/barbers/getAll')
 	async getUsers(@Res() res){
@@ -58,16 +39,26 @@ export class UserController {
 				throw new Error(err);
 			})
 	}
-	
-	@Get('/createLog')
-	getHello()/*: string*/ { 
-			//let log2 : CreateLogBarbersDTO;
-			//this.logService.log("mensaje test","14515dfgd");
-			//return this.appService.getHello();
-		}
-	
-	//recibir objetos por parametro
-	// deleteUser(@Res res , @Query('objetoPorurl') objeto){
+	//This endopoint can be accesed with url/user/createNewUser
+	@Post('/createUser')
+	async createUser(@Res() res, @Body() createUserDTO : CreateUserDTO){
+			await this.userService.createUser(createUserDTO)
+					.then((user)=>{
+							console.log("Llegue positivo");
+							return res.status(HttpStatus.OK).json({
+									response: 2,
+									content: user
+							});
+					})
+					.catch((err)=>{
+							console.log("llegue negativo");
+							return res.status(HttpStatus.BAD_REQUEST).json({
+									response: 3,
+									content: err
+							});
+					});   
+	}
 
-    // }
+
+	
 }
