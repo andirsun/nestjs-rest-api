@@ -13,10 +13,37 @@ import { LogBarbersService } from "../log-barbers/log-barbers.service";
 export class UserController {
 
 	constructor(
-							private userService : UserService,
-							private logService : LogBarbersService
-							){}
-
+		private userService : UserService,
+		private logService : LogBarbersService
+	){}
+	
+	/*
+		This endpoint return a specific user
+		searching by id
+	*/
+	@Get('/info')
+	async getUserById(@Res() res,@Query('idUser')idUser : number){
+		await this.userService.getUser(idUser)
+			.then(user=>{
+				
+				return res.status(HttpStatus.OK).json({
+					response: 2,
+					content:{
+						user
+					}
+				});
+			})
+			.catch(err=>{
+				/* Sentry report */
+				res.status(HttpStatus.BAD_REQUEST).json({
+					response: 1,
+					content:{
+						message : "no encontramos a un usuario con ese id"
+					}
+				});
+				throw new Error(err);
+			})
+	}
 	/*
 		This endpoint return all users
 	*/
