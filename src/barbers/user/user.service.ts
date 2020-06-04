@@ -32,6 +32,13 @@ export class UserService {
          return user;
     }
     /*
+        Function that returns a user by phone
+    */
+    async getUserByPhone(phone : number):Promise<User>{
+        const user = await  this.userModel.findOne({phone : phone });
+        return user;                                                                                                                    
+    }
+    /*
         THis function create an user. you need to pass the
         CreateUserDto object to works
     */

@@ -27,6 +27,7 @@ import { LogBarbersModule } from 'src/barbers/log-barbers/log-barbers.module';
     
   ],
   controllers: [UserController],
-  providers: [UserService]
+  providers: [UserService],
+  exports:[UserService]
 })
 export class UserModule {}

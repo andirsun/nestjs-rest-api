@@ -11,7 +11,7 @@ export interface User extends Document {
     updated: string,
     name: string,
     registrationCode :string,
-    phone: string,
+    phone: number,
     birth: string,
     email: string,
     addresses : [Address],
