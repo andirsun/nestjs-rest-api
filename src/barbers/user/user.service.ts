@@ -7,8 +7,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { User } from "./interfaces/user.interfaces";
 //data transfer object
 import { CreateUserDTO } from "./dto/user.dto";
-/* Neccesary to read the .env file */
-require("dotenv").config();
+
 
 // This file works to make queries to the databse 
 @Injectable()
