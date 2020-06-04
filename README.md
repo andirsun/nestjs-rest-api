@@ -1,2 +1,2 @@
 # TimugoBackend
-Timugo node js backend, using to serve mobile app and landing page app
+Used to serve every single app made by Timugo Inc
