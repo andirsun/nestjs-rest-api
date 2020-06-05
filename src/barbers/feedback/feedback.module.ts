@@ -1,23 +1,27 @@
+/* Nest js dependencies */
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+/* Schemas */
 import { FeedbackSchema } from './schema/feedback.schema';
+/* Services */
 import { FeedbackService } from './feedback.service';
+/* Controllers */
 import { FeedbackController }  from './feedback.controller'
+/* Modules */
 import { UserModule } from '../user/user.module';
 
 
 @Module({
-    imports: [
-        //Registro los esquemas e indica la base de datos
-        MongooseModule.forFeature(
-            [
-                {name: 'feedbacks', schema: FeedbackSchema}
-            ], 'BarbersMongoDb'),
-        UserModule
-    ],
-    controllers:[FeedbackController],
-    providers: [FeedbackService],
-    exports:[FeedbackService]
+	imports: [
+		MongooseModule.forFeature(
+			[
+				{name: 'feedbacks', schema: FeedbackSchema}
+			], 'BarbersMongoDb'),
+		UserModule
+	],
+	controllers:[FeedbackController],
+	providers: [FeedbackService],
+	exports:[FeedbackService]
 
 })
 
