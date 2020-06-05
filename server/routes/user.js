@@ -2,7 +2,6 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const _ = require("underscore");
 const User = require("../models/user");
-const Feedback = require("../models/feedback");
 const jwt = require("jsonwebtoken");
 const temporalOrder = require("../models/temporalOrder");
 const City= require("../models/city");
@@ -1271,84 +1270,6 @@ app.post("/login", function(req, res) {
       }
     }
   );
-});
-app.post('/giveFeedback',function(req,res){
-  let body =  req.body;
-  let comment = body.comment;
-  let phoneUser = body.phoneUser;
-  User.findOne({phone:phoneUser},function(err,response){
-    if (err) {
-      return res.status(500).json({
-        response: 3,
-        content:{
-          message: "Error al buscar al usuario con ese celular.",
-          err
-        } 
-      });
-    }
-    if(response){
-      let client = response.toJSON();
-      Feedback.find(function(err,feedbacks){
-        if(err){
-          return res.status(500).json({
-            response: 3,
-            content:{
-              message: "Error al hacer fetch a la tabla de los feedbacks",
-              err
-            } 
-          });
-        }
-        if(feedbacks){
-          let id = 0 
-          if(feedbacks.length == 0){
-            //if no exists any order
-            id=1
-          }else{
-            id=feedbacks[feedbacks.length-1].id + 1;
-          }
-          let feedback = new Feedback({
-            id,
-            updated: moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm"),
-            idUser : client.id,
-            nameUser : client.name,
-            feedback: comment
-          });
-          console.log(feedback);
-          feedback.save((err,response)=>{
-            if(err){
-              return res.status(500).json({
-                response: 3,
-                content:{
-                  message: "Error al guardar el feedback",
-                  err
-                } 
-              });
-            }
-            if(response){
-              return res.status(200).json({
-                response: 2,
-                content: {
-                  feedback: response
-                }
-              });
-            }else{
-              return res.status(200).json({
-                response: 1,
-                content: "no se agrego el feedback"
-              });
-            }
-          });
-        }
-      });
-      
-    }else{
-      res.status(400).json({
-        response: 1,
-        content:"no encontramos a un usuario con ese phone"
-      });
-    }
-  });
-   
 });
 app.post('/createPublicityMethod',function(req,res){
   ///Add user to DB the data is read by body of the petition
