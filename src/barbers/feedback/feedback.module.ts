@@ -12,16 +12,16 @@ import { UserModule } from '../user/user.module';
 
 
 @Module({
-	imports: [
-		MongooseModule.forFeature(
-			[
-				{name: 'feedbacks', schema: FeedbackSchema}
-			], 'BarbersMongoDb'),
-		UserModule
-	],
-	controllers:[FeedbackController],
-	providers: [FeedbackService],
-	exports:[FeedbackService]
+    imports: [
+        MongooseModule.forFeature(
+            [
+                {name: 'feedbacks', schema: FeedbackSchema}
+            ], 'BarbersMongoDb'),
+        UserModule
+    ],
+    controllers:[FeedbackController],
+    providers: [FeedbackService],
+    exports:[FeedbackService]
 
 })
 

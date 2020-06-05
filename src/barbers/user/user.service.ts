@@ -26,9 +26,9 @@ export class UserService {
         Function that return a particular user by id 
         from the database 
     */
-    async getUser(userId : string):Promise<User>{
-         const user = await  this.userModel.findById(userId);
-         return user;
+    async getUser(userId : number):Promise<User>{
+				const user = await  this.userModel.findById(userId);
+				return user;
     }
     /*
         Function that returns a user by phone
