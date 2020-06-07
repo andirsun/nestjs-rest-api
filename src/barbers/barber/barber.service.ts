@@ -8,6 +8,7 @@ import { BarberInterface } from "./interfaces/barber.interface";
 import { BarbersPaymentsInterface } from './interfaces/payments.interface';
 /** Moment js Time handler module */
 import * as momentZone from 'moment-timezone';
+import { CreateBarberDTO } from './dto/barber.dto';
 @Injectable()
 export class BarberService {
 
@@ -39,5 +40,14 @@ export class BarberService {
     /* Insert and return the query */
     return this.barberModel.findByIdAndUpdate(idBarber,{$push : {payments: log}},{new : true});
   }
+
+   /*
+    This function create a barber in database
+  */
+  async createBarber(baberDTO: CreateBarberDTO): Promise <BarberInterface>{
+    const barber = await new this.barberModel(baberDTO);
+    return barber.save();
+  }
+  
   
 }

@@ -2,6 +2,7 @@ import { Controller, Get, Res, Query, HttpStatus, Post, Body, Ip } from '@nestjs
 import { BarberService } from './barber.service';
 import { PaymentBarberLogDTO } from './dto/paymentLog.dto';
 import { LogBarbersService } from '../log-barbers/log-barbers.service';
+import { CreateBarberDTO } from './dto/barber.dto';
 
 @Controller('barber')
 export class BarberController {
@@ -31,6 +32,28 @@ export class BarberController {
 						// });
 				});   
 	}
+
+  /*
+		This endpoint creates a new Barber
+	*/
+  @Post('/createBarber')
+  async createBarber(@Res() res, @Body() createBarberDTO :CreateBarberDTO){
+    this.barberServices.createBarber(createBarberDTO)
+      .then(( newBarber ) => {
+        return res.status(HttpStatus.OK).json({
+          respose: 1,
+          content:{ 
+            newBarber 
+          }
+        });
+      })
+      .catch(( err ) => {
+        return res.status(HttpStatus.BAD_REQUEST).json({
+          respose: 3,
+          content: err
+        });
+      })
+  }
 
 	/*
 		This endpoint make a recarge of balance
