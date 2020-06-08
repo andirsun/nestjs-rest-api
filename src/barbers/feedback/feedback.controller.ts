@@ -32,7 +32,9 @@ export class FeedbackController{
 						}else{
 							return res.status(HttpStatus.OK).json({
 								response: 2,
-								content: feedbacks
+								content: {
+									feedbacks
+								}
 							});
 						}
 					})
