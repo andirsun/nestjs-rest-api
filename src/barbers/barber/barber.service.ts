@@ -3,12 +3,14 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 /* MOngoose dependecies */
 import { Model } from 'mongoose';
-/* Interfaces */
+/* Repositories */
 import { BarberInterface } from "./interfaces/barber.interface";
 import { BarbersPaymentsInterface } from './interfaces/payments.interface';
+/* Dtos*/
+import { CreateBarberDTO } from './dto/barber.dto';
 /** Moment js Time handler module */
 import * as momentZone from 'moment-timezone';
-import { CreateBarberDTO } from './dto/barber.dto';
+
 @Injectable()
 export class BarberService {
 
