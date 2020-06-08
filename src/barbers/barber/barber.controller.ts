@@ -48,10 +48,13 @@ export class BarberController {
         });
       })
       .catch(( err ) => {
-        return res.status(HttpStatus.BAD_REQUEST).json({
+        /*Handle info to send frontend*/
+	      res.status(HttpStatus.BAD_REQUEST).json({
           respose: 3,
           content: err
         });
+        /*error to sentry report*/
+        throw new Error(err);
       })
   }
 
