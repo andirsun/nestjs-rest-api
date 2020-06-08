@@ -1,7 +1,10 @@
+/*Nest js dependencies*/
 import { Controller, Get, Res, Query, HttpStatus, Post, Body, Ip } from '@nestjs/common';
-import { BarberService } from './barber.service';
-import { PaymentBarberLogDTO } from './dto/paymentLog.dto';
+/* Services*/
 import { LogBarbersService } from '../log-barbers/log-barbers.service';
+import { BarberService } from './barber.service';
+/* Dtos*/
+import { PaymentBarberLogDTO } from './dto/paymentLog.dto';
 import { CreateBarberDTO } from './dto/barber.dto';
 
 @Controller('barber')
