@@ -1,18 +1,47 @@
+/* Nest dependencies */
 import { Injectable } from '@nestjs/common';
+
+const mainFolder = process.env.FILES_MAIN_FOLDER || "";
+
+/* external libraries*/
 require('dotenv').config();
 const AWS = require('aws-sdk');
 const fs = require('fs');
 const url = require('url');
-
-const mainFolder = process.env.FILES_MAIN_FOLDER || "";
 const bucket = 'data-timugo';
 const spacesEndpoint = new AWS.Endpoint('nyc3.digitaloceanspaces.com');
-
+/* Amazon spaces configs */
 const s3 = new AWS.S3({
   endpoint: spacesEndpoint,
   accessKeyId : process.env.S3_ACCESS_KEY,
   secretAccessKey : process.env.S3_SECRET_KEY
 });
+/*
+* Instructions how to use this module :
+* Functionality : the module allow upload every type of file to
+*                 dedicated timugo file server, and then obteins 
+*                 the url of the file
+* Permissions : The file could be PUBLIC Or PRIVATE
+* Steps :
+* 1) Import the file service in any module 
+*     example : import { FilesService } from 'src/modules/files/files.service';
+*     constructor (private filesService : FilesService ){} 
+* 2) Create a url to insert the file*
+*     example : string = `Pets/Products/${partner._id}/${product._id}/`;
+* 3) Use the promise function uploadFile with the params : 
+*     example :  this.filesService.uploadFile(remotePath,file.originalname,file.buffer,"PUBLIC")
+* 4) Get the file URL, NAME etc :
+*     example : 
+*                content : {
+*                  message : 'UPLOADED',
+*                  description : '¡Archivo subido exitosiamente!',
+*                  remoteFilename : this.filesService.getRemoteFileName(),
+*                  url : this.filesService.getURL(),
+*                  urlFull : this.filesService.getURLParams(),
+*                                    
+*								 }
+*
+*/
 @Injectable()
 export class FilesService {
   /* Class properties */
@@ -71,17 +100,14 @@ export class FilesService {
     return s3.deleteObject(params).promise();
   }
   /*
-    This function returns the Url params to acces
-    private or public file 
+    Getters
   */
   getURLParams(){
     return s3.getSignedUrl('getObject', { Bucket: bucket, Key: this.keyFile});
   };
-
   getURL(){
     return 'https://data-timugo.nyc3.digitaloceanspaces.com/'+this.keyFile
   };
-
   getParams() {
     let urlString = s3.getSignedUrl('getObject', { Bucket: bucket, Key: this.keyFile});
     urlString = urlString.replace("https://data-timugo.nyc3.digitaloceanspaces.com", "");
@@ -93,7 +119,6 @@ export class FilesService {
     }
     return params;
   }
-
   getRemoteFileName(){
     return this.keyFile;
   };
