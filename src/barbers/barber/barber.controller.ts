@@ -3,17 +3,22 @@ import { Controller, Get, Res, Query, HttpStatus, Post, Body, Ip } from '@nestjs
 /* Services*/
 import { LogBarbersService } from '../log-barbers/log-barbers.service';
 import { BarberService } from './barber.service';
+import { TempOrderService } from '../temporalOrders/tempOrders.service';
+
 /* Dtos*/
 import { PaymentBarberLogDTO } from './dto/paymentLog.dto';
 import { CreateBarberDTO } from './dto/barber.dto';
+import { clearConfigCache } from 'prettier';
 
 @Controller('barber')
 export class BarberController {
 
   constructor(
 		private barberServices : BarberService,
-		private logService : LogBarbersService
-	){}
+    private logService : LogBarbersService,
+    private tempOrderService: TempOrderService
+  ){}
+  
 	@Get('/getByCity')
 	async getActiveOrdersByCity(@Res() res,@Query('city')city : string){
 		await this.barberServices.getBarbersByCity(city)
@@ -34,7 +39,20 @@ export class BarberController {
 						// 		content: err
 						// });
 				});   
-	}
+  }
+  
+  @Post('/finishOrCancellOrder')
+  async finishOrCancellOrder(@Body() body){
+    let idOrder = parseInt(body.idOrder)
+    this.tempOrderService.changeTempOrderSTatus(idOrder)
+      .then( (tempOrder) => {
+        let newTemp = tempOrder.toJSON()
+        console.log(newTemp)
+      })
+      .catch ( (err) => {
+        console.log(err)
+      })
+  }
 
   /*
 		This endpoint creates a new Barber
