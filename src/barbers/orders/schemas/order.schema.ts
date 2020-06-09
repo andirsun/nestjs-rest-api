@@ -5,7 +5,7 @@ import uniqueValidator = require("mongoose-unique-validator");
 /* Schemas */
 import { ServiceSchema } from "src/pets/service/schemas/service.schema";
 import { AddressSchema } from "src/barbers/user/schemas/address.schema";
-
+import { LogPaymentSchema } from './logpayment.schema'
 /** Moment js Time handler module */
 import * as momentZone from 'moment-timezone';
 
@@ -74,7 +74,7 @@ export const orderSchema = new Schema({
     required:[true, "el estado pendiente es necesario"],
     default : true 
   },
-  logPayment : [String],
+  logPayment : [LogPaymentSchema],
   status: {
     type: Boolean,
     default: true,

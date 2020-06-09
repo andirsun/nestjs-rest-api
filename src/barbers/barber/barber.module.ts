@@ -10,7 +10,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { BarberSchema } from './schemas/barber.schema';
 /* Aditional Modules */
 import { LogBarbersModule } from '../log-barbers/log-barbers.module';
-import { TemporalOrdersModule } from '../temporalOrders/tempOrders.module';
+import { OrdersBarbersModule } from '../orders/orders.module';
+
 
 @Module({
   imports : [
@@ -26,7 +27,7 @@ import { TemporalOrdersModule } from '../temporalOrders/tempOrders.module';
       ],'BarbersMongoDb'),
     // Other module is required need to import here
     LogBarbersModule,
-    TemporalOrdersModule
+    OrdersBarbersModule
   ],
   providers: [BarberService],
   controllers: [BarberController],

@@ -1,7 +1,10 @@
+/* Mongoose Dependencies*/
+import { Document } from "mongoose";
 /* Interfaces */
 import { Address } from "../../user/interfaces/address.interface";
-import { orderService } from "../interfaces/serviceOrder.interface";
-import { Document } from "mongoose";
+import { ServiceOrderRepository } from "./service.interface";
+import { LogPaymentInterface } from './logpayment.interface';
+
 /*
   Temporal order interface
 */
@@ -10,10 +13,10 @@ export interface barberyOrder extends Document {
   updated : string,
   idClient : string,
   nameClient : string,
-  idBarber : number,
+  idBarber : string,
   /* Retrocompatibility with old address */
-  city : string,
-  address : string,
+  //city : string,
+  //address : string,
   /* New Address */
   newAddress : Address,
   dateBeginOrder: string,
@@ -23,9 +26,9 @@ export interface barberyOrder extends Document {
   orderDuration : number,
   dateFinishOrder : string,
   hourEnd: string,
-  services : orderService,
+  services : [ServiceOrderRepository],
+  logPayment : [LogPaymentInterface],
   pending : boolean,
-  logPayment : [string],
   status : boolean,
   price : number
 }

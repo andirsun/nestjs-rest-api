@@ -3,12 +3,12 @@ import { Controller, Get, Res, Query, HttpStatus, Post, Body, Ip } from '@nestjs
 /* Services*/
 import { LogBarbersService } from '../log-barbers/log-barbers.service';
 import { BarberService } from './barber.service';
-import { TempOrderService } from '../temporalOrders/tempOrders.service';
+import { OrdersService } from '../orders/orders.service';
+
 
 /* Dtos*/
 import { PaymentBarberLogDTO } from './dto/paymentLog.dto';
 import { CreateBarberDTO } from './dto/barber.dto';
-import { clearConfigCache } from 'prettier';
 
 @Controller('barber')
 export class BarberController {
@@ -16,7 +16,7 @@ export class BarberController {
   constructor(
 		private barberServices : BarberService,
     private logService : LogBarbersService,
-    private tempOrderService: TempOrderService
+    private orderService: OrdersService
   ){}
   
 	@Get('/getByCity')
@@ -40,20 +40,17 @@ export class BarberController {
 						// });
 				});   
   }
-  
   @Post('/finishOrCancellOrder')
   async finishOrCancellOrder(@Body() body){
     let idOrder = parseInt(body.idOrder)
-    this.tempOrderService.changeTempOrderSTatus(idOrder)
-      .then( (tempOrder) => {
-        let newTemp = tempOrder.toJSON()
-        console.log(newTemp)
+    this.orderService.changeTempOrderSTatus(idOrder)
+      .then( (order) => {
+        console.log(order)
       })
       .catch ( (err) => {
         console.log(err)
       })
   }
-
   /*
 		This endpoint creates a new Barber
 	*/
@@ -78,7 +75,6 @@ export class BarberController {
         throw new Error(err);
       })
   }
-
 	/*
 		This endpoint make a recarge of balance
 	*/

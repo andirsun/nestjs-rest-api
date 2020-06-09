@@ -26,4 +26,15 @@ export class OrdersService {
     const ActiveOrders = await this.ordersModel.find({status:true,"newAddress.city":city});
     return ActiveOrders;
   }
+  async changeTempOrderSTatus(idOrder: number): Promise<barberyOrder>{
+    console.log('Id Order    ', idOrder);
+    const tempOrder = await this.ordersModel.findOneAndUpdate({id: idOrder,status:true},{status:false})
+
+    const temp2 = await this.ordersModel.find();
+    
+    console.log('ESte es el temp ', tempOrder)    
+    console.log('ESte es el temp2 ', temp2)
+    
+    return 
+  }
 }
