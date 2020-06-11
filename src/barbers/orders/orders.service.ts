@@ -17,19 +17,28 @@ export class OrdersService {
   constructor(@InjectModel('orders') private readonly orders : Model<barberyOrder>){}
   /* Queries */
   /*
-      This function return the all the users in the database
+      This function return the all active orders
   */
   async getActiveOrders(): Promise<barberyOrder[]> {
     const ActiveOrders = await this.orders.find({status:'PENDING'});
     console.log(ActiveOrders);
     return ActiveOrders;
   }
+
+  /*
+      This function return the all active orders by city 
+  */
   async getAtiveOrdersByCity(city : string): Promise<barberyOrder[]>{
     const ActiveOrders = await this.orders.find({status:'PENDING',"newAddress.city":city});
     return ActiveOrders;
   }
-  async changeTempOrderSTatus(orderId: string, newStatus: string): Promise<barberyOrder>{
+
+  /*
+      This function change the order status and return the order updated
+  */
+  async changeOrderSTatus(orderId: string, newStatus: string): Promise<barberyOrder>{
     let order;
+    //The current date and hour
     let date = moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm");
     if(newStatus != 'FINISHED'){
       order =  this.orders.findByIdAndUpdate(orderId, {status : newStatus,
@@ -41,6 +50,10 @@ export class OrdersService {
     return order;
   }
 
+
+  /*
+    PENDING DOCUMENTATION
+  */
   async setOrderDuration(orderId: string, dateBeginOrder: string, hourStart: string) : Promise<barberyOrder>{
     console.log('dateBeginOrder   :', dateBeginOrder);
     console.log('hourStart   :', hourStart)
@@ -51,11 +64,11 @@ export class OrdersService {
     return order;
   }
   
+  /*
+      This function insert the url image in a order document and return it updated
+  */
   async addUrlImgToOrder( orderId: string, urlImg: string ) : Promise <barberyOrder>{
     return await this.orders.findByIdAndUpdate(orderId, { img : urlImg }, {new : true});
   }
-    
-
-
 
 }

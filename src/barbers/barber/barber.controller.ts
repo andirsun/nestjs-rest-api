@@ -54,12 +54,12 @@ export class BarberController {
   }
 
   /*
-		This endpoint calcel a  Barber order
+		This endpoint reverse (cancel) a order taken for a Barber 
   */
   
   @Post('/orders/cancell')
   async cancellOrder(@Res() res, @Body() body){
-    this.orderService.changeTempOrderSTatus(body.idOrder, 'CANCELLED')
+    this.orderService.changeOrderSTatus(body.idOrder, 'CANCELLED')
       .then( (order) => {
         if(!order){
           return res.status(HttpStatus.BAD_REQUEST).json({
@@ -86,12 +86,15 @@ export class BarberController {
       })
   }
 
+  /*
+    This endpoint mark as finished a completed service by a barber
+  */
 
   @Post('/orders/finish')
   @UseInterceptors(FileInterceptor('file'))
   async finishOrder(@Res() res, @Body() body, @UploadedFile() file: FileInterface){
     let orderId = body.idOrder;
-    this.orderService.changeTempOrderSTatus(orderId, 'FINISHED')
+    this.orderService.changeOrderSTatus(orderId, 'FINISHED')
     .then( (order) => {
       if(!order){
         return res.status(HttpStatus.BAD_REQUEST).json({
@@ -102,7 +105,7 @@ export class BarberController {
         })
       };
       let newOrder = order.toJSON();
-      console.log('Este es new order  : ', newOrder);
+      // console.log('Este es new order  : ', newOrder);
       let dateBeginOrder = newOrder.dateBeginOrder;
       let hourStart = newOrder.hourStart;
       //Set duration time 

@@ -47,6 +47,10 @@ export class UserService {
         return await user.save();
     }
 
+    /*
+    This function add points into barber docuemnt, when the order is finished. 
+    return user document.
+    */
     async addUserPoints(userId: string) : Promise<User>{
       const user = this.userModel.findByIdAndUpdate(userId,{ $inc:{ points: 50 }});
       return  user
