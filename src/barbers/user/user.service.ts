@@ -46,6 +46,11 @@ export class UserService {
         console.log("object");
         return await user.save();
     }
+
+    async addUserPoints(userId: string) : Promise<User>{
+      const user = this.userModel.findByIdAndUpdate(userId,{ $inc:{ points: 50 }});
+      return  user
+    }
     
 
 }

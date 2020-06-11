@@ -51,5 +51,10 @@ export class BarberService {
     return barber.save();
   }
   
+
+  async addBarberPoints(orderCommission: number, barberId: string) : Promise <BarberInterface>{
+    const barber = this.barberModel.findByIdAndUpdate(barberId,{ $inc:{ points: 50, balance: -orderCommission }});
+    return  barber
+  }
   
 }

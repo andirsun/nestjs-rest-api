@@ -29,6 +29,7 @@ export interface barberyOrder extends Document {
   services : [ServiceOrderRepository],
   logPayment : [LogPaymentInterface],
   pending : boolean,
-  status : boolean,
-  price : number
+  // status : string,
+  price : number,
+  img: string
 }

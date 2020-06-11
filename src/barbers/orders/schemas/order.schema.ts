@@ -9,6 +9,10 @@ import { LogPaymentSchema } from './logpayment.schema'
 /** Moment js Time handler module */
 import * as momentZone from 'moment-timezone';
 
+let validStatus = {
+  values: ["PENDING", "CANCELLED", "CONFIRMED", "FINISHED"],
+  message: "{VALUE} no es un status válido"
+};
 
 export const orderSchema = new Schema({
   id: {
@@ -29,7 +33,7 @@ export const orderSchema = new Schema({
     required:[true,"EL nombre del cliente es necesario"]
   },
   idBarber: {
-    type: Number,
+    type: String,
     required: [false]
   },
   nameBarber:{
@@ -76,13 +80,17 @@ export const orderSchema = new Schema({
   },
   logPayment : [LogPaymentSchema],
   status: {
-    type: Boolean,
-    default: true,
-    required: [false]
+    type: String,
+    default: "PENDING",
+    enum: validStatus
   },
   price:{
     type: Number,
     required:[true, "EL precio es estrictamente necesario"]
+  },
+  img: {
+    type: String,
+    // required:[true, "La imagen es necesaria"]
   }
 });
 

@@ -1,14 +1,24 @@
 /*Nest js dependencies*/
-import { Controller, Get, Res, Query, HttpStatus, Post, Body, Ip } from '@nestjs/common';
+import { Controller, Get, Res, Query, HttpStatus, Post, Body, Ip, UseInterceptors, UploadedFile } from '@nestjs/common';
 /* Services*/
 import { LogBarbersService } from '../log-barbers/log-barbers.service';
 import { BarberService } from './barber.service';
 import { OrdersService } from '../orders/orders.service';
-
+import { FilesService } from '../../modules/files/files.service';
+import { UserService } from '../user/user.service';
 
 /* Dtos*/
 import { PaymentBarberLogDTO } from './dto/paymentLog.dto';
 import { CreateBarberDTO } from './dto/barber.dto';
+
+/*Interceptors*/
+import { FileInterceptor } from '@nestjs/platform-express';
+
+/*Interfaces*/
+import { FileInterface } from '../../modules/files/file.interface';
+
+
+
 
 @Controller('barber')
 export class BarberController {
@@ -16,7 +26,9 @@ export class BarberController {
   constructor(
 		private barberServices : BarberService,
     private logService : LogBarbersService,
-    private orderService: OrdersService
+    private orderService: OrdersService,
+    private filesService : FilesService,
+    private userService: UserService
   ){}
   
 	@Get('/getByCity')
@@ -40,17 +52,152 @@ export class BarberController {
 						// });
 				});   
   }
-  @Post('/finishOrCancellOrder')
-  async finishOrCancellOrder(@Body() body){
-    let idOrder = parseInt(body.idOrder)
-    this.orderService.changeTempOrderSTatus(idOrder)
+
+  /*
+		This endpoint calcel a  Barber order
+  */
+  
+  @Post('/orders/cancell')
+  async cancellOrder(@Res() res, @Body() body){
+    this.orderService.changeTempOrderSTatus(body.idOrder, 'CANCELLED')
       .then( (order) => {
-        console.log(order)
+        if(!order){
+          return res.status(HttpStatus.BAD_REQUEST).json({
+            response: 1,
+            content: {
+              message: 'No encontramos la orden que quieres cancelar'
+            }
+          })
+        };
+        return res.status(HttpStatus.OK).json({
+          response: 2,
+          content: {
+            message: 'La orden fue cancelada correctamente'
+          }
+        });
       })
       .catch ( (err) => {
-        console.log(err)
+        res.status(HttpStatus.BAD_REQUEST).json({
+          respose: 3,
+          content: err
+        });
+        /*error to sentry report*/
+        throw new Error(err);
       })
   }
+
+
+  @Post('/orders/finish')
+  @UseInterceptors(FileInterceptor('file'))
+  async finishOrder(@Res() res, @Body() body, @UploadedFile() file: FileInterface){
+    let orderId = body.idOrder;
+    this.orderService.changeTempOrderSTatus(orderId, 'FINISHED')
+    .then( (order) => {
+      if(!order){
+        return res.status(HttpStatus.BAD_REQUEST).json({
+          response: 1,
+          content: {
+            message: 'No encontramos la orden que quieres finalizar'
+          }
+        })
+      };
+      let newOrder = order.toJSON();
+      console.log('Este es new order  : ', newOrder);
+      let dateBeginOrder = newOrder.dateBeginOrder;
+      let hourStart = newOrder.hourStart;
+      //Set duration time 
+      this.orderService.setOrderDuration(orderId, dateBeginOrder, hourStart)
+      .then( (response) => {
+        let orderPrice: number = newOrder.price;
+        let orderCommission: number = orderPrice * 0.30;
+        let barberId: string =  newOrder.idBarber;
+        //Add barber's points and set balance 
+        this.barberServices.addBarberPoints(orderCommission, barberId)
+        .then ( (barber) =>{
+          //Add user's points 
+          let idClient: string = newOrder.idClient;
+          this.userService.addUserPoints(idClient)
+          .then ( (user) =>{
+            //Upload the file to Digital Ocean
+            let remotePath : string = `arbers/Orders/${orderId}/${file.originalname}`;
+            this.filesService.uploadFile(remotePath,file.originalname,file.buffer,"PUBLIC")
+            .then( (response : any ) => {
+              //Add image remote url to order document 
+              this.orderService.addUrlImgToOrder(orderId,this.filesService.getURL())
+              .then( (resp) => {
+                return res.status(HttpStatus.OK).json({
+                  response: 2,
+                  content: {
+                    message : 'UPLOADED',
+                    description : '¡Archivo subido exitosiamente!',
+                    remoteFilename : this.filesService.getRemoteFileName(),
+                    url : this.filesService.getURL(),
+                    urlFull : this.filesService.getURLParams(),
+                    order
+                  }
+                });
+              })
+              .catch ( (err) => {
+                throw new Error(err);
+              })
+            })
+            .catch( (err) => {
+              res.status(HttpStatus.BAD_REQUEST).json({
+                response: 3,
+                content : {
+                  message : 'ERROR',
+                  description : '¡Ups, tuvimos un problema!',
+                  error : 'FILE CORRUPTED OR NOT FOUND IN BACKEND'
+                }
+              });
+              throw new Error(err);
+            })
+          })
+          .catch( (err) => {
+            res.status(HttpStatus.BAD_REQUEST).json({
+              respose: 3,
+              content: {
+                message: '¡Ups, tuvimos un problema!',
+                error: err
+              }
+            });
+            throw new Error(err);
+          })
+        })
+        .catch( (err) => {
+          res.status(HttpStatus.BAD_REQUEST).json({
+            respose: 3,
+            content: {
+              message: '¡Ups, tuvimos un problema!',
+              error: err
+            }
+          });
+          throw new Error(err);
+        })
+      })
+      .catch( (err) => {
+        res.status(HttpStatus.BAD_REQUEST).json({
+          respose: 3,
+          content: {
+            message: '¡Ups, tuvimos un problema!',
+            error: err
+          }
+        });
+        throw new Error(err);
+      })
+    })
+    .catch ( (err) => {
+      res.status(HttpStatus.BAD_REQUEST).json({
+        respose: 3,
+        content: err
+      });
+      /*error to sentry report*/
+      throw new Error(err);
+    })
+  }
+
+
+
   /*
 		This endpoint creates a new Barber
 	*/

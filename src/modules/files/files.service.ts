@@ -92,6 +92,8 @@ export class FilesService {
     /* The type of return must to be a promise to handle te upload time */
     return await s3.putObject(params).promise();
   };
+
+
   deleteFile(remoteFilename : string){
     let params = {
       Bucket : bucket,

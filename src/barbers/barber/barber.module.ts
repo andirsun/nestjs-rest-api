@@ -11,6 +11,8 @@ import { BarberSchema } from './schemas/barber.schema';
 /* Aditional Modules */
 import { LogBarbersModule } from '../log-barbers/log-barbers.module';
 import { OrdersBarbersModule } from '../orders/orders.module';
+import { FilesModule } from '../../modules/files/files.module';
+import { UserModule } from '../user/user.module';
 
 
 @Module({
@@ -27,7 +29,9 @@ import { OrdersBarbersModule } from '../orders/orders.module';
       ],'BarbersMongoDb'),
     // Other module is required need to import here
     LogBarbersModule,
-    OrdersBarbersModule
+    OrdersBarbersModule,
+    FilesModule,
+    UserModule
   ],
   providers: [BarberService],
   controllers: [BarberController],
