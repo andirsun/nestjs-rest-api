@@ -59,10 +59,10 @@ export const orderSchema = new Schema({
     default : momentZone().tz('America/Bogota').format("HH:mm")
   },
   serviceDuration:{
-    type : String
+    type : Number
   },
   orderDuration :{
-    type : String
+    type : Number
   },
   dateFinishOrder: {
     type: String,

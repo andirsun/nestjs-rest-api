@@ -108,8 +108,9 @@ export class BarberController {
       // console.log('Este es new order  : ', newOrder);
       let dateBeginOrder = newOrder.dateBeginOrder;
       let hourStart = newOrder.hourStart;
+      let dateFinishOrder = newOrder.dateFinishOrder
       //Set duration time 
-      this.orderService.setOrderDuration(orderId, dateBeginOrder, hourStart)
+      this.orderService.setDuration(orderId, dateBeginOrder, hourStart, dateFinishOrder)
       .then( (response) => {
         let orderPrice: number = newOrder.price;
         let orderCommission: number = orderPrice * 0.30;
