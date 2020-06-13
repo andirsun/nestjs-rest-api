@@ -93,10 +93,10 @@ export class BarberController {
   @Post('/orders/finish')
   @UseInterceptors(FileInterceptor('file'))
   async finishOrder(@Res() res, @Body() body, @UploadedFile() file: FileInterface){
-    let orderId = body.idOrder;
+    let orderId : string = body.idOrder;
     this.orderService.changeOrderSTatus(orderId, 'FINISHED')
-    .then( (order) => {
-      if(!order){
+    .then( (newOrder) => {
+      if(!newOrder){
         return res.status(HttpStatus.BAD_REQUEST).json({
           response: 1,
           content: {
@@ -104,8 +104,6 @@ export class BarberController {
           }
         })
       };
-      let newOrder = order.toJSON();
-      // console.log('Este es new order  : ', newOrder);
       let dateBeginOrder = newOrder.dateBeginOrder;
       let hourStart = newOrder.hourStart;
       let dateFinishOrder = newOrder.dateFinishOrder
@@ -123,7 +121,7 @@ export class BarberController {
           this.userService.addUserPoints(idClient)
           .then ( (user) =>{
             //Upload the file to Digital Ocean
-            let remotePath : string = `arbers/Orders/${orderId}/${file.originalname}`;
+            let remotePath : string = `Barbers/Orders/${orderId}/${file.originalname}`;
             this.filesService.uploadFile(remotePath,file.originalname,file.buffer,"PUBLIC")
             .then( (response : any ) => {
               //Add image remote url to order document 
@@ -204,7 +202,7 @@ export class BarberController {
 
   /*
 		This endpoint creates a new Barber
-	*/
+  */
   @Post('/createBarber')
   async createBarber(@Res() res, @Body() createBarberDTO :CreateBarberDTO){
     this.barberServices.createBarber(createBarberDTO)
