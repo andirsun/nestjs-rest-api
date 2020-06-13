@@ -16,6 +16,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 
 /*Interfaces*/
 import { FileInterface } from '../../modules/files/file.interface';
+import { TimeService } from '../time/time.service';
 
 
 
@@ -28,7 +29,8 @@ export class BarberController {
     private logService : LogBarbersService,
     private orderService: OrdersService,
     private filesService : FilesService,
-    private userService: UserService
+    private userService: UserService,
+    private timeService: TimeService
   ){}
   
 	@Get('/getByCity')
@@ -59,7 +61,9 @@ export class BarberController {
   
   @Post('/orders/cancell')
   async cancellOrder(@Res() res, @Body() body){
-    this.orderService.changeOrderSTatus(body.idOrder, 'CANCELLED')
+    //The current date and hour
+    let now = this.timeService.getCurrentDate();
+    this.orderService.changeOrderSTatus(body.idOrder, now, 'CANCELLED')
       .then( (order) => {
         if(!order){
           return res.status(HttpStatus.BAD_REQUEST).json({
@@ -94,7 +98,9 @@ export class BarberController {
   @UseInterceptors(FileInterceptor('file'))
   async finishOrder(@Res() res, @Body() body, @UploadedFile() file: FileInterface){
     let orderId : string = body.idOrder;
-    this.orderService.changeOrderSTatus(orderId, 'FINISHED')
+    //The current date and hour
+    let now = this.timeService.getCurrentDate();
+    this.orderService.changeOrderSTatus(orderId, now, 'FINISHED')
     .then( (newOrder) => {
       if(!newOrder){
         return res.status(HttpStatus.BAD_REQUEST).json({
@@ -108,7 +114,7 @@ export class BarberController {
       let hourStart = newOrder.hourStart;
       let dateFinishOrder = newOrder.dateFinishOrder
       //Set duration time 
-      this.orderService.setDuration(orderId, dateBeginOrder, hourStart, dateFinishOrder)
+      this.timeService.setDuration(orderId, dateBeginOrder, hourStart, dateFinishOrder)
       .then( (response) => {
         let orderPrice: number = newOrder.price;
         let orderCommission: number = orderPrice * 0.30;
@@ -135,7 +141,7 @@ export class BarberController {
                     remoteFilename : this.filesService.getRemoteFileName(),
                     url : this.filesService.getURL(),
                     urlFull : this.filesService.getURLParams(),
-                    order
+                    newOrder
                   }
                 });
               })

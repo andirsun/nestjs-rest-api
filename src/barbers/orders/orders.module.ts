@@ -4,6 +4,7 @@ import { OrdersService } from './orders.service';
 import { UserModule } from '../user/user.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { orderSchema } from './schemas/order.schema';
+import { TimeModule } from '../time/time.module';
 
 @Module({
   imports: [
@@ -19,8 +20,8 @@ import { orderSchema } from './schemas/order.schema';
         
       ],'BarbersMongoDb'),
     // Other module is required need to import here
-    UserModule
-    
+    UserModule,
+    TimeModule
   ],
   controllers: [OrdersController],
   providers: [OrdersService],

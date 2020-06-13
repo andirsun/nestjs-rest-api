@@ -13,6 +13,7 @@ import { LogBarbersModule } from '../log-barbers/log-barbers.module';
 import { OrdersBarbersModule } from '../orders/orders.module';
 import { FilesModule } from '../../modules/files/files.module';
 import { UserModule } from '../user/user.module';
+import { TimeModule } from '../time/time.module';
 
 
 @Module({
@@ -31,7 +32,8 @@ import { UserModule } from '../user/user.module';
     LogBarbersModule,
     OrdersBarbersModule,
     FilesModule,
-    UserModule
+    UserModule,
+    TimeModule
   ],
   providers: [BarberService],
   controllers: [BarberController],
