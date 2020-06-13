@@ -5,10 +5,14 @@ import uniqueValidator = require("mongoose-unique-validator");
 /* Schemas */
 import { ServiceSchema } from "src/pets/service/schemas/service.schema";
 import { AddressSchema } from "src/barbers/user/schemas/address.schema";
-
+import { LogPaymentSchema } from './logpayment.schema'
 /** Moment js Time handler module */
 import * as momentZone from 'moment-timezone';
 
+let validStatus = {
+  values: ["PENDING", "CANCELLED", "CONFIRMED", "FINISHED"],
+  message: "{VALUE} no es un status válido"
+};
 
 export const orderSchema = new Schema({
   id: {
@@ -29,7 +33,7 @@ export const orderSchema = new Schema({
     required:[true,"EL nombre del cliente es necesario"]
   },
   idBarber: {
-    type: Number,
+    type: String,
     required: [false]
   },
   nameBarber:{
@@ -55,10 +59,10 @@ export const orderSchema = new Schema({
     default : momentZone().tz('America/Bogota').format("HH:mm")
   },
   serviceDuration:{
-    type : String
+    type : Number
   },
   orderDuration :{
-    type : String
+    type : Number
   },
   dateFinishOrder: {
     type: String,
@@ -74,15 +78,19 @@ export const orderSchema = new Schema({
     required:[true, "el estado pendiente es necesario"],
     default : true 
   },
-  logPayment : [String],
+  logPayment : [LogPaymentSchema],
   status: {
-    type: Boolean,
-    default: true,
-    required: [false]
+    type: String,
+    default: "PENDING",
+    enum: validStatus
   },
   price:{
     type: Number,
     required:[true, "EL precio es estrictamente necesario"]
+  },
+  img: {
+    type: String,
+    // required:[true, "La imagen es necesaria"]
   }
 });
 

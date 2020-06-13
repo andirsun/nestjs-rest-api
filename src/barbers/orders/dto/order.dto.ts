@@ -1,6 +1,6 @@
 /* Interfaces */
 import { Address } from "../../user/interfaces/address.interface";
-import { orderService } from "../interfaces/serviceOrder.interface";
+import { ServiceOrderRepository  } from "../interfaces/service.interface";
 /*
   The CreateOrderDTO is the object
   with the minimun info to create 
@@ -14,7 +14,7 @@ export class CreateOrderDTO {
   readonly idBarber :string;
   readonly nameBarber: string;
   readonly address: Address;
-  readonly service: orderService;
+  readonly service: ServiceOrderRepository;
   readonly dateBeginOrder: string;
   readonly hourStart:string;
   readonly pending: boolean;

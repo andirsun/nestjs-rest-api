@@ -51,5 +51,14 @@ export class BarberService {
     return barber.save();
   }
   
+  /*
+    This function add points and set balance into barber docuemnt, when the order is finished. 
+    return barber document.
+  */
+
+  async addBarberPoints(orderCommission: number, barberId: string) : Promise <BarberInterface>{
+    const barber = this.barberModel.findByIdAndUpdate(barberId,{ $inc:{ points: 50, balance: -orderCommission }});
+    return  barber
+  }
   
 }

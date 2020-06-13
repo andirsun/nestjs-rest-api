@@ -14,7 +14,8 @@ import { orderSchema } from './schemas/order.schema';
       */
       [ 
         //If we need more schemas for user module can import here
-        {name:"temporalorders",schema : orderSchema}
+        {name:"orders",schema : orderSchema},
+        
         
       ],'BarbersMongoDb'),
     // Other module is required need to import here
