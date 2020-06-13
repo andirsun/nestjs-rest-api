@@ -37,20 +37,18 @@ export class OrdersService {
       This function change the order status and return the order updated
   */
   async changeOrderSTatus(orderId: string, newStatus: string): Promise<barberyOrder>{
-    let order;
+    let order : barberyOrder ;
     //The current date and hour
     let date = moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm");
-    if(newStatus != 'FINISHED'){
+    if(newStatus == 'CANCELLED'  || newStatus == 'CONFIRMED' ){
       order =  this.orders.findByIdAndUpdate(orderId, {status : newStatus,
                     updated: date }, {new: true});
-    }else{
+    } else if ( newStatus == 'FINISHED' )
       order =  this.orders.findByIdAndUpdate(orderId, {status : newStatus, 
               updated: date, dateFinishOrder: date}, {new: true});
     }
     return order;
   }
-
-
   /*
     PENDING DOCUMENTATION
   */
