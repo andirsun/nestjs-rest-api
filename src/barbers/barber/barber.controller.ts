@@ -24,39 +24,36 @@ import { FileInterface } from '../../modules/files/file.interface';
 export class BarberController {
 
   constructor(
-		private barberServices : BarberService,
+    private barberServices : BarberService,
     private logService : LogBarbersService,
     private orderService: OrdersService,
     private filesService : FilesService,
     private userService: UserService
   ){}
   
-	@Get('/getByCity')
-	async getActiveOrdersByCity(@Res() res,@Query('city')city : string){
-		await this.barberServices.getBarbersByCity(city)
-				.then((barbers)=>{
-						console.log("Llegue positivo");
-						return res.status(HttpStatus.OK).json({
-								response: 2,
-								content: {
-                  barbers
-                }
-						});
-				})
-				.catch((err)=>{
-						console.log("llegue negativo");
-						throw new Error(err);
-						// return res.status(HttpStatus.BAD_REQUEST).json({
-						// 		response: 3,
-						// 		content: err
-						// });
-				});   
+  @Get('/getByCity')
+  async getActiveOrdersByCity(@Res() res,@Query('city')city : string){
+    this.barberServices.getBarbersByCity(city)
+      .then((barbers)=>{
+        console.log("Llegue positivo");
+        return res.status(HttpStatus.OK).json({
+            response: 2,
+            content: {
+              barbers
+            }
+        });
+      })
+      .catch((err)=>{
+        res.status(HttpStatus.BAD_REQUEST).json({
+            response: 3,
+            content: err
+        });
+        throw new Error(err);
+      });   
   }
-
   /*
-		This endpoint reverse (cancel) a order taken for a Barber 
+    This endpoint reverse (cancel) a order taken for a Barber 
   */
-  
   @Post('/orders/cancell')
   async cancellOrder(@Res() res, @Body() body){
     this.orderService.changeOrderSTatus(body.idOrder, 'CANCELLED')
@@ -79,13 +76,14 @@ export class BarberController {
       .catch ( (err) => {
         res.status(HttpStatus.BAD_REQUEST).json({
           respose: 3,
-          content: err
+          content: {
+            err 
+          }
         });
         /*error to sentry report*/
         throw new Error(err);
-      })
+      });
   }
-
   /*
     This endpoint mark as finished a completed service by a barber
   */
@@ -135,7 +133,7 @@ export class BarberController {
                     remoteFilename : this.filesService.getRemoteFileName(),
                     url : this.filesService.getURL(),
                     urlFull : this.filesService.getURLParams(),
-                    order
+                    order : resp
                   }
                 });
               })
@@ -201,7 +199,7 @@ export class BarberController {
 
 
   /*
-		This endpoint creates a new Barber
+    This endpoint creates a new Barber
   */
   @Post('/createBarber')
   async createBarber(@Res() res, @Body() createBarberDTO :CreateBarberDTO){
@@ -216,7 +214,7 @@ export class BarberController {
       })
       .catch(( err ) => {
         /*Handle info to send frontend*/
-	      res.status(HttpStatus.BAD_REQUEST).json({
+        res.status(HttpStatus.BAD_REQUEST).json({
           respose: 3,
           content: err
         });
@@ -224,36 +222,36 @@ export class BarberController {
         throw new Error(err);
       })
   }
-	/*
-		This endpoint make a recarge of balance
-	*/
-	@Post('/payments/chargeBalance')
-	async makeNewPayment(@Res() res, @Body() body : PaymentBarberLogDTO,@Ip() ip : string){
-		/* FIrst step : make the recharge */
-		this.barberServices.makePaymentCharge(body.idBarber,body.amount)
-			.then(resp =>{
-				this.logService.log("Se recargo la cuenta del barbero",body.idBarber);
-				/* Then Create A log of payment */
-				this.barberServices.addPaymentLog(body.idBarber,body.amount,body.paymentId,ip)
-					.then(barber =>{
-						this.logService.log("Se creo un log de pago para un barbero",body.idBarber);
-						return res.status(HttpStatus.OK).json({
-							response: 2,
-							content: {
-								message : "Genial!, tu cuenta se recargo correctamente",
-								balance : barber.balance,
-								payments : barber.payments
-							}
-						});
-					})
-					.catch(err=> {
-						throw new Error(err);
-					});
-			})
-			.catch(err=> {
-				throw new Error(err);
-			});
-		
-	}
+  /*
+    This endpoint make a recarge of balance
+  */
+  @Post('/payments/chargeBalance')
+  async makeNewPayment(@Res() res, @Body() body : PaymentBarberLogDTO,@Ip() ip : string){
+    /* FIrst step : make the recharge */
+    this.barberServices.makePaymentCharge(body.idBarber,body.amount)
+      .then(resp =>{
+        this.logService.log("Se recargo la cuenta del barbero",body.idBarber);
+        /* Then Create A log of payment */
+        this.barberServices.addPaymentLog(body.idBarber,body.amount,body.paymentId,ip)
+          .then(barber =>{
+            this.logService.log("Se creo un log de pago para un barbero",body.idBarber);
+            return res.status(HttpStatus.OK).json({
+              response: 2,
+              content: {
+                message : "Genial!, tu cuenta se recargo correctamente",
+                balance : barber.balance,
+                payments : barber.payments
+              }
+            });
+          })
+          .catch(err=> {
+            throw new Error(err);
+          });
+      })
+      .catch(err=> {
+        throw new Error(err);
+      });
+    
+  }
 }
 

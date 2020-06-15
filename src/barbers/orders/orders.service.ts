@@ -40,12 +40,10 @@ export class OrdersService {
     let order : barberyOrder ;
     //The current date and hour
     let date = moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm");
-    if(newStatus == 'CANCELLED'  || newStatus == 'CONFIRMED' ){
-      order =  this.orders.findByIdAndUpdate(orderId, {status : newStatus,
-                    updated: date }, {new: true});
-    } else if ( newStatus == 'FINISHED' )
-      order =  this.orders.findByIdAndUpdate(orderId, {status : newStatus, 
-              updated: date, dateFinishOrder: date}, {new: true});
+    if(newStatus == 'CANCELLED'  || newStatus == 'CONFIRMED' ) {
+      order =  await this.orders.findByIdAndUpdate(orderId, {status : newStatus,updated: date }, {new: true});
+    } else if ( newStatus == 'FINISHED' ) {
+      order =  await this.orders.findByIdAndUpdate(orderId, {status : newStatus, updated: date, dateFinishOrder: date}, {new: true});
     }
     return order;
   }
