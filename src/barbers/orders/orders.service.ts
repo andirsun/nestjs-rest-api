@@ -20,7 +20,6 @@ export class OrdersService {
   */
   async getActiveOrders(): Promise<barberyOrder[]> {
     const ActiveOrders = await this.orders.find({status:'PENDING'});
-    console.log(ActiveOrders);
     return ActiveOrders;
   }
 
@@ -44,6 +43,14 @@ export class OrdersService {
       order =  this.orders.findByIdAndUpdate(orderId, {status : newStatus, 
               updated: date, dateFinishOrder: date}, {new: true});
     }
+    return order;
+  }
+
+  /*
+    This function set the service and order duration into the order document
+  */
+  async setFinishDuration(orderId: string, orderDuration: number, serviceDuration: number) : Promise<barberyOrder>{
+    let order = this.orders.findByIdAndUpdate(orderId, { serviceDuration : serviceDuration, orderDuration: orderDuration}, { new: true });
     return order;
   }
  

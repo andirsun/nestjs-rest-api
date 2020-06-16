@@ -37,7 +37,6 @@ export class BarberController {
 	async getActiveOrdersByCity(@Res() res,@Query('city')city : string){
 		await this.barberServices.getBarbersByCity(city)
 				.then((barbers)=>{
-						console.log("Llegue positivo");
 						return res.status(HttpStatus.OK).json({
 								response: 2,
 								content: {
@@ -46,7 +45,6 @@ export class BarberController {
 						});
 				})
 				.catch((err)=>{
-						console.log("llegue negativo");
 						throw new Error(err);
 						// return res.status(HttpStatus.BAD_REQUEST).json({
 						// 		response: 3,
@@ -101,7 +99,7 @@ export class BarberController {
     //The current date and hour
     let now = this.timeService.getCurrentDate();
     this.orderService.changeOrderSTatus(orderId, now, 'FINISHED')
-    .then( (newOrder) => {
+    .then( async (newOrder) => {
       if(!newOrder){
         return res.status(HttpStatus.BAD_REQUEST).json({
           response: 1,
@@ -110,12 +108,12 @@ export class BarberController {
           }
         })
       };
-      let dateBeginOrder = newOrder.dateBeginOrder;
-      let hourStart = newOrder.hourStart;
-      let dateFinishOrder = newOrder.dateFinishOrder
-      //Set duration time 
-      this.timeService.setDuration(orderId, dateBeginOrder, hourStart, dateFinishOrder)
-      .then( (response) => {
+      //Set duration in minutes for order and service duration
+      let minutesDurationOrder : number = await this.timeService.setDurationInMinutes(newOrder.dateBeginOrder, newOrder.dateFinishOrder );
+      let minutesDurationService : number = await this.timeService.setDurationInMinutes(newOrder.hourStart, newOrder.dateFinishOrder);
+      //Set in DOCUMENT duration in minutes for order and service duration
+      this.orderService.setFinishDuration(orderId, minutesDurationOrder,minutesDurationService)
+      .then( (durationOrder) => {
         let orderPrice: number = newOrder.price;
         let orderCommission: number = orderPrice * 0.30;
         let barberId: string =  newOrder.idBarber;
@@ -141,7 +139,7 @@ export class BarberController {
                     remoteFilename : this.filesService.getRemoteFileName(),
                     url : this.filesService.getURL(),
                     urlFull : this.filesService.getURLParams(),
-                    newOrder
+                    order: durationOrder
                   }
                 });
               })
