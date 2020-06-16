@@ -6,6 +6,7 @@ import { BarberService } from './barber.service';
 import { OrdersService } from '../orders/orders.service';
 import { FilesService } from '../../modules/files/files.service';
 import { UserService } from '../user/user.service';
+import { TimeService } from '../time/time.service';
 
 /* Dtos*/
 import { PaymentBarberLogDTO } from './dto/paymentLog.dto';
@@ -16,7 +17,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 
 /*Interfaces*/
 import { FileInterface } from '../../modules/files/file.interface';
-import { TimeService } from '../time/time.service';
+
 
 
 
