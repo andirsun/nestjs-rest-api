@@ -1,15 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import * as moment2 from "moment-timezone";
-import { InjectModel } from "@nestjs/mongoose";
-import { barberyOrder } from "../orders/interfaces/orders.interface";
-import { Model } from 'mongoose';
 const moment = require('moment-timezone');
 
 @Injectable()
 export class TimeService{
 
-  constructor(@InjectModel('orders') private orders: Model<barberyOrder>){}
-  
   /*
     This function takes as a parameter an hour in HH:mm:ss format and returns the received time in 
     its amount in minutes. Is used in setDurationInMinutes function.
@@ -17,6 +11,7 @@ export class TimeService{
   setDuration(difference:string) : number {
     return (moment.duration(difference)._data.hours)*60 + moment.duration(difference)._data.minutes;
   }
+  
   /*
     This functions cast from date string to moment object and return it
   */
@@ -41,7 +36,6 @@ export class TimeService{
   /*
     This function set the service and order duration into the order docuemnt
   */
-
   async setDurationInMinutes(newNow: string, newThen: string) : Promise<number>{
     let now : object = await this.setMomentObject(newNow);
     let then : object = await this.setMomentObject(newThen);
