@@ -14,11 +14,12 @@ export interface barberyOrder extends Document {
   idClient : string,
   nameClient : string,
   idBarber : string,
+  nameBarber: string,
   /* Retrocompatibility with old address */
   //city : string,
   //address : string,
   /* New Address */
-  newAddress : Address,
+  newAddress : [Address],
   dateBeginOrder: string,
   dateArriveBarber: string,
   hourStart : string,
@@ -27,9 +28,9 @@ export interface barberyOrder extends Document {
   dateFinishOrder : string,
   hourEnd: string,
   services : [ServiceOrderRepository],
-  logPayment : [LogPaymentInterface],
   pending : boolean,
-  // status : string,
+  logPayment : [LogPaymentInterface],
+  status : string,
   price : number,
   img: string
 }

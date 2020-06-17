@@ -41,8 +41,8 @@ export const orderSchema = new Schema({
     require:[false]
   },
   /* legacy version V1 anddress and city */
-  address :String,
-  city : String,
+  // address :String,
+  // city : String,
   /* New Address format */
   newAddress : AddressSchema,
   dateBeginOrder: {
