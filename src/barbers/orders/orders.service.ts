@@ -36,9 +36,8 @@ export class OrdersService {
       This function find the confirmmed orders that corresponding to a barber
       and return it
   */
-  async getBarberActiveOrders(barberId: string) : Promise<barberyOrder[]>{
-    const activeOrders = await this.orders.find({status:'CONFIRMED', idBarber: barberId});
-    console.log('ACTIVE   :', activeOrders);
+  async getBarberActiveOrder(barberId: string) : Promise<barberyOrder>{
+    const activeOrders = await this.orders.findOne({status:'CONFIRMED', idBarber: barberId});
     return activeOrders;
   }
 

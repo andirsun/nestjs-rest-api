@@ -41,7 +41,6 @@ export class BarberController {
   async getActiveOrdersByCity(@Res() res,@Query('city')city : string){
     this.barberServices.getBarbersByCity(city)
       .then((barbers)=>{
-        console.log("Llegue positivo");
         return res.status(HttpStatus.OK).json({
             response: 2,
             content: {
@@ -61,13 +60,13 @@ export class BarberController {
   /*
     This endpoint return all confirmed orders for a barber
   */
-  @Get('/checkConfirmedOrders')
+  @Get('/checkConfirmedOrder')
   async checkBarberOrder(@Res() res, @Query('phoneBarber') phoneBarber: number){
     let barberPhone = phoneBarber;
     //Get the barber by phone
     this.barberServices.getBarberByPhone(barberPhone)
-      .then( (response) => {
-        if(!response){
+      .then( (barber) => {
+        if(!barber){
           return res.status(HttpStatus.BAD_REQUEST).json({
             response: 1,
             content:{
@@ -75,24 +74,21 @@ export class BarberController {
             }
           })
         }
-        let barber = response[0];
         let barberId : string = barber._id.toString()
         // check if this barber is enrrolled in an order 
-        this.orderService.getBarberActiveOrders(barberId)
-          .then( (orders) => {
-            if(orders.length == 0){
+        this.orderService.getBarberActiveOrder(barberId)
+          .then( (order) => {
+            if(!order){
               return res.status(HttpStatus.BAD_REQUEST).json({
                 response: 1,
                 content:{
-                  message: 'No tienes ordebes confirmadas'
+                  message: 'No tienes ordenes confirmadas'
                 }
               })
             }
             return res.status(HttpStatus.OK).json({
               response: 2,
-              content: {
-                orders
-              }
+              content: order
             })
           })
           .catch( (err) => {

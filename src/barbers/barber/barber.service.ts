@@ -10,7 +10,6 @@ import { BarbersPaymentsInterface } from './interfaces/payments.interface';
 import { CreateBarberDTO } from './dto/barber.dto';
 /** Moment js Time handler module */
 import * as momentZone from 'moment-timezone';
-import { find } from 'rxjs/operators';
 
 @Injectable()
 export class BarberService {
@@ -27,8 +26,8 @@ export class BarberService {
   /*
     This function find a barber by phone and return it
   */
-  async getBarberByPhone(barberPhone : number): Promise <BarberInterface[]>{
-    const Barbers = await this.barberModel.find({phone:barberPhone});
+  async getBarberByPhone(barberPhone : number): Promise <BarberInterface>{
+    const Barbers = await this.barberModel.findOne({phone:barberPhone});
     return Barbers;
   }
 
