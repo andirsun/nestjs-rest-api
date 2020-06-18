@@ -121,7 +121,8 @@ export class BarberController {
   async cancellOrder(@Res() res, @Body() body){
     //The current date and hour
     let now = this.timeService.getCurrentDate();
-    this.orderService.changeOrderSTatus(body.idOrder, now, 'CANCELLED')
+    let comment = body.comment || "Sin comentarios";
+    this.orderService.changeOrderSTatus(body.idOrder, now, 'CANCELLED', comment)
       .then( (order) => {
         if(!order){
           return res.status(HttpStatus.BAD_REQUEST).json({
@@ -157,9 +158,10 @@ export class BarberController {
   @UseInterceptors(FileInterceptor('file'))
   async finishOrder(@Res() res, @Body() body, @UploadedFile() file: FileInterface){
     let orderId : string = body.idOrder;
+    let comment = body.comment || "Sin comentarios";
     //The current date and hour
     let now = this.timeService.getCurrentDate();
-    this.orderService.changeOrderSTatus(orderId, now, 'FINISHED')
+    this.orderService.changeOrderSTatus(orderId, now, 'FINISHED', comment)
     .then( async (newOrder) => {
       if(!newOrder){
         return res.status(HttpStatus.BAD_REQUEST).json({

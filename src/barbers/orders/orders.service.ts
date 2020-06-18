@@ -45,12 +45,12 @@ export class OrdersService {
   /*
       This function change the order status and return the order updated
   */
-  async changeOrderSTatus(orderId: string, date: string, newStatus: string): Promise<barberyOrder>{
+  async changeOrderSTatus(orderId: string, date: string, newStatus: string, comment: string ) : Promise<barberyOrder>{
     let order : barberyOrder ;
     if(newStatus == 'CANCELLED'  || newStatus == 'CONFIRMED' ) {
-      order =  await this.orders.findByIdAndUpdate(orderId, {status : newStatus,updated: date }, {new: true});
+      order =  await this.orders.findByIdAndUpdate(orderId, {status : newStatus,updated: date, comments: comment }, {new: true});
     } else if ( newStatus == 'FINISHED' ) {
-      order =  await this.orders.findByIdAndUpdate(orderId, {status : newStatus, updated: date, dateFinishOrder: date}, {new: true});
+      order =  await this.orders.findByIdAndUpdate(orderId, {status : newStatus, updated: date, dateFinishOrder: date, comments: comment }, {new: true});
     }
     return order;
   }
