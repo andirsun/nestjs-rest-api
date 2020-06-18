@@ -1,5 +1,5 @@
 /*Nest js dependencies*/
-import { Controller, Get, Res, Query, HttpStatus, Post, Body, Ip, UseInterceptors, UploadedFile, Put } from '@nestjs/common';
+import { Controller, Get, Res, Query, HttpStatus, Post, Body, Ip, UseInterceptors, UploadedFile} from '@nestjs/common';
 /* Services*/
 import { LogBarbersService } from '../log-barbers/log-barbers.service';
 import { BarberService } from './barber.service';
@@ -17,8 +17,6 @@ import { FileInterceptor } from '@nestjs/platform-express';
 
 /*Interfaces*/
 import { FileInterface } from '../../modules/files/file.interface';
-import { privateEncrypt } from 'crypto';
-import { Http } from '@sentry/node/dist/integrations';
 
 
 
@@ -326,18 +324,6 @@ export class BarberController {
       .catch(err=> {
         throw new Error(err);
       }); 
-  }
-
-  @Put('/editOrder')
-  async editOrder(@Res() res, @Body() body){
-    let Orderid = body.idOrder;
-    let services = body.services;
-    let price;
-    services = JSON.parse(services);
-    services.forEach(element => {
-    price = price + (element.price*element.quantity);
-  });
-    return
   }
 }
 
