@@ -112,6 +112,61 @@ export class BarberController {
       });
   }
 
+  /*
+    This endpoint return all finished orders for a barber
+  */
+  @Get('/getHistoryOrdersBarber')
+  async getOrdersHistory(@Res() res, @Query('phoneBarber') phoneBarber:number){
+    let barberPhone : number = phoneBarber;
+    //Get barber by phone
+    this.barberServices.getBarberByPhone(barberPhone)
+      .then( (barber) => {
+        if(!barber){
+          return res.status(HttpStatus.BAD_REQUEST).json({
+            respose: 1,
+            message: 'Ups!  no te encontramos en nuestra base de datos'
+          })
+        }
+        //St the barber document id
+        let barberId : string = barber._id.toString()
+        
+        // check if this Barber have finished orders
+        this.orderService.getFinishedOrdersByBarber(barberId)
+          .then( (orders) => {
+            if(orders.length == 0){
+              return res.status(HttpStatus.BAD_REQUEST).json({
+                respose: 1,
+                message: 'Ups!  no tienes irdenes finalizadas'
+              })
+            }
+            return res.status(HttpStatus.OK).json({
+              response: 2,
+              content: {
+                orders
+              }
+            })
+          })
+          .catch( (err) => {
+            res.status(HttpStatus.BAD_REQUEST).json({
+              response: 3,
+              content: {
+                message: 'Ups! Ha ocurrido un error'
+              }
+            })
+            throw new Error(err);
+          })
+      })
+      .catch( (err) => {
+        res.status(HttpStatus.BAD_REQUEST).json({
+          response: 3,
+          content: {
+            message: 'Ups! Ha ocurrido un error'
+          }
+        })
+        throw new Error(err);
+      });
+  }
+
 
 
   /*
