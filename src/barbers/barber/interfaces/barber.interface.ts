@@ -26,5 +26,5 @@ export interface BarberInterface extends Document {
   role : string,
   deviceInfo :[DeviceInfoInterface] ,
   payments: [BarbersPaymentsInterface]
-
+  status: boolean
 }

@@ -15,6 +15,7 @@ export class OrdersService {
   */
   constructor(@InjectModel('orders') private readonly orders : Model<barberyOrder>){}
   /* Queries */
+  
   /*
       This function return the all active orders
   */
@@ -32,9 +33,18 @@ export class OrdersService {
   }
 
   /*
+      This function find the confirmmed orders that corresponding to a barber
+      and return it
+  */
+  async getBarberActiveOrders(barberId: string) : Promise<barberyOrder[]>{
+    const activeOrders = await this.orders.find({status:'CONFIRMED', idBarber: barberId});
+    console.log('ACTIVE   :', activeOrders);
+    return activeOrders;
+  }
+
+  /*
       This function change the order status and return the order updated
   */
-
   async changeOrderSTatus(orderId: string, date: string, newStatus: string): Promise<barberyOrder>{
     let order : barberyOrder ;
     if(newStatus == 'CANCELLED'  || newStatus == 'CONFIRMED' ) {
