@@ -91,7 +91,8 @@ export const orderSchema = new Schema({
   img: {
     type: String,
     // required:[true, "La imagen es necesaria"]
-  }
+  },
+  comment: String,
 });
 
 /*PLUGINS ZONE*/

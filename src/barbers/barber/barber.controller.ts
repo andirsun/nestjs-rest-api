@@ -1,5 +1,5 @@
 /*Nest js dependencies*/
-import { Controller, Get, Res, Query, HttpStatus, Post, Body, Ip, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Res, Query, HttpStatus, Post, Body, Ip, UseInterceptors, UploadedFile} from '@nestjs/common';
 /* Services*/
 import { LogBarbersService } from '../log-barbers/log-barbers.service';
 import { BarberService } from './barber.service';
@@ -34,11 +34,13 @@ export class BarberController {
     private timeService: TimeService
   ){}
   
+  /*
+    This endpoint return all barbers in a city
+  */
   @Get('/getByCity')
   async getActiveOrdersByCity(@Res() res,@Query('city')city : string){
     this.barberServices.getBarbersByCity(city)
       .then((barbers)=>{
-        console.log("Llegue positivo");
         return res.status(HttpStatus.OK).json({
             response: 2,
             content: {
@@ -54,6 +56,64 @@ export class BarberController {
         throw new Error(err);
       });   
   }
+
+  /*
+    This endpoint return all confirmed orders for a barber
+  */
+  @Get('/checkConfirmedOrder')
+  async checkBarberOrder(@Res() res, @Query('phoneBarber') phoneBarber: number){
+    let barberPhone = phoneBarber;
+    //Get the barber by phone
+    this.barberServices.getBarberByPhone(barberPhone)
+      .then( (barber) => {
+        if(!barber){
+          return res.status(HttpStatus.BAD_REQUEST).json({
+            response: 1,
+            content:{
+              message: 'Ups!  no te encontramos en nuestra base de datos'
+            }
+          })
+        }
+        let barberId : string = barber._id.toString()
+        // check if this barber is enrrolled in an order 
+        this.orderService.getBarberActiveOrder(barberId)
+          .then( (order) => {
+            if(!order){
+              return res.status(HttpStatus.BAD_REQUEST).json({
+                response: 1,
+                content:{
+                  message: 'No tienes ordenes confirmadas'
+                }
+              })
+            }
+            return res.status(HttpStatus.OK).json({
+              response: 2,
+              content: order
+            })
+          })
+          .catch( (err) => {
+            res.status(HttpStatus.BAD_REQUEST).json({
+              response: 3,
+              content: {
+                message: 'Ups! Ha ocurrido un error'
+              }
+            })
+            throw new Error(err);
+          })
+      })
+      .catch( (err) => {
+        res.status(HttpStatus.BAD_REQUEST).json({
+          response: 3,
+          content: {
+            message: 'Ups! Ha ocurrido un error'
+          }
+        })
+        throw new Error(err);
+      });
+  }
+
+
+
   /*
     This endpoint reverse (cancel) a order taken for a Barber 
   */
@@ -61,7 +121,8 @@ export class BarberController {
   async cancellOrder(@Res() res, @Body() body){
     //The current date and hour
     let now = this.timeService.getCurrentDate();
-    this.orderService.changeOrderSTatus(body.idOrder, now, 'CANCELLED')
+    let comment = body.comment || "Sin comentarios";
+    this.orderService.changeOrderSTatus(body.idOrder, now, 'CANCELLED', comment)
       .then( (order) => {
         if(!order){
           return res.status(HttpStatus.BAD_REQUEST).json({
@@ -97,9 +158,10 @@ export class BarberController {
   @UseInterceptors(FileInterceptor('file'))
   async finishOrder(@Res() res, @Body() body, @UploadedFile() file: FileInterface){
     let orderId : string = body.idOrder;
+    let comment = body.comment || "Sin comentarios";
     //The current date and hour
     let now = this.timeService.getCurrentDate();
-    this.orderService.changeOrderSTatus(orderId, now, 'FINISHED')
+    this.orderService.changeOrderSTatus(orderId, now, 'FINISHED', comment)
     .then( async (newOrder) => {
       if(!newOrder){
         return res.status(HttpStatus.BAD_REQUEST).json({
@@ -257,8 +319,7 @@ export class BarberController {
       })
       .catch(err=> {
         throw new Error(err);
-      });
-    
+      }); 
   }
 }
 

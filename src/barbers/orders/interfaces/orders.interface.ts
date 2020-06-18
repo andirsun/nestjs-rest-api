@@ -19,7 +19,7 @@ export interface barberyOrder extends Document {
   //city : string,
   //address : string,
   /* New Address */
-  newAddress : [Address],
+  newAddress : Address,
   dateBeginOrder: string,
   dateArriveBarber: string,
   hourStart : string,
@@ -32,5 +32,6 @@ export interface barberyOrder extends Document {
   logPayment : [LogPaymentInterface],
   status : string,
   price : number,
-  img: string
+  img: string,
+  comment: string
 }

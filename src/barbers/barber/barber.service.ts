@@ -15,11 +15,22 @@ import * as momentZone from 'moment-timezone';
 export class BarberService {
 
   constructor(@InjectModel('barbers') private readonly barberModel : Model<BarberInterface>){}
-
+  
+  /*
+    This function find all barbers at a city and return it
+  */
   async getBarbersByCity(city : string): Promise<BarberInterface[]>{
     const Barbers = await this.barberModel.find({city:city});
     return Barbers;
   }
+  /*
+    This function find a barber by phone and return it
+  */
+  async getBarberByPhone(barberPhone : number): Promise <BarberInterface>{
+    const Barbers = await this.barberModel.findOne({phone:barberPhone});
+    return Barbers;
+  }
+
   /*
     This function charge amount of money to a barber
     account balance
