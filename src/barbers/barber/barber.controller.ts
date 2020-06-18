@@ -36,6 +36,9 @@ export class BarberController {
     private timeService: TimeService
   ){}
   
+  /*
+    This endpoint return all barbers in a city
+  */
   @Get('/getByCity')
   async getActiveOrdersByCity(@Res() res,@Query('city')city : string){
     this.barberServices.getBarbersByCity(city)
@@ -57,7 +60,10 @@ export class BarberController {
       });   
   }
 
-  @Get('/checkBarberOrder')
+  /*
+    This endpoint return all confirmed orders for a barber
+  */
+  @Get('/checkConfirmedOrders')
   async checkBarberOrder(@Res() res, @Query('phoneBarber') phoneBarber: number){
     let barberPhone = phoneBarber;
     //Get the barber by phone
