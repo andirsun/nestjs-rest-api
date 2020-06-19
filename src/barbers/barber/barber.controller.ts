@@ -234,7 +234,7 @@ export class BarberController {
         .then ( (barber) =>{
           //Add user's points 
           let idClient: string = newOrder.idClient;
-          this.userService.addUserPoints(idClient)
+          this.userService.addUserPoints(idClient,50)
           .then ( (user) =>{
             //Upload the file to Digital Ocean
             let remotePath : string = `Barbers/Orders/${orderId}/${file.originalname}`;
