@@ -56,7 +56,6 @@ export class BarberController {
         throw new Error(err);
       });   
   }
-
   /*
     This endpoint return all confirmed orders for a barber
   */
@@ -111,7 +110,6 @@ export class BarberController {
         throw new Error(err);
       });
   }
-
   /*
     This endpoint return all finished orders for a barber
   */
@@ -166,9 +164,6 @@ export class BarberController {
         throw new Error(err);
       });
   }
-
-
-
   /*
     This endpoint reverse (cancel) a order taken for a Barber 
   */
@@ -208,7 +203,6 @@ export class BarberController {
   /*
     This endpoint mark as finished a completed service by a barber
   */
-
   @Post('/orders/finish')
   @UseInterceptors(FileInterceptor('file'))
   async finishOrder(@Res() res, @Body() body, @UploadedFile() file: FileInterface){
@@ -319,9 +313,6 @@ export class BarberController {
       throw new Error(err);
     })
   }
-
-
-
   /*
     This endpoint creates a new Barber
   */
