@@ -20,9 +20,9 @@ export class AdminController {
         let emailsArray : [string] = [""]
 
         let cycle = new Promise((resolve, reject) => {
-          emails.forEach((value, index, array) => {
+          emails.forEach((value, index) => {
               emailsArray.push(value.email);
-              if (index === array.length -1) resolve();
+              if (index ===emails.length -1) resolve();
           });
         });
       
@@ -30,7 +30,7 @@ export class AdminController {
           return res.status(HttpStatus.OK).json({
             response: 2,
             content: {
-              emails
+              emails : emailsArray
             }
           });
         });
