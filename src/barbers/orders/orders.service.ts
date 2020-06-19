@@ -28,7 +28,7 @@ export class OrdersService {
       This function return the all active orders by city 
   */
   async getActiveOrdersByCity(city : string): Promise<barberyOrder[]>{
-    const ActiveOrders = await this.orders.find({status:'PENDING',city :city});
+    const ActiveOrders = await this.orders.find({status:'PENDING',"newAddress.city" :city});
     return ActiveOrders;
   }
 
