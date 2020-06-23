@@ -17,8 +17,6 @@ import { FileInterceptor } from '@nestjs/platform-express';
 
 /*Interfaces*/
 import { FileInterface } from '../../modules/files/file.interface';
-import { response } from 'express';
-import { Console } from 'console';
 
 
 
