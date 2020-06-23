@@ -23,6 +23,7 @@ export class BarberService {
     const Barbers = await this.barberModel.find({city:city});
     return Barbers;
   }
+  
   /*
     This function find a barber by phone and return it
   */
@@ -38,6 +39,39 @@ export class BarberService {
   async makePaymentCharge(idBarber : string, amount:number): Promise<BarberInterface>{
     return this.barberModel.findByIdAndUpdate(idBarber,{$inc : {balance : amount}},{new:true});
   }
+
+    
+  /*
+    This function the barber connected status 
+  */
+  async getBarberConnection (barberPhone : number): Promise <boolean>{
+    let connected;
+    const barber = await this.barberModel.findOne({phone:barberPhone});
+    //If the barber does not exist, so barber is equal to null 
+    if(barber == null){
+      connected = null;
+    }else{
+      connected = barber.connected;
+    };
+    return connected;
+  }
+  
+  /*
+    This function return the barber status (if is a enabled account) 
+  */
+  async getBarberStatus (barberPhone : number): Promise <boolean>{
+    let status;
+    const barber = await this.barberModel.findOne({phone:barberPhone});
+    //If the barber does not exist, so barber is equal to null 
+    if(barber == null){
+      status = null;
+    }else{
+      status = barber.status;
+    };
+    
+    return status;
+  }
+
   /*
     This function create a payment log for barbers
   */
@@ -66,7 +100,6 @@ export class BarberService {
     This function add points and set balance into barber docuemnt, when the order is finished. 
     return barber document.
   */
-
   async addBarberPoints(orderCommission: number, barberId: string) : Promise <BarberInterface>{
     const barber = this.barberModel.findByIdAndUpdate(barberId,{ $inc:{ points: 50, balance: -orderCommission }});
     return  barber

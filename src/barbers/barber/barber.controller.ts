@@ -165,6 +165,113 @@ export class BarberController {
       });
   }
   /*
+    This endpoint return all active orders for a connected barber
+  */
+  @Get('getAvailableOrders')
+  async getAvailableOrders(@Res() res, @Query('phoneBarber') phoneBarber: number){
+    let barberPhone : number = phoneBarber;
+    this.barberServices.getBarberByPhone(barberPhone)
+      .then( (barber) => {
+        console.log(Object.keys(barber).length)
+        if((Object.keys(barber).length) == 0){
+          return res.status(HttpStatus.BAD_REQUEST).json({
+            response: 1, 
+            message: 'No existe un barbero con ese número de teléfono'
+          })
+        }
+        let connected = barber.connected;
+        let status = barber.status;
+        let city = barber.city;
+        //Ckeck if barber is connected
+        if(connected){
+          //Ckeck if barber have a enabled account
+          if(status){
+            //Get all active orders by city 
+            this.orderService.getActiveOrdersByCity(city)
+              .then( (orders) => {
+                if(orders.length == 0){
+                  return res.status(HttpStatus.BAD_REQUEST).json({
+                    response: 1, 
+                    message: 'No hay ordenes activas en tu ciudad'
+                  })
+                }
+                return res.status(HttpStatus.OK).json({
+                  response: 2, 
+                  content:{
+                    orders
+                  }
+                })
+              })
+              .catch( (err) => {
+                res.status(HttpStatus.BAD_REQUEST).json({
+                  response: 3,
+                  content: {
+                    message: 'Ups! Ha ocurrido un error buscando las ordenes'
+                  }
+                })
+                throw new Error(err);
+              });
+          }else{
+            return res.status(HttpStatus.BAD_REQUEST).json({
+              response: 1, 
+              message: 'Tu cuenta esta desactivada, debes contactar con el Administrador de tu ciudad'
+            })
+          }
+        }else{
+          return res.status(HttpStatus.BAD_REQUEST).json({
+            response: 1, 
+            message: 'Debes estar conectado para recibir ordenes'
+          })
+        }
+    })
+    .catch( (err) => {
+      res.status(HttpStatus.BAD_REQUEST).json({
+        response: 3,
+        content: {
+          message: 'Ups! Ha ocurrido un error buscando al barbero'
+        }
+      })
+      throw new Error(err);
+    });
+  }
+
+  /*
+    This endpoint check if the barber is connected or not
+  */
+  @Get('checkBarberConnection')
+  async checkIfBarberConnect(@Res() res, @Query('phoneBarber') phoneBarber: number){
+    let barberPhone : number = phoneBarber;
+    this.barberServices.getBarberConnection(barberPhone)
+      .then( (barberConnection) => {
+        //Check if the barber  does not exist
+        if(barberConnection == null){
+          return res.status(HttpStatus.BAD_REQUEST).json({
+            response: 1, 
+            message: 'No existe un barbero con ese número de teléfono'
+          })
+        }  
+        if(!barberConnection){
+          return res.status(HttpStatus.OK).json({
+            response: 2, 
+            message: 'El barbero no esta conectado'
+          })
+        }
+        return res.status(HttpStatus.OK).json({
+          response: 2, 
+          message: 'El barbero esta conectado'
+        })
+      })
+      .catch( (err) => {
+        res.status(HttpStatus.BAD_REQUEST).json({
+          response: 3,
+          content: {
+            message: 'Ups! Ha ocurrido un error'
+          }
+        })
+        throw new Error(err);
+      });
+  }
+  /*
     This endpoint reverse (cancel) a order taken for a Barber 
   */
   @Post('/orders/cancell')
@@ -200,6 +307,7 @@ export class BarberController {
         throw new Error(err);
       });
   }
+
   /*
     This endpoint mark as finished a completed service by a barber
   */
@@ -337,6 +445,7 @@ export class BarberController {
         throw new Error(err);
       })
   }
+
   /*
     This endpoint make a recarge of balance
   */

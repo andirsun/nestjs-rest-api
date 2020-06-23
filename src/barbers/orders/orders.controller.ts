@@ -35,12 +35,14 @@ export class OrdersController {
 	}
 	@Get('/activeOrdersByCity')
 	async getActiveOrdersByCity(@Res() res,@Query('city')city : string){
-		await this.orderService.getAtiveOrdersByCity(city)
+		await this.orderService.getActiveOrdersByCity(city)
 				.then((orders)=>{
 						console.log("Llegue positivo");
 						return res.status(HttpStatus.OK).json({
 								response: 2,
-								content: orders
+								content: {
+                  orders
+                }
 						});
 				})
 				.catch((err)=>{
