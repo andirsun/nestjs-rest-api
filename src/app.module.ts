@@ -30,6 +30,7 @@ import { OrdersPetsModule } from './pets/orders/orders.module';
 
 import { FilesModule } from './modules/files/files.module';
 import { TimeModule } from './barbers/time/time.module';
+import { AdminBarbersModule } from './barbers/admin/admin.module';
 require("dotenv").config();
 // ============================
 //  Enviroment
@@ -56,7 +57,7 @@ if (process.env.ENVIROMENT === 'dev' || process.env.ENVIROMENT === 'local') {
 @Module({
   imports: [
 
-    /* Barberos Modules */
+    /* Barbers Modules */
     UserModule,
     UserPetsModule,
     BarberModule,
@@ -65,8 +66,12 @@ if (process.env.ENVIROMENT === 'dev' || process.env.ENVIROMENT === 'local') {
     OrdersBarbersModule,
     LogBarbersModule,
     FeedbackModule,
+<<<<<<< HEAD
     TimeModule,
     PromotionalCodesModule,
+=======
+    AdminBarbersModule,
+>>>>>>> 43d7e50e5ab987c6a1f5ef3d4e1809b85b20b8a9
     
     /* Pets Modules */
     PartnerModule,
@@ -76,9 +81,10 @@ if (process.env.ENVIROMENT === 'dev' || process.env.ENVIROMENT === 'local') {
     
     /* EXTRA modules */
     //Twilio SMS notification and Calls MOdule
+    TimeModule,
     TwilioModule,
 
-    /* Autentication Modules */
+    //Autentication Modules
     AuthModule,
 
     /* Files management with digital ocean spaces */

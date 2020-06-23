@@ -17,8 +17,6 @@ import { FileInterceptor } from '@nestjs/platform-express';
 
 /*Interfaces*/
 import { FileInterface } from '../../modules/files/file.interface';
-import { response } from 'express';
-import { Console } from 'console';
 
 
 
@@ -58,7 +56,6 @@ export class BarberController {
         throw new Error(err);
       });   
   }
-
   /*
     This endpoint return all confirmed orders for a barber
   */
@@ -113,7 +110,6 @@ export class BarberController {
         throw new Error(err);
       });
   }
-
   /*
     This endpoint return all finished orders for a barber
   */
@@ -168,7 +164,6 @@ export class BarberController {
         throw new Error(err);
       });
   }
-
   /*
     This endpoint return all active orders for a connected barber
   */
@@ -276,8 +271,6 @@ export class BarberController {
         throw new Error(err);
       });
   }
-
-
   /*
     This endpoint reverse (cancel) a order taken for a Barber 
   */
@@ -349,7 +342,7 @@ export class BarberController {
         .then ( (barber) =>{
           //Add user's points 
           let idClient: string = newOrder.idClient;
-          this.userService.addUserPoints(idClient)
+          this.userService.addUserPoints(idClient,50)
           .then ( (user) =>{
             //Upload the file to Digital Ocean
             let remotePath : string = `Barbers/Orders/${orderId}/${file.originalname}`;
@@ -428,7 +421,6 @@ export class BarberController {
       throw new Error(err);
     })
   }
-
   /*
     This endpoint creates a new Barber
   */
