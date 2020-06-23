@@ -25,6 +25,7 @@ import { ServiceModule } from './pets/service/service.module';
 import { BarberModule } from './barbers/barber/barber.module';
 import { OrdersBarbersModule } from './barbers/orders/orders.module';
 import { BarberyServiceModule } from './barbers/barbery-service/barbery-service.module';
+import { ReferredCodesModule } from './barbers/referred-codes/referred-codes.module';
 import { OrdersPetsModule } from './pets/orders/orders.module';
 
 import { FilesModule } from './modules/files/files.module';
@@ -65,8 +66,9 @@ if (process.env.ENVIROMENT === 'dev' || process.env.ENVIROMENT === 'local') {
     OrdersBarbersModule,
     LogBarbersModule,
     FeedbackModule,
+    ReferredCodesModule,
     AdminBarbersModule,
-    
+
     /* Pets Modules */
     PartnerModule,
     ProductsModule,
