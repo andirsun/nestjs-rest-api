@@ -26,7 +26,9 @@ export class ReferredCodesController {
         if(!code){
           return res.status(HttpStatus.BAD_REQUEST).json({
             response: 1,
-            message: 'Ups! Tu código de referido es incorrecto'
+            content : {
+              message: 'Ups! Tu código de referido es incorrecto'
+            }
           })
         }
         this.referredCodeService.setUsedCodeTracker(referredCode, currentDate, userId)
@@ -34,18 +36,25 @@ export class ReferredCodesController {
             if(!codeDoc){
               return res.status(HttpStatus.BAD_REQUEST).json({
                 response: 1,
-                message: 'Ups! Ha ocurrido un problema'
+                content:{
+                  message: 'Ups! Ha ocurrido un problema'
+                }
+                
               })
             }
             return res.status(HttpStatus.OK).json({
               response: 2,
-              message: 'Código correcto'
+              content : {
+                message: 'Código correcto'
+              }
             })  
           })
           .catch ( (err) => {
             res.status(HttpStatus.BAD_REQUEST).json({
               response: 3,
-              message: 'Ups! Ha ocurrido un error'
+              content : {
+                message: 'Ups! Ha ocurrido un error'
+              }
             })
             throw new Error(err);
           })
@@ -53,7 +62,9 @@ export class ReferredCodesController {
       .catch ( (err) => {
         res.status(HttpStatus.BAD_REQUEST).json({
           response: 3,
-          message: 'Ups! Ha ocurrido un error'
+          content : {
+            message: 'Ups! Ha ocurrido un error'
+          }
         })
         throw new Error(err);
       })
@@ -77,7 +88,9 @@ export class ReferredCodesController {
         if(!code){
           return res.status(HttpStatus.BAD_REQUEST).json({
             response: 1,
-            message: 'Ups! No pudimos crear tu código'
+            content :{
+              message: 'Ups! No pudimos crear tu código'
+            }
           })
         }
         return res.status(HttpStatus.OK).json({
@@ -90,7 +103,9 @@ export class ReferredCodesController {
       .catch ( (err) => {
         res.status(HttpStatus.BAD_REQUEST).json({
           response: 3,
-          message: 'Ups! Ha ocurrido un error'
+          content :{
+            message: 'Ups! Ha ocurrido un error'
+          }
         })
         throw new Error(err);
       })
