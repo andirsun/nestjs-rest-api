@@ -3,7 +3,7 @@ import { Schema } from 'mongoose';
 /*Adional Schemas*/
 import { CodeTrackerSchema } from './code-tracker.schema'
 
-export const promotionalCodeSchema =  new Schema({
+export const ReferredCodeSchema =  new Schema({
 
   promotorId: {
     type: String,

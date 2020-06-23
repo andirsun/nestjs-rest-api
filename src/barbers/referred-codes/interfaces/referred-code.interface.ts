@@ -6,7 +6,7 @@ import { CodeTrackerInterface } from './code-tracker.interface';
 
 
 
-export interface PromotionalCodeInterface  extends Document  {
+export interface ReferredCodeInterface  extends Document  {
   promotorId : string,
   code: string
   generationDate: string,

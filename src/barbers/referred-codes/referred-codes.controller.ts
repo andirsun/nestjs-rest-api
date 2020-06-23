@@ -2,7 +2,7 @@
 /* Nest Js dependencies */
 import { Controller, Injectable, Put, Res, Body, Query, HttpStatus, Get } from '@nestjs/common';
 /*Service*/
-import { PromotionalCodesService } from './promotional-codes.service';
+import { ReferredCodesService } from './referred-codes.service';
 /*Aditional Services*/
 import { TimeService } from '../time/time.service';
 
@@ -10,18 +10,18 @@ import { TimeService } from '../time/time.service';
 /*
   This endpoint check if a given code from user is valid
 */
-@Controller('promcodes')
-export class PromotionalCodesController {
-  constructor(private promotionalCodeService: PromotionalCodesService,
+@Controller('refcodes')
+export class ReferredCodesController {
+  constructor(private referredCodeService: ReferredCodesService,
               private timeService: TimeService){}
 
 
   @Get('getCode')
   async getCode(@Res() res, @Body() body){
-    let promotionalCode = body.code;
+    let referredCode = body.code;
     let userId = body.userId;
     let currentDate: string = this.timeService.getCurrentDate();
-    this.promotionalCodeService.getCode(promotionalCode)
+    this.referredCodeService.getCode(referredCode)
       .then( (code) => {
         if(!code){
           return res.status(HttpStatus.BAD_REQUEST).json({
@@ -29,7 +29,7 @@ export class PromotionalCodesController {
             message: 'Ups! Tu código de referido es incorrecto'
           })
         }
-        this.promotionalCodeService.setUsedCodeTracker(promotionalCode, currentDate, userId)
+        this.referredCodeService.setUsedCodeTracker(referredCode, currentDate, userId)
           .then( (codeDoc) => {
             if(!codeDoc){
               return res.status(HttpStatus.BAD_REQUEST).json({
@@ -60,7 +60,7 @@ export class PromotionalCodesController {
   }
 
   /*
-    This enpoint creates a new promotional code
+    This enpoint creates a new referred code
   */
   @Put('createCode')
   async createcode( @Res() res, @Body() body ){
@@ -70,9 +70,9 @@ export class PromotionalCodesController {
     let currentDate: string = this.timeService.getCurrentDate();
     //Take the userName string upto the first space
     let firstName:string = userName.substr(0, userName.indexOf(' '));
-    //Set the promotional code with fisrt name + timeStamp
+    //Set the referred code with fisrt name + timeStamp
     let code: string = `${firstName}${timeStamp}`;
-    this.promotionalCodeService.setNewCode(userId, currentDate, code)
+    this.referredCodeService.setNewCode(userId, currentDate, code)
       .then( (code) => {
         if(!code){
           return res.status(HttpStatus.BAD_REQUEST).json({
