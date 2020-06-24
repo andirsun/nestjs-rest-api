@@ -26,7 +26,7 @@ export class ReferredCodesService {
   /*
     add date and  userId into the code-tracker when a code is used by a user
   */
-  async setUsedCodeTracker(referredCode: string, date: string, userId: string){
+  async setUsedCodeTracker(referredCode: string, date: string, userId: string): Promise<ReferredCodeInterface>{
     let trackedElement: CodeTrackerInterface = {date: date, userId: userId }
     const code = this.referredCodeModel.findOneAndUpdate({code: referredCode},{ $push: { usedCodeTracker: trackedElement} });
     return code;
