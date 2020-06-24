@@ -31,6 +31,7 @@ import { OrdersPetsModule } from './pets/orders/orders.module';
 import { FilesModule } from './modules/files/files.module';
 import { TimeModule } from './barbers/time/time.module';
 import { AdminBarbersModule } from './barbers/admin/admin.module';
+import { PromotionalCodesModule } from './barbers/promotional-codes/promotional-codes.module';
 require("dotenv").config();
 // ============================
 //  Enviroment
@@ -68,6 +69,7 @@ if (process.env.ENVIROMENT === 'dev' || process.env.ENVIROMENT === 'local') {
     FeedbackModule,
     ReferredCodesModule,
     AdminBarbersModule,
+    PromotionalCodesModule,
 
     /* Pets Modules */
     PartnerModule,
