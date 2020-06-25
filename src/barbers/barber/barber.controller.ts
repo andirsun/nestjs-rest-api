@@ -1,5 +1,5 @@
 /*Nest js dependencies*/
-import { Controller, Get, Res, Query, HttpStatus, Post, Body, Ip, UseInterceptors, UploadedFile} from '@nestjs/common';
+import { Controller, Get, Res, Query, HttpStatus, Post, Body, Ip, UseInterceptors, UploadedFile, Put} from '@nestjs/common';
 /* Services*/
 import { LogBarbersService } from '../log-barbers/log-barbers.service';
 import { BarberService } from './barber.service';
@@ -33,7 +33,39 @@ export class BarberController {
     private userService: UserService,
     private timeService: TimeService
   ){}
-  
+
+  /*
+    This endpoint find return a barber by phone
+  */
+  @Get('getBarberByPhone')
+  async getBarberByPhone(@Res() res, @Query('phoneBarber') barberPhone ){
+    this.barberServices.getBarberByPhone(barberPhone)
+      .then( (barber) => {
+        if(!barber){
+          return res.status(HttpStatus.BAD_REQUEST).json({
+            response: 1,
+            content:{
+              message: 'No existe ningún barbero con ese número de celular'
+            }
+          })
+        }
+        return res.status(HttpStatus.OK).json({
+          response: 2,
+          content:{
+            barber
+          }
+        })
+      })
+      .catch( (err) => {
+        res.status(HttpStatus.BAD_REQUEST).json({
+          response: 3,
+          content: {
+            message: 'Ups! Ha ocurrido un error'
+          }
+        })
+        throw new Error(err);
+      })
+  }
   /*
     This endpoint return all barbers in a city
   */
@@ -421,30 +453,6 @@ export class BarberController {
       throw new Error(err);
     })
   }
-  /*
-    This endpoint creates a new Barber
-  */
-  @Post('/createBarber')
-  async createBarber(@Res() res, @Body() createBarberDTO :CreateBarberDTO){
-    this.barberServices.createBarber(createBarberDTO)
-      .then(( newBarber ) => {
-        return res.status(HttpStatus.OK).json({
-          respose: 1,
-          content:{ 
-            newBarber 
-          }
-        });
-      })
-      .catch(( err ) => {
-        /*Handle info to send frontend*/
-        res.status(HttpStatus.BAD_REQUEST).json({
-          respose: 3,
-          content: err
-        });
-        /*error to sentry report*/
-        throw new Error(err);
-      })
-  }
 
   /*
     This endpoint make a recarge of balance
@@ -476,5 +484,31 @@ export class BarberController {
         throw new Error(err);
       }); 
   }
+
+  /*
+    This endpoint creates a new Barber
+  */
+ @Put('/createBarber')
+ async createBarber(@Res() res, @Body() createBarberDTO :CreateBarberDTO){
+   this.barberServices.createBarber(createBarberDTO)
+     .then(( newBarber ) => {
+       return res.status(HttpStatus.OK).json({
+         respose: 1,
+         content:{ 
+           newBarber 
+         }
+       });
+     })
+     .catch(( err ) => {
+       /*Handle info to send frontend*/
+       res.status(HttpStatus.BAD_REQUEST).json({
+         respose: 3,
+         content: err
+       });
+       /*error to sentry report*/
+       throw new Error(err);
+     })
+ }
+
 }
 
