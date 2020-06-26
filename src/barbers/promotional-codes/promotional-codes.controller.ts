@@ -15,16 +15,22 @@ export class PromotionalCodeController{
   */
  @Put('createCode')
  async createcode( @Res() res, @Body() body:PromotionalCodeDTO){
-  let keyword: string = body.keyword;
-  let description: string = body.description;
-  let promotor: string = body.promotor;
-  let cluster: string = body.cluster
-  let timeStamp: number = new Date().getMilliseconds();
+  let promCodeDocTemplate : PromotionalCodeDTO = {
+    keyword : body.keyword,
+    description: body.description,
+    promotor: body.promotor,
+    cluster:  body.cluster,
+    discount: body.discount,
+    durationInDays: body.durationInDays
+  }
   let currentDate: string = this.timeService.getCurrentDate();
-   
-   //Set the referred code with fkey word + timeStamp
-   let code: string = `${keyword}${timeStamp}`;
-   this.promotionalCodeService.setNewCode(cluster, promotor,description, currentDate, code)
+  //Set the prom code experitaion date
+  let expirationDate: string = this.timeService.setPromExpirationDate(currentDate, promCodeDocTemplate.durationInDays)
+  
+  let timeStamp: number = new Date().getMilliseconds();
+   //Set the referred code with key word + timeStamp
+   let code: string = `${promCodeDocTemplate.keyword}${timeStamp}`;
+   this.promotionalCodeService.setNewCode(promCodeDocTemplate, code, expirationDate, currentDate)
      .then( (code) => {
         if(!code){
           return res.status(HttpStatus.BAD_REQUEST).json({
