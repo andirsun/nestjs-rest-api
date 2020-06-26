@@ -35,10 +35,44 @@ export class BarberController {
   ){}
 
   /*
+    This endpoint find return a barber by phone and return his balance and points
+  */
+  @Get('getBarberBalance')
+  async getBarberBalance(@Res() res, @Query('phoneBarber') barberPhone: number){
+    this.barberServices.getBarberByPhone(barberPhone)
+      .then( (barber) => {
+        if(!barber){
+          return res.status(HttpStatus.BAD_REQUEST).json({
+            response: 1,
+            content:{
+              message: 'No existe ningún barbero con ese número de celular'
+            }
+          })
+        }
+        return res.status(HttpStatus.OK).json({
+          response: 2,
+          content:{
+            balance : barber.balance,
+            points : barber.points
+          }
+        })
+      })
+      .catch( (err) => {
+        res.status(HttpStatus.BAD_REQUEST).json({
+          response: 3,
+          content: {
+            message: 'Ups! Ha ocurrido un error'
+          }
+        })
+        throw new Error(err);
+      })
+  }
+
+  /*
     This endpoint find return a barber by phone
   */
   @Get('getBarberByPhone')
-  async getBarberByPhone(@Res() res, @Query('phoneBarber') barberPhone ){
+  async getBarberByPhone(@Res() res, @Query('phoneBarber') barberPhone: number){
     this.barberServices.getBarberByPhone(barberPhone)
       .then( (barber) => {
         if(!barber){
@@ -154,7 +188,9 @@ export class BarberController {
         if(!barber){
           return res.status(HttpStatus.BAD_REQUEST).json({
             respose: 1,
-            message: 'Ups!  no te encontramos en nuestra base de datos'
+            content: {
+              message: 'Ups!  no te encontramos en nuestra base de datos'
+            }
           })
         }
         //St the barber document id
@@ -166,7 +202,9 @@ export class BarberController {
             if(orders.length == 0){
               return res.status(HttpStatus.BAD_REQUEST).json({
                 respose: 1,
-                message: 'Ups!  no tienes irdenes finalizadas'
+                content: {
+                  message: 'Ups!  no tienes irdenes finalizadas'
+                }
               })
             }
             return res.status(HttpStatus.OK).json({
@@ -208,7 +246,9 @@ export class BarberController {
         if((Object.keys(barber).length) == 0){
           return res.status(HttpStatus.BAD_REQUEST).json({
             response: 1, 
-            message: 'No existe un barbero con ese número de teléfono'
+            content: {
+              message: 'No existe un barbero con ese número de teléfono'
+            }
           })
         }
         let connected = barber.connected;
@@ -224,7 +264,9 @@ export class BarberController {
                 if(orders.length == 0){
                   return res.status(HttpStatus.BAD_REQUEST).json({
                     response: 1, 
-                    message: 'No hay ordenes activas en tu ciudad'
+                    content: {
+                      message: 'No hay ordenes activas en tu ciudad'
+                    }
                   })
                 }
                 return res.status(HttpStatus.OK).json({
@@ -246,13 +288,17 @@ export class BarberController {
           }else{
             return res.status(HttpStatus.BAD_REQUEST).json({
               response: 1, 
-              message: 'Tu cuenta esta desactivada, debes contactar con el Administrador de tu ciudad'
+              content: {
+                message: 'Tu cuenta esta desactivada, debes contactar con el Administrador de tu ciudad'
+              }
             })
           }
         }else{
           return res.status(HttpStatus.BAD_REQUEST).json({
             response: 1, 
-            message: 'Debes estar conectado para recibir ordenes'
+            content: {
+              message: 'Debes estar conectado para recibir ordenes'
+            }
           })
         }
     })
@@ -279,18 +325,24 @@ export class BarberController {
         if(barberConnection == null){
           return res.status(HttpStatus.BAD_REQUEST).json({
             response: 1, 
-            message: 'No existe un barbero con ese número de teléfono'
+            content: {
+              message: 'No existe un barbero con ese número de teléfono' 
+            }
           })
         }  
         if(!barberConnection){
           return res.status(HttpStatus.OK).json({
             response: 2, 
-            message: 'El barbero no esta conectado'
+            content: {
+              message: 'El barbero no esta conectado'
+            }
           })
         }
         return res.status(HttpStatus.OK).json({
           response: 2, 
-          message: 'El barbero esta conectado'
+          content: {
+            message: 'El barbero esta conectado'
+          }
         })
       })
       .catch( (err) => {
