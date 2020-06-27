@@ -28,14 +28,15 @@ export class PromotionalCodeService{
     Create a new promotional code into DB
   */
   async setNewCode(newPromCode: PromotionalCodeDTO, code: string, expirationDate: string, currentDate: string): Promise<PromotionalCodeInterface>{
+    const {promotor, description, cluster, discount } = newPromCode;
     let promotionalCodeDocument = new this.promotinalCodeModel({
-      promotor: newPromCode.promotor,
+      promotor,
+      description,
+      cluster, 
+      discount,
       code: code,
       generationDate: currentDate,
-      description: newPromCode.description,
-      cluster: newPromCode.cluster,
-      expirationDate: expirationDate,
-      discount: newPromCode.discount 
+      expirationDate: expirationDate
     })
     return promotionalCodeDocument.save()
   }
