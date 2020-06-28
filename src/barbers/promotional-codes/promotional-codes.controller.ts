@@ -14,17 +14,14 @@ export class PromotionalCodeController{
     This enpoint creates a new referred code
   */
  @Put('createCode')
- async createcode( @Res() res, @Body() body:PromotionalCodeDTO){
-  let keyword: string = body.keyword;
-  let description: string = body.description;
-  let promotor: string = body.promotor;
-  let cluster: string = body.cluster
-  let timeStamp: number = new Date().getMilliseconds();
+ async createcode( @Res() res, @Body() promotionalCodeDTO:PromotionalCodeDTO){
   let currentDate: string = this.timeService.getCurrentDate();
-   
-   //Set the referred code with fkey word + timeStamp
-   let code: string = `${keyword}${timeStamp}`;
-   this.promotionalCodeService.setNewCode(cluster, promotor,description, currentDate, code)
+  //Set the prom code experitaion date
+  let expirationDate: string = this.timeService.setPromExpirationDate(currentDate, promotionalCodeDTO.durationInDays)
+  let timeStamp: number = new Date().getMilliseconds();
+   //Set the referred code with key word + timeStamp
+   let code: string = `${promotionalCodeDTO.keyword}${timeStamp}`;
+   this.promotionalCodeService.setNewCode(promotionalCodeDTO, code, expirationDate, currentDate)
      .then( (code) => {
         if(!code){
           return res.status(HttpStatus.BAD_REQUEST).json({

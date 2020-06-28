@@ -43,4 +43,12 @@ export class TimeService{
     return this.setDuration(difference)
   }
 
+  /*
+    This function set the promotional code expiration date 
+  */
+  setPromExpirationDate(currentDate: string, differenceInDays: number): string{
+    const expirationDate: string = moment(currentDate, "YYYY-MM-DD HH:mm").add(differenceInDays,'days').format("YYYY-MM-DD HH:mm");
+    return expirationDate
+  }
+
 }

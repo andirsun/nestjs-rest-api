@@ -28,6 +28,10 @@ export const PromotionalCodeSchema =  new Schema({
     type: String,
     required: true
   },
+  expirationDate: {
+    type: String,
+    required: true
+  },
   description: {
     type: String
   },
@@ -35,5 +39,9 @@ export const PromotionalCodeSchema =  new Schema({
     type: String,
     enum: validCluster
   },
-  usedCodeTracker: [CodeTrackerSchema]
-})
+  usedCodeTracker: [CodeTrackerSchema],
+  discount: {
+    type: Number,
+    required:[true, "Set the discount is required"],
+  }
+}) 

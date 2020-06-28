@@ -6,6 +6,7 @@ import { Model } from 'mongoose';
 /*Aditional Dependences*/
 import { PromotionalCodeInterface } from '../../../dist/barbers/promotional-codes/interfaces/promotional-code.interface';
 import { CodeTrackerInterface } from '../../../dist/barbers/promotional-codes/interfaces/code-tracker.interface';
+import { PromotionalCodeDTO } from './dto/promotional-codes.dto';
 
 
 @Injectable()
@@ -26,13 +27,16 @@ export class PromotionalCodeService{
   /*
     Create a new promotional code into DB
   */
-  async setNewCode(cluster: string, promotor: string ,description: string, currentDate: string, code: string): Promise<PromotionalCodeInterface>{
+  async setNewCode(newPromCode: PromotionalCodeDTO, code: string, expirationDate: string, currentDate: string): Promise<PromotionalCodeInterface>{
+    const {promotor, description, cluster, discount } = newPromCode;
     let promotionalCodeDocument = new this.promotinalCodeModel({
-      promotor: promotor,
+      promotor,
+      description,
+      cluster, 
+      discount,
       code: code,
       generationDate: currentDate,
-      description: description,
-      cluster: cluster
+      expirationDate: expirationDate
     })
     return promotionalCodeDocument.save()
   }

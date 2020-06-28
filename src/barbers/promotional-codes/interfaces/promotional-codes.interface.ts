@@ -10,7 +10,9 @@ export interface PromotionalCodeInterface  extends Document  {
   promotor : string,
   code: string
   generationDate: string,
+  expirationDate: string,
   description: string,
   cluster: string,
-  usedCodeTracker: [CodeTrackerInterface]
+  usedCodeTracker: [CodeTrackerInterface],
+  discount: number
 }
