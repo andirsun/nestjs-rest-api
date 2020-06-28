@@ -7,6 +7,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { User } from "./interfaces/user.interfaces";
 //data transfer object
 import { CreateUserDTO } from "./dto/user.dto";
+import { UserPromCodeInterface } from './interfaces/user-promcode.interface';
 
 
 // This file works to make queries to the databse 
@@ -60,6 +61,14 @@ export class UserService {
   */
   async addUserPoints(userId: string, points : number) : Promise<User>{
     const user = await this.userModel.findByIdAndUpdate(userId,{ $inc:{ points }});
+    return user;
+  }
+
+  /*
+    Links the given code to the user document
+  */
+  async linkPromCodeToUser(userId: string, userPromCode: UserPromCodeInterface ) : Promise<User>{
+    const user = this.userModel.findByIdAndUpdate(userId,{$push : {promotionalCodes: userPromCode }}, {new: true})
     return user;
   }
     

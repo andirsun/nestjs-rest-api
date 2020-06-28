@@ -4,10 +4,11 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from 'mongoose';
 /*Aditional Dependences*/
-import { PromotionalCodeInterface } from '../../../dist/barbers/promotional-codes/interfaces/promotional-code.interface';
-import { CodeTrackerInterface } from '../../../dist/barbers/promotional-codes/interfaces/code-tracker.interface';
-import { PromotionalCodeDTO } from './dto/promotional-codes.dto';
+// import { PromotionalCodeInterface } from '../../../dist/barbers/promotional-codes/interfaces/promotional-code.interface';
+import { PromotionalCodeInterface } from './interfaces/promotional-codes.interface';
 
+import { PromotionalCodeDTO } from './dto/promotional-codes.dto';
+import { CodeTrackerInterface } from '.././referred-codes/interfaces/code-tracker.interface';
 
 @Injectable()
 export class PromotionalCodeService{
@@ -16,12 +17,9 @@ export class PromotionalCodeService{
   /*
     Check into DB, if the promotional code given from user exist
   */
-  async getCode(promotionalCode: string) : Promise<boolean> {
+  async getCode(promotionalCode: string) : Promise<PromotionalCodeInterface> {
     const code = await this.promotinalCodeModel.findOne({code: promotionalCode});
-    if(code === null){
-      return false;
-    }
-    return true;
+    return code;
   }
 
   /*

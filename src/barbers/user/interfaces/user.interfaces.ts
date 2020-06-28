@@ -2,6 +2,7 @@
 import { Address } from "./address.interface";
 import { Card } from "./card.interface";
 import { Document } from "mongoose";
+import { UserPromCodeInterface } from "./user-promcode.interface";
 
 
 
@@ -20,5 +21,6 @@ export interface User extends Document {
     points: number,
     status: boolean,
     cards : [Card],
-    publicityMethod:string
+    publicityMethod:string,
+    promotionalCodes:[UserPromCodeInterface]
 };

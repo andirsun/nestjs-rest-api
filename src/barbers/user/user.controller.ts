@@ -4,9 +4,14 @@ import { Controller,Get,Post,Put,Delete,Res,HttpStatus,Body, Query} from '@nestj
     Data Onjects Transfer are all the interfaces to transfer betwen this class en requests
 */
 import { CreateUserDTO } from "./dto/user.dto";
+import { UserPromCodeDTO } from './dto/user-promcode.dto';
+
 /* Services */
 import { UserService } from "./user.service";
 import { LogBarbersService } from "../log-barbers/log-barbers.service";
+import { PromotionalCodeService } from '../promotional-codes/promotional-codes.service';
+import { TimeService } from '../time/time.service';
+import { UserPromCodeInterface } from './interfaces/user-promcode.interface';
 
 
 @Controller('user')
@@ -14,7 +19,10 @@ export class UserController {
 
 	constructor(
 		private userService : UserService,
-		private logService : LogBarbersService
+    private logService : LogBarbersService,
+    private promotionalCodeService: PromotionalCodeService,
+    private timeService: TimeService
+
 	){}
 	
 	/*
@@ -84,8 +92,87 @@ export class UserController {
 									content: err
 							});
 					});   
-	}
+  }
+  
+  @Post('/linkPromCode')
+  async linkPromCode(@Res() res, @Body() userPromCodeDTO: UserPromCodeDTO){
+    /*Check if the received code exists*/
+    this.promotionalCodeService.getCode(userPromCodeDTO.code)
+      .then( (code) => {
+        if(!code){
+          return res.status(HttpStatus.BAD_REQUEST).json({
+            response: 1,
+            content : {
+              message: 'Ups! El código que ingresaste no existe'
+            }
+          })
+        }
+        /*Check if the received code is still valid*/
+        this.timeService.getPromCodeExpiryConfirmation(code.expirationDate)
+          .then( (isValidCode) => {
+            if(!isValidCode){
+              return res.status(HttpStatus.BAD_REQUEST).json({
+                response: 1,
+                content : {
+                  message: 'Ups! El código que ingresaste ya venció'
+                }
+              })
+            }
+            /*Create the teplate of the new user promotional code*/
+            let newUserPromCode: UserPromCodeInterface = {
+              discount: code.discount, 
+              code: code.code, 
+              expirationDate: code.expirationDate
+            }
+            /*Links the received code with a user */
+            this.userService.linkPromCodeToUser(userPromCodeDTO.userId ,  newUserPromCode)
+              .then( (user) => {
+                if(!user){
+                  return res.status(HttpStatus.BAD_REQUEST).json({
+                    response: 1,
+                    content : {
+                      message: 'Ups! No pudimos vincular el código a tu cuenta',
+                    }
+                  })
+                }
+                return res.status(HttpStatus.OK).json({
+                  response: 2,
+                  content : {
+                    message: 'El código se ha vinculado a tu cuenta correctamente',
+                    discount: code.discount,
+                    expirationDate: code.expirationDate
+                  }
+                })
+              })
+              .catch ( (err) => {
+                res.status(HttpStatus.BAD_REQUEST).json({
+                  response: 3,
+                  content : {
+                    message: 'Ups! Ha ocurrido un error'
+                  }
+                })
+                throw new Error(err);
+              })
 
-
-	
+          })
+          .catch ( (err) => {
+            res.status(HttpStatus.BAD_REQUEST).json({
+              response: 3,
+              content : {
+                message: 'Ups! Ha ocurrido un error'
+              }
+            })
+            throw new Error(err);
+          })
+      })
+      .catch ( (err) => {
+        res.status(HttpStatus.BAD_REQUEST).json({
+          response: 3,
+          content : {
+            message: 'Ups! Ha ocurrido un error'
+          }
+        })
+        throw new Error(err);
+      })  
+  }	
 }
