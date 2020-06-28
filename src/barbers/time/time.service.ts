@@ -27,13 +27,6 @@ export class TimeService{
   }
 
   /*
-    This function return de current date in  HH:mm:ss format
-  */
-  getCurrentDate(): string{
-    return moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm");
-  }
-
-  /*
     This function set the service and order duration into the order docuemnt
   */
   async setDurationInMinutes(newNow: string, newThen: string) : Promise<number>{
@@ -49,6 +42,24 @@ export class TimeService{
   setPromExpirationDate(currentDate: string, differenceInDays: number): string{
     const expirationDate: string = moment(currentDate, "YYYY-MM-DD HH:mm").add(differenceInDays,'days').format("YYYY-MM-DD HH:mm");
     return expirationDate
+  }
+
+  /*
+    This function return de current date in  HH:mm:ss format
+  */
+  getCurrentDate(): string{
+    return moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm");
+  }
+
+  /*
+    check if a code has already expired
+  */
+  async getPromCodeExpiryConfirmation(expirationDate: string): Promise <boolean>{
+    let currentDate: string = this.getCurrentDate();
+    if(currentDate <= expirationDate){
+      return true
+    }
+    return false
   }
 
 }

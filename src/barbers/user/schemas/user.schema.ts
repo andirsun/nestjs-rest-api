@@ -7,6 +7,7 @@ import uniqueValidator = require("mongoose-unique-validator");
 import { AddressSchema } from "./address.schema";
 import { CardSchema } from "./card.schema";
 import { NequiSchema } from "./nequi.schema";
+import { UserPromCodeSchema } from "./user-promcode.schema";
 
 
 let rolesValidos = {
@@ -78,7 +79,8 @@ export const UserSchema = new Schema({
   publicityMethod:{
     type: String,
     default: "none"
-  }
+  },
+  promotionalCodes:[UserPromCodeSchema]
 });
 /*PLUGINS ZONE*/
 // Plugin to make unique validator

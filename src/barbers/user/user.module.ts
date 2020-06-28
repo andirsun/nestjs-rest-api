@@ -8,6 +8,8 @@ import { UserSchema } from "./schemas/user.schema";
 /* Extra modules importations */
 import { MongooseModule } from "@nestjs/mongoose";
 import { LogBarbersModule } from 'src/barbers/log-barbers/log-barbers.module';
+import { PromotionalCodesModule } from '../promotional-codes/promotional-codes.module';
+import { TimeModule } from '../time/time.module';
 
 
 @Module({
@@ -23,7 +25,9 @@ import { LogBarbersModule } from 'src/barbers/log-barbers/log-barbers.module';
         
       ],'BarbersMongoDb'),
     // Other module is required need to import here
-    LogBarbersModule
+    LogBarbersModule,
+    PromotionalCodesModule,
+    TimeModule
     
   ],
   controllers: [UserController],
