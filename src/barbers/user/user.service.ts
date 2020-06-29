@@ -71,6 +71,14 @@ export class UserService {
     const user = this.userModel.findByIdAndUpdate(userId,{$push : {promotionalCodes: userPromCode }}, {new: true})
     return user;
   }
+
+  /*
+    Get registered users BY Date
+  */
+  async registeredUsers():Promise<User[]>{
+    let users : User[] = await this.userModel.find({},'updated');
+    return users
+  }
     
 
 }
