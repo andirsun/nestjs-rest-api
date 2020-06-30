@@ -1,6 +1,6 @@
 {
   "name": "timugo-api",
-  "version": "1.3.0",
+  "version": "1.4.2",
   "description": "Timugo REST API with full documentation",
   "main": "index.js",
   "scripts": {

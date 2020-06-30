@@ -3,8 +3,7 @@ const app = express();
 //////////////////
 // This file exports all routes for the all apis used in the bacjkend, this routes
 // will be use in the server.js file
-socketServer = require('../sockets/serverSocket');
-global.socketServer = socketServer;
+
 
 app.use(require('./user'));
 app.use(require('./barber'));

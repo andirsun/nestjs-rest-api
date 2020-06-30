@@ -1,13 +1,13 @@
 /*
   The NequiSendPush Class helps to set all parameters needed
-  to create a request to send a push notification payments
-  details of params here : https://docs.conecta.nequi.com.co/?api=unregisteredPayments#!/Pagos32con32Push/post_services_paymentservice_unregisteredpayment
+  to create a request to rever a push notification payment
+  details of params here : https://docs.conecta.nequi.com.co/?api=unregisteredPayments#!/Reversos/post_services_reverseservices_reversetransaction
 */
-class NequiSendPush {
+class NequiReversePushPayment {
   
   constructor(){
     /* The builder contains the structure to fill before send request */
-    const builder = require('./builders/sendPushBuilder');
+    const builder = require('./builders/reversePushPaymentBuilder');
     /* Get the structure to fill the properties in the structure */
     this._Request = builder.getBaseRequestMessage();
   }
@@ -23,7 +23,7 @@ class NequiSendPush {
   setRequestDate(dtISOFormat){
     this._Request.RequestMessage.RequestHeader.RequestDate = dtISOFormat;
   }
-  /*An unique identifier for log purpose*/
+  /*An unique identifier for log purpose Identificador de la transacción a reversar*/
   setMessageID(messageId){
     this._Request.RequestMessage.RequestHeader.MessageID = messageId;
   }
@@ -37,30 +37,18 @@ class NequiSendPush {
   }
   /* Send phone number to request propertie*/
   setPhoneNumber(phoneNumber){
-    this._Request.RequestMessage.RequestBody.any.unregisteredPaymentRQ.phoneNumber = phoneNumber;
+    this._Request.RequestMessage.RequestBody.any.reversionRQ.phoneNumber= phoneNumber;
   }
   /* Send code to request propertie*/
   setCode(code){
-    this._Request.RequestMessage.RequestBody.any.unregisteredPaymentRQ.code = code;
+    this._Request.RequestMessage.RequestBody.any.reversionRQ.code = code;
   }
   /* 
     Send value (actually is the price) number to request propertie
-    for example (14900), value of payment
+    for example (14900), value of reverse 
   */
   setValue(value){
-    this._Request.RequestMessage.RequestBody.any.unregisteredPaymentRQ.value = value;
-  }
-  /* This function set the first reference of payment */
-  setReference1(reference){
-    this._Request.RequestMessage.RequestBody.any.unregisteredPaymentRQ.reference1 = reference;
-  }
-  /* This function set the second reference of payment */
-  setReference2(reference){
-    this._Request.RequestMessage.RequestBody.any.unregisteredPaymentRQ.reference2 = reference;
-  }
-  /* This function set the third reference of payment */
-  setReference3(reference){
-    this._Request.RequestMessage.RequestBody.any.unregisteredPaymentRQ.reference3 = reference;
+    this._Request.RequestMessage.RequestBody.any.reversionRQ.value = value;
   }
   /******************** GETTERS ******************** */
   /* function to get the entire request structure */
@@ -73,4 +61,4 @@ class NequiSendPush {
   }
 }
 /* Export the class */
-module.exports = NequiSendPush;
+module.exports = NequiReversePushPayment;

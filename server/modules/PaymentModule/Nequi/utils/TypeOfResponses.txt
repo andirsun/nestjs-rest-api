@@ -1,11 +1,31 @@
 /******** NEQUI PUSH PAYMENT METHODS **********/
 // Payment Creation
+1. Request y Response del servicio de pago del API y screenshot con el comprobante de pago desde el app con un número de celular valido y existente en el ambiente de pruebas de QA. Además el request y response del servicio de consulta de estado de pago que retorne que fue exitoso.
+ Request y Response del servicio para crear el pago:
+
+Request : 
+{
+  host: 'api.sandbox.nequi.com',
+  path: '/payments/v1/-services-paymentservice-unregisteredpayment',
+  method: 'POST',
+  headers: {
+    'content-type': 'application/json',
+    'x-api-key': 'ZJFpQiVaez1mxEly12iWF7dnhIbZn0T64BGFf678',
+    Host: 'api.sandbox.nequi.com',
+    'Content-Length': 460,
+    'X-Amz-Date': '20200518T155422Z',
+    Authorization: 'AWS4-HMAC-SHA256 Credential=AKIASSSPECJGMPUNEQGO/20200518/us-east-1/execute-api/aws4_request, SignedHeaders=content-length;content-type;host;x-amz-date;x-api-key, Signature=e18295a0e5a17af0cc2dba8a1165098057fea57d2e56b9d9c2077482a9767800'
+  },
+  service: 'execute-api',
+  body: '{"RequestMessage":{"RequestHeader":{"Channel":"PNP04-C001","RequestDate":"2020-05-18T15:54:22.904Z","MessageID":"817262897","ClientID":"3162452663","Destination":{"ServiceName":"PaymentsService","ServiceOperation":"unregisteredPayment","ServiceRegion":"C001","ServiceVersion":"1.0.0"}},"RequestBody":{"any":{"unregisteredPaymentRQ":{"phoneNumber":"3162452663","code":"NIT_1","value":"20000","reference1":"reference1","reference3":"recarga de saldo timugo"}}}}}'
+}
+Response : 
 {
   "RequestMessage": {
     "RequestHeader": {
       "Channel": "PNP04-C001",
-      "RequestDate": "2020-05-14T16:31:49.819Z",
-      "MessageID": "473909815",
+      "RequestDate": "2020-05-18T15:40:53.501Z",
+      "MessageID": "816453493",
       "ClientID": "3162452663",
       "Destination": {
         "ServiceName": "PaymentsService",
@@ -26,68 +46,8 @@
       }
     }
   }
-} {
-  "ResponseMessage": {
-    "ResponseHeader": {
-      "Channel": "PNP04-C001",
-      "ResponseDate": "2020-05-14T16:31:53.861Z",
-      "Status": {
-        "StatusCode": "0",
-        "StatusDesc": "SUCCESS"
-      },
-      "MessageID": "473909815",
-      "ClientID": "3162452663",
-      "Destination": {
-        "ServiceName": "PaymentsService",
-        "ServiceOperation": "unregisteredPayment",
-        "ServiceRegion": "C001",
-        "ServiceVersion": "1.0.0"
-      }
-    },
-    "ResponseBody": {
-      "any": {
-        "unregisteredPaymentRS": {
-          "transactionId": "350-3162452663-13647-473909815"
-        }
-      }
-    }
-  }
 }
-// Payment Check (pending payment)
-{
-  "ResponseMessage": {
-    "ResponseHeader": {
-      "Channel": "PNP04-C001",
-      "ResponseDate": "2020-05-14T16:33:29.427Z",
-      "Status": {
-        "StatusCode": "0",
-        "StatusDesc": "SUCCESS"
-      },
-      "MessageID": "474007090",
-      "ClientID": "3116021602",
-      "Destination": {
-        "ServiceName": "PaymentsService",
-        "ServiceOperation": "getStatusPayment",
-        "ServiceRegion": "C001",
-        "ServiceVersion": "1.0.0"
-      }
-    },
-    "ResponseBody": {
-      "any": {
-        "getStatusPaymentRS": {
-          "date": "Mayo 14 - 2020 | 11:31 AM",
-          "trnId": "350-3162452663-13647-473909815",
-          "originMoney": [],
-          "name": "EL RANCHERO",
-          "ipAddress": "N/A",
-          "value": "20000",
-          "status": "33"
-        }
-      }
-    }
-  }
-}
-// Payment check (accepted payment)
+Response : 
 {
   "ResponseMessage": {
     "ResponseHeader": {
@@ -122,17 +82,37 @@
     }
   }
 }
-//Payment Check (Cancel)
+
+Request Y Response de la comprobacion del pago exitoso :
+Request :
+{
+  host: 'api.sandbox.nequi.com',
+  path: '/payments/v1/-services-paymentservice-getstatuspayment',
+  method: 'POST',
+  headers: {
+    'content-type': 'application/json',
+    'x-api-key': 'ZJFpQiVaez1mxEly12iWF7dnhIbZn0T64BGFf678',
+    Host: 'api.sandbox.nequi.com',
+    'Content-Length': 373,
+    'X-Amz-Date': '20200518T155425Z',
+    Authorization: 'AWS4-HMAC-SHA256 Credential=AKIASSSPECJGMPUNEQGO/20200518/us-east-1/execute-api/aws4_request, SignedHeaders=content-length;content-type;host;x-amz-date;x-api-key, Signature=6014721e33219ff8d7c22876cb20194b8f2d71d59d2c7603e676073691a93838'
+  },
+  service: 'execute-api',
+  body: '{"RequestMessage":{"RequestHeader":{"Channel":"PNP04-C001","RequestDate":"2020-05-18T15:54:25.136Z","MessageID":"817265135","ClientID":"3116021602","Destination":{"ServiceName":"PaymentsService","ServiceOperation":"getStatusPayment","ServiceRegion":"C001","ServiceVersion":"1.0.0"}},"RequestBody":{"any":{"getStatusPaymentRQ":{"codeQR":"350-3162452663-13647-817262897"}}}}}'
+}
+
+Response :
+
 {
   "ResponseMessage": {
     "ResponseHeader": {
       "Channel": "PNP04-C001",
-      "ResponseDate": "2020-05-14T17:13:43.218Z",
+      "ResponseDate": "2020-05-14T16:35:25.961Z",
       "Status": {
-        "StatusCode": "10-455",
-        "StatusDesc": "La transacción esta cancelada"
+        "StatusCode": "0",
+        "StatusDesc": "SUCCESS"
       },
-      "MessageID": "476422051",
+      "MessageID": "474124991",
       "ClientID": "3116021602",
       "Destination": {
         "ServiceName": "PaymentsService",
@@ -142,21 +122,205 @@
       }
     },
     "ResponseBody": {
-      "any": {}
+      "any": {
+        "getStatusPaymentRS": {
+          "date": "2020-05-14 11:31:52",
+          "trnId": "M40",
+          "phoneNumber": "3162452663",
+          "originMoney": [{}],
+          "name": "EL RANCHERO",
+          "ipAddress": "N/A",
+          "value": "20000",
+          "status": "35"
+        }
+      }
     }
   }
 }
-// Payment Check ( time expire)
+
+2. Request y Response del servicio de pago del API con un número de celular valido y existente en el ambiente de pruebas de QA, pero el pago debe ser rechazado desde el app y se debe enviar el request y response del servicio de consulta de estado de pago que retorne que fue rechazado.
+ Request y Response del servicio para crear el pago:
+Request  : 
+Request:  {
+  host: 'api.sandbox.nequi.com',
+  path: '/payments/v1/-services-paymentservice-unregisteredpayment',
+  method: 'POST',
+  headers: {
+    'content-type': 'application/json',
+    'x-api-key': 'ZJFpQiVaez1mxEly12iWF7dnhIbZn0T64BGFf678',
+    Host: 'api.sandbox.nequi.com',
+    'Content-Length': 460,
+    'X-Amz-Date': '20200518T161254Z',
+    Authorization: 'AWS4-HMAC-SHA256 Credential=AKIASSSPECJGMPUNEQGO/20200518/us-east-1/execute-api/aws4_request, SignedHeaders=content-length;content-type;host;x-amz-date;x-api-key, Signature=880b15c66d1614694b3884e489b798cf00a56debf5395bc10e56f3ba16863aad'
+  },
+  service: 'execute-api',
+  body: '{"RequestMessage":{"RequestHeader":{"Channel":"PNP04-C001","RequestDate":"2020-05-18T16:12:54.319Z","MessageID":"818374319","ClientID":"3162452663","Destination":{"ServiceName":"PaymentsService","ServiceOperation":"unregisteredPayment","ServiceRegion":"C001","ServiceVersion":"1.0.0"}},"RequestBody":{"any":{"unregisteredPaymentRQ":{"phoneNumber":"3162452663","code":"NIT_1","value":"20000","reference1":"reference1","reference3":"recarga de saldo timugo"}}}}}'
+}
+
+Response : 
 {
   "ResponseMessage": {
     "ResponseHeader": {
       "Channel": "PNP04-C001",
-      "ResponseDate": "2020-05-14T18:52:06.978Z",
+      "ResponseDate": "2020-05-18T16:12:56.044Z",
+      "Status": {
+        "StatusCode": "0",
+        "StatusDesc": "SUCCESS"
+      },
+      "MessageID": "818374319",
+      "ClientID": "3162452663",
+      "Destination": {
+        "ServiceName": "PaymentsService",
+        "ServiceOperation": "unregisteredPayment",
+        "ServiceRegion": "C001",
+        "ServiceVersion": "1.0.0"
+      }
+    },
+    "ResponseBody": {
+      "any": {
+        "unregisteredPaymentRS": {
+          "transactionId": "350-3162452663-13647-818374319"
+        }
+      }
+    }
+  }
+}
+
+Request Y Response de la comprobacion del pago cancelado :
+Request : 
+Request:  {
+  host: 'api.sandbox.nequi.com',
+  path: '/payments/v1/-services-paymentservice-getstatuspayment',
+  method: 'POST',
+  headers: {
+    'content-type': 'application/json',
+    'x-api-key': 'ZJFpQiVaez1mxEly12iWF7dnhIbZn0T64BGFf678',
+    Host: 'api.sandbox.nequi.com',
+    'Content-Length': 373,
+    'X-Amz-Date': '20200518T161737Z',
+    Authorization: 'AWS4-HMAC-SHA256 Credential=AKIASSSPECJGMPUNEQGO/20200518/us-east-1/execute-api/aws4_request, SignedHeaders=content-length;content-type;host;x-amz-date;x-api-key, Signature=99e0063be072a997718da2e98a10180ffa19bcaedbdaa431f632c2492874f67f'
+  },
+  service: 'execute-api',
+  body: '{"RequestMessage":{"RequestHeader":{"Channel":"PNP04-C001","RequestDate":"2020-05-18T16:17:37.295Z","MessageID":"818657295","ClientID":"3116021602","Destination":{"ServiceName":"PaymentsService","ServiceOperation":"getStatusPayment","ServiceRegion":"C001","ServiceVersion":"1.0.0"}},"RequestBody":{"any":{"getStatusPaymentRQ":{"codeQR":"350-3162452663-13647-818374319"}}}}}'
+}
+
+
+Response :
+{
+  "ResponseMessage": {
+    "ResponseHeader": {
+      "Channel": "PNP04-C001",
+      "ResponseDate": "2020-05-18T16:17:37.930Z",
+      "Status": {
+        "StatusCode": "0",
+        "StatusDesc": "SUCCESS"
+      },
+      "MessageID": "818657295",
+      "ClientID": "3116021602",
+      "Destination": {
+        "ServiceName": "PaymentsService",
+        "ServiceOperation": "getStatusPayment",
+        "ServiceRegion": "C001",
+        "ServiceVersion": "1.0.0"
+      }
+    },
+    "ResponseBody": {
+      "any": {
+        "getStatusPaymentRS": {
+          "date": "2020-05-18 11:12:55",
+          "trnId": "M8",
+          "phoneNumber": "3162452663",
+          "originMoney": [{}],
+          "name": "EL RANCHERO",
+          "ipAddress": "N/A",
+          "value": "20000",
+          "status": "35"
+        }
+      }
+    }
+  }
+}
+
+3. Request y Response del servicio de pago del API con un número de celular valido y existente en el ambiente de pruebas de QA, pero el pago debe expirar, esperar los 45 minutos y se debe enviar el request y response del servicio de consulta de estado de pago que retorne que este expiró.
+
+ Request y Response del servicio para crear el pago:
+Request : 
+Request:  {
+  host: 'api.sandbox.nequi.com',
+  path: '/payments/v1/-services-paymentservice-unregisteredpayment',
+  method: 'POST',
+  headers: {
+    'content-type': 'application/json',
+    'x-api-key': 'ZJFpQiVaez1mxEly12iWF7dnhIbZn0T64BGFf678',
+    Host: 'api.sandbox.nequi.com',
+    'Content-Length': 460,
+    'X-Amz-Date': '20200518T163238Z',
+    Authorization: 'AWS4-HMAC-SHA256 Credential=AKIASSSPECJGMPUNEQGO/20200518/us-east-1/execute-api/aws4_request, SignedHeaders=content-length;content-type;host;x-amz-date;x-api-key, Signature=8d54efef02e591a2f189abf7dcfce8705030388b2bbe7a8e035ca702ae29af19'
+  },
+  service: 'execute-api',
+  body: '{"RequestMessage":{"RequestHeader":{"Channel":"PNP04-C001","RequestDate":"2020-05-18T16:32:38.144Z","MessageID":"819558144","ClientID":"3162452663","Destination":{"ServiceName":"PaymentsService","ServiceOperation":"unregisteredPayment","ServiceRegion":"C001","ServiceVersion":"1.0.0"}},"RequestBody":{"any":{"unregisteredPaymentRQ":{"phoneNumber":"3162452663","code":"NIT_1","value":"20000","reference1":"reference1","reference3":"recarga de saldo timugo"}}}}}'
+}
+
+Response : 
+
+{
+  "ResponseMessage": {
+    "ResponseHeader": {
+      "Channel": "PNP04-C001",
+      "ResponseDate": "2020-05-18T16:32:39.352Z",
+      "Status": {
+        "StatusCode": "0",
+        "StatusDesc": "SUCCESS"
+      },
+      "MessageID": "819558144",
+      "ClientID": "3162452663",
+      "Destination": {
+        "ServiceName": "PaymentsService",
+        "ServiceOperation": "unregisteredPayment",
+        "ServiceRegion": "C001",
+        "ServiceVersion": "1.0.0"
+      }
+    },
+    "ResponseBody": {
+      "any": {
+        "unregisteredPaymentRS": {
+          "transactionId": "350-3162452663-13647-819558144"
+        }
+      }
+    }
+  }
+}
+
+Request Y Response de la comprobación del pago vencido :
+Request : 
+
+Request:  {
+  host: 'api.sandbox.nequi.com',
+  path: '/payments/v1/-services-paymentservice-getstatuspayment',
+  method: 'POST',
+  headers: {
+    'content-type': 'application/json',
+    'x-api-key': 'ZJFpQiVaez1mxEly12iWF7dnhIbZn0T64BGFf678',
+    Host: 'api.sandbox.nequi.com',
+    'Content-Length': 373,
+    'X-Amz-Date': '20200518T171757Z',
+    Authorization: 'AWS4-HMAC-SHA256 Credential=AKIASSSPECJGMPUNEQGO/20200518/us-east-1/execute-api/aws4_request, SignedHeaders=content-length;content-type;host;x-amz-date;x-api-key, Signature=f42b846dd4141e17e9ed39c7084eb3f621b1449e7d4ecd17ea9f9bb8456453d2'
+  },
+  service: 'execute-api',
+  body: '{"RequestMessage":{"RequestHeader":{"Channel":"PNP04-C001","RequestDate":"2020-05-18T17:17:57.418Z","MessageID":"822277418","ClientID":"3116021602","Destination":{"ServiceName":"PaymentsService","ServiceOperation":"getStatusPayment","ServiceRegion":"C001","ServiceVersion":"1.0.0"}},"RequestBody":{"any":{"getStatusPaymentRQ":{"codeQR":"350-3162452663-13647-819558144"}}}}}'
+}
+
+Response :
+{
+  "ResponseMessage": {
+    "ResponseHeader": {
+      "Channel": "PNP04-C001",
+      "ResponseDate": "2020-05-18T17:18:00.370Z",
       "Status": {
         "StatusCode": "10-454",
         "StatusDesc": "La transacción ya caducó"
       },
-      "MessageID": "482323276",
+      "MessageID": "822277418",
       "ClientID": "3116021602",
       "Destination": {
         "ServiceName": "PaymentsService",
@@ -170,3 +334,58 @@
     }
   }
 }
+
+4. Request y Response del servicio de pago del API con un número de celular no existente en QA,
+
+Request : 
+Request:  {
+  host: 'api.sandbox.nequi.com',
+  path: '/payments/v1/-services-paymentservice-unregisteredpayment',
+  method: 'POST',
+  headers: {
+    'content-type': 'application/json',
+    'x-api-key': 'ZJFpQiVaez1mxEly12iWF7dnhIbZn0T64BGFf678',
+    Host: 'api.sandbox.nequi.com',
+    'Content-Length': 460,
+    'X-Amz-Date': '20200518T162913Z',
+    Authorization: 'AWS4-HMAC-SHA256 Credential=AKIASSSPECJGMPUNEQGO/20200518/us-east-1/execute-api/aws4_request, SignedHeaders=content-length;content-type;host;x-amz-date;x-api-key, Signature=2baa3f89dee8c3c0d0b9fa91bbecfa84c4d0ca00db7031015f9bf6b6ab830349'
+  },
+  service: 'execute-api',
+  body: '{"RequestMessage":{"RequestHeader":{"Channel":"PNP04-C001","RequestDate":"2020-05-18T16:29:13.283Z","MessageID":"819353283","ClientID":"1234567891","Destination":{"ServiceName":"PaymentsService","ServiceOperation":"unregisteredPayment","ServiceRegion":"C001","ServiceVersion":"1.0.0"}},"RequestBody":{"any":{"unregisteredPaymentRQ":{"phoneNumber":"1234567891","code":"NIT_1","value":"20000","reference1":"reference1","reference3":"recarga de saldo timugo"}}}}}'
+}
+
+
+
+Response : 
+
+{
+  "ResponseMessage": {
+    "ResponseHeader": {
+      "Channel": "PNP04-C001",
+      "ResponseDate": "2020-05-18T16:29:14.301Z",
+      "Status": {
+        "StatusCode": "20-08A",
+        "StatusDesc": "Ese cliente no existe"
+      },
+      "MessageID": "819353283",
+      "ClientID": "1234567891",
+      "Destination": {
+        "ServiceName": "PaymentsService",
+        "ServiceOperation": "unregisteredPayment",
+        "ServiceRegion": "C001",
+        "ServiceVersion": "1.0.0"
+      }
+    },
+    "ResponseBody": {
+      "any": {}
+    }
+  }
+}
+
+5. Request y Response del servicio de reverso del API de un pago que haya sido exitoso.
+
+Request : 
+
+Response:
+
+
