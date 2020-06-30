@@ -11,11 +11,11 @@ const cors = require("cors");
 const http = require("http");
 let server = http.createServer(app);
 // Public path to access data
-//const publicPath = path.resolve(__dirname, "../public");
+const publicPath = path.resolve(__dirname, "../public");
 // .env variables with all api keys
 require("dotenv").config();
 ////////////////////////////////////
-//app.use(express.static(publicPath)); //access to data like images or anything else
+app.use(express.static(publicPath)); //access to data like images or anything else
 // Using module express-fileupload to upload files to server
 app.use(fileUpload({ useTempFiles: true }));
 // print in the server console the petitions like logs
