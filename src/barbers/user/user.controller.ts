@@ -11,6 +11,7 @@ import { UserService } from "./user.service";
 import { LogBarbersService } from "../log-barbers/log-barbers.service";
 import { PromotionalCodeService } from '../promotional-codes/promotional-codes.service';
 import { TimeService } from '../time/time.service';
+/*Interfaces*/
 import { UserPromCodeInterface } from './interfaces/user-promcode.interface';
 
 
@@ -73,7 +74,67 @@ export class UserController {
 				/* Sentry report */
 				throw new Error(err);
 			})
-	}
+  }
+  
+  /*
+		This endpoint return all valid user's prom codes
+	*/
+  @Get('/getUserPromCodes')
+  async getUserPromCodes(@Res() res, @Query('userId') userId: string){
+    //Check all user codes
+    this.userService.getUserPromCodes(userId)
+      .then( (codes) => {
+        //Check if the user has codes
+        if(codes.length == 0){
+          return res.status(HttpStatus.BAD_REQUEST).json({
+            response: 1,
+            content:{
+              message: 'No tienes códigos promocionales'
+            }
+          })
+        }
+        //Set array with not expired codes only 
+        this.timeService.getExpiredCodes(codes)
+          .then( (verifiedCodes) => {
+            //Check if all user's codes has already expired
+            if(verifiedCodes.length == 0){
+              return res.status(HttpStatus.BAD_REQUEST).json({
+                response: 1,
+                content:{
+                  message: 'No tienes códigos promocionales'
+                }
+              })
+            }
+            return res.status(HttpStatus.OK).json({
+              response: 2,
+              content:{
+                codes: verifiedCodes
+              }
+            })
+
+          })
+          .catch ( (err) => {
+            res.status(HttpStatus.BAD_REQUEST).json({
+              response: 3,
+              content : {
+                message: 'Ups! Ha ocurrido un error'
+              }
+            })
+            throw new Error(err);
+          })
+      })
+      .catch ( (err) => {
+        res.status(HttpStatus.BAD_REQUEST).json({
+          response: 3,
+          content : {
+            message: 'Ups! Ha ocurrido un error'
+          }
+        })
+        throw new Error(err);
+      })
+  }
+
+
 	//This endopoint can be accesed with url/user/createNewUser
 	@Post('/createUser')
 	async createUser(@Res() res, @Body() createUserDTO : CreateUserDTO){
