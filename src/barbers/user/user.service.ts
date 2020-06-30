@@ -76,7 +76,8 @@ export class UserService {
     Get registered users BY Date
   */
   async registeredUsers():Promise<User[]>{
-    let users : User[] = await this.userModel.find({},'updated');
+    // search only the users who the socuments has the updated propertie and returns the document only with this propertie
+    let users : User[] = await this.userModel.find({updated : {$ne : undefined}},'updated');
     return users
   }
     
