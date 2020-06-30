@@ -1,0 +1,16 @@
+name: Check critical files
+
+on: [pull_request]
+
+jobs:
+  check-critical-files:
+    runs-on: ubuntu-latest
+    name: Check for critical files
+    steps:
+      - uses: codelytv/check-critical-files@v1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          critical_message: Se modifico una variable en el archivo .env, recuerda cambiarla tambien en <b>produccion !!</b>
+          critical_files: |
+            .env
+            
