@@ -1,19 +1,16 @@
 /* Nest Js dependencies */
 import { Controller,Get,Post,Put,Delete,Res,HttpStatus,Body, Query, Inject, forwardRef} from '@nestjs/common';
-/*
-    Data Onjects Transfer are all the interfaces to transfer betwen this class en requests
-*/
+//Data Onjects Transfer are all the interfaces to transfer betwen this class en requests
 import { CreateUserDTO } from "./dto/user.dto";
 import { UserPromCodeDTO } from './dto/user-promcode.dto';
-
 /* Services */
 import { UserService } from "./user.service";
 import { LogBarbersService } from "../log-barbers/log-barbers.service";
 import { PromotionalCodeService } from '../promotional-codes/promotional-codes.service';
 import { TimeService } from '../time/time.service';
+import { OrdersService } from '../orders/orders.service';
 /*Interfaces*/
 import { UserPromCodeInterface } from './interfaces/user-promcode.interface';
-import { OrdersService } from '../orders/orders.service';
 
 
 @Controller('user')
@@ -25,7 +22,7 @@ export class UserController {
     private promotionalCodeService: PromotionalCodeService,
     private timeService: TimeService,
     private ordersService : OrdersService
-	){}
+  ){}
 	
 	/*
 		This endpoint return a specific user
@@ -61,7 +58,7 @@ export class UserController {
 	async getUsers(@Res() res){
 		await this.userService.getUsers()
 			.then(users=>{
-				this.logService.log("Se consultaron los usuarios","none");
+			  this.logService.log("Se consultaron los usuarios","none");
 				return res.status(HttpStatus.OK).json({
 					response: 2,
 					content:{
