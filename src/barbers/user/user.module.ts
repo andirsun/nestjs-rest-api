@@ -10,6 +10,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { LogBarbersModule } from 'src/barbers/log-barbers/log-barbers.module';
 import { PromotionalCodesModule } from '../promotional-codes/promotional-codes.module';
 import { TimeModule } from '../time/time.module';
+import { OrdersBarbersModule } from '../orders/orders.module';
 
 
 @Module({
@@ -27,7 +28,8 @@ import { TimeModule } from '../time/time.module';
     // Other module is required need to import here
     LogBarbersModule,
     PromotionalCodesModule,
-    TimeModule
+    TimeModule,
+    OrdersBarbersModule
     
   ],
   controllers: [UserController],

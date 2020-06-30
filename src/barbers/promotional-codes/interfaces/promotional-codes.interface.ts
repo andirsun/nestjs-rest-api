@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 
 
 /* Aditional Interfaces*/
-import { CodeTrackerInterface } from '../../../../dist/barbers/promotional-codes/interfaces/code-tracker.interface';
+//import { CodeTrackerInterface } from '../../../../dist/barbers/promotional-codes/interfaces/code-tracker.interface';
 
 
 export interface PromotionalCodeInterface  extends Document  {
@@ -13,6 +13,6 @@ export interface PromotionalCodeInterface  extends Document  {
   expirationDate: string,
   description: string,
   cluster: string,
-  usedCodeTracker: [CodeTrackerInterface],
+  //usedCodeTracker: [CodeTrackerInterface],
   discount: number
 }

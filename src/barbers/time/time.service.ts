@@ -81,4 +81,25 @@ export class TimeService{
    return codes;
  }
 
+  /*
+    Get a year of a specific date
+  */
+  getYear(date : string): number {
+    return parseInt(moment(date).year());
+  }
+
+  /*
+    Get a week name of a specific date
+  */
+  getWeekNumber(date : string): number {
+    return parseInt(moment(date).week());
+  }
+
+  /*
+    Get a time (YYYY:MM:DD) with a year and week given
+  */
+  getTimeWithYearAndWeek(year : number, week : number): string {
+    return moment().isoWeekYear(year).isoWeek(week).startOf('week').format("YYYY-MM-DD");
+  }
+
 }
