@@ -153,7 +153,31 @@ app.get("/getAddressesUser",function(req,res){
     }
   });
 });
-//DELETED: app.get("/getUser",function(req,res)
+app.get("/getUser",function(req,res){
+  let phone = req.query.phone;
+  User.findOne({phone:phone},function(err,response){
+    if (err) {
+      return res.status(500).json({
+        response: 3,
+        content:{
+          message: "Error al tratar de encontrar al usuario con el numero",
+          err
+        } 
+      });
+    }
+    if(response){
+      res.status(200).json({
+        response: 2,
+        content:response
+      });
+    }else{
+      res.status(200).json({
+        response: 1,
+        content:"No se encontro ningun usuario con ese telefono"
+      });
+    }
+  });
+});
 app.get("/getPublicityMethods",function(req,res){
   publicityMethod.find((err,response)=>{
     if (err) {
