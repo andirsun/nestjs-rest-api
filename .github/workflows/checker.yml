@@ -1,4 +1,4 @@
-name: Check critical files
+name: labeler_env
 
 on: [pull_request]
 
@@ -13,4 +13,5 @@ jobs:
           critical_message: Se modifico una variable en el archivo .env, recuerda cambiarla tambien en <b>produccion !!</b>
           critical_files: |
             .env
+  
             
