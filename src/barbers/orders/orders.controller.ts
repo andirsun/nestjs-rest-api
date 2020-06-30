@@ -17,41 +17,39 @@ export class OrdersController {
 
   @Get('/activeOrders')
 	async getActiveOrders(@Res() res){
-			await this.orderService.getActiveOrders()
-					.then((orders)=>{
-							console.log("Llegue positivo");
-							return res.status(HttpStatus.OK).json({
-									response: 2,
-									content: orders
-							});
-					})
-					.catch((err)=>{
-							console.log("llegue negativo");
-							return res.status(HttpStatus.BAD_REQUEST).json({
-									response: 3,
-									content: err
-							});
-					});   
+		await this.orderService.getActiveOrders()
+			.then((orders)=>{
+				return res.status(HttpStatus.OK).json({
+					response: 2,
+					content: orders
+				});
+			})
+			.catch((err)=>{
+				res.status(HttpStatus.BAD_REQUEST).json({
+					response: 3,
+					content: err
+				});
+				throw new Error(err);
+			});   
 	}
 	@Get('/activeOrdersByCity')
 	async getActiveOrdersByCity(@Res() res,@Query('city')city : string){
 		await this.orderService.getActiveOrdersByCity(city)
-				.then((orders)=>{
-						console.log("Llegue positivo");
-						return res.status(HttpStatus.OK).json({
-								response: 2,
-								content: {
-                  orders
-                }
-						});
-				})
-				.catch((err)=>{
-						console.log("llegue negativo");
-						return res.status(HttpStatus.BAD_REQUEST).json({
-								response: 3,
-								content: err
-						});
-				});   
+			.then((orders)=>{
+				return res.status(HttpStatus.OK).json({
+					response: 2,
+					content: {
+						orders
+					}
+				});
+			})
+			.catch((err)=>{
+				res.status(HttpStatus.BAD_REQUEST).json({
+					response: 3,
+					content: err
+				});
+				throw new Error(err);
+			});   
 	}
 
 
