@@ -78,8 +78,8 @@ export class UserController {
   /*
     this function check if an user is in a order in progress
   */
-  @Get('/checkUserOrder')
-  async checkUserInCurrentOrder (@Res() res, @Query('idUser')idUser : string){
+  @Get('/checkOrder')
+  async checkInCurrentOrder (@Res() res, @Query('idUser')idUser : string){
     this.ordersService.getActiveOrdersByIdUserAndStatus(idUser,"PENDING")
       .then(order=>{
         if (!order) {
@@ -108,6 +108,46 @@ export class UserController {
         throw new Error(err);
       })
   }
+  /*
+    this function check if an user has token
+  */
+  @Get('/checkToken')
+  async checkToken (@Res() res, @Query('phoneUser')phone : number){
+    this.userService.getUserByPhone(phone)
+      .then(user=>{
+        if (!user) {
+          return res.status(HttpStatus.FORBIDDEN).json({
+            response: 1,
+            content: {
+              message : "No se encontro a un usuario con ese telefono"
+            }
+          });  
+        } else if(user.phoneToken == "none"){
+          return res.status(HttpStatus.BAD_REQUEST).json({
+            response: 1,
+            content: {
+              message : "El usuario no tiene phone token definido"
+            }
+          });
+        } else {
+          return res.status(HttpStatus.OK).json({
+            response: 2,
+            content: {
+              token : user.phoneToken
+            }
+          });
+        }
+      })
+      .catch(err =>{
+        res.status(HttpStatus.BAD_REQUEST).json({
+          response: 3,
+          content: {
+            error : err
+          }
+        });
+        throw new Error(err);
+      })
+ }
   /*
     This endpoint create an user
   */
