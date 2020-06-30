@@ -3,6 +3,8 @@ import { Controller, Get, Res, HttpStatus } from '@nestjs/common';
 // External services
 import { UserService } from "../user/user.service";
 import { TimeService } from '../time/time.service';
+import { resolve } from 'path';
+import { rejects } from 'assert';
 
 
 @Controller('admin')
@@ -87,33 +89,50 @@ export class AdminController {
               "firstDayOfWeekDate": "2020-05-17"
           },
         */
-        weekArray.forEach(week =>  {
-          //build the format of interface
-          let week2Push : weeksFormat = {
-            year : 2020,
-            numberWeek : week,
-            newUsers : 0,
-            firstDayOfWeekDate : this.timeService.getTimeWithYearAndWeek(2020,week)
-          }
-          let key = `${2020}-${week}`;
-          // push the week item into dictionary of weeks with key : value
-          weeks[key] = week2Push;
+        var firstLoop = new Promise((resolve, reject) => {
+          weekArray.forEach((week,index,array) =>  {
+            //build the format of interface
+            let week2Push : weeksFormat = {
+              year : 2020,
+              numberWeek : week,
+              newUsers : 0,
+              firstDayOfWeekDate : this.timeService.getTimeWithYearAndWeek(2020,week)
+            }
+            let key = `${2020}-${week}`;
+            // push the week item into dictionary of weeks with key : value
+            weeks[key] = week2Push;
+            if (index === array.length -1) resolve();
+          });
+        });
+        // Excecutes only when the first loop ends  
+        firstLoop.then(() => {
+          let secondLoop = new Promise((resolve,reject)=>{
+            
+            /*
+              This foreach add +1 to every new user registered depends in
+              which week he register in the app
+            */
+            users.forEach((user,index,array) => {
+              // create a composed key: 'year-week'
+              const yearWeek = `${this.timeService.getYear(user.updated)}-${this.timeService.getWeekNumber(user.updated)}`;
+              weeks[yearWeek].newUsers++; 
+              if (index === array.length -1) resolve();
+            });
+          
+          })
+          // excecute when the second loop ends  
+          secondLoop.then(()=>{
+            //Return the response
+            return res.status(HttpStatus.OK).json({
+              response: 2,
+              content: weeks
+            });
+          })
         });
         
-        /*
-          This foreach add +1 to every new user registered depends in
-          which week he register in the app
-        */
-        users.forEach(user => {
-          // create a composed key: 'year-week'
-          const yearWeek = `${this.timeService.getYear(user.updated)}-${this.timeService.getWeekNumber(user.updated)}`;
-          weeks[yearWeek].newUsers++; 
-        });
-        //Return the response
-        return res.status(HttpStatus.OK).json({
-          response: 2,
-          content: weeks
-        });
+        
+        
+        
       })
       .catch(err=>{
         res.status(HttpStatus.BAD_REQUEST).json({
