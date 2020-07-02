@@ -6,9 +6,13 @@ import { AdminService } from './admin.service';
 import { AdminController } from './admin.controller';
 // Modules
 import { UserModule } from '../user/user.module';
+import { TimeModule } from '../time/time.module';
 
 @Module({
-  imports : [UserModule],
+  imports : [
+    UserModule,
+    TimeModule
+  ],
   providers: [AdminService],
   controllers: [AdminController]
   

@@ -33,6 +33,14 @@ export class OrdersService {
   }
 
   /*
+    This function return an order with idUser and status 
+  */
+ async getActiveOrdersByIdUserAndStatus(idUser : string,status : "PENDING" | "CANCELLED" | "CONFIRMED" | "FINISHED"):Promise<barberyOrder>{
+  const order = await this.orders.findOne({status, idClient:idUser});
+  return order;
+}
+
+  /*
       This function find the confirmmed orders that correspond to a barber and return itn it
   */
   async getBarberActiveOrder(barberId: string) : Promise<barberyOrder>{
