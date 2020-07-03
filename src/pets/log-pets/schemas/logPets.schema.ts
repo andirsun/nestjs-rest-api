@@ -4,7 +4,6 @@ import { Schema} from "mongoose";
 import uniqueValidator = require("mongoose-unique-validator");
 /** Moment js Time handler module */
 import * as momentZone from 'moment-timezone';
-
 export const LogPetsSchema = new Schema({
     time: { 
         type: String,

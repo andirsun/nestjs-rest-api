@@ -10,7 +10,6 @@ import { BarbersPaymentsInterface } from './interfaces/payments.interface';
 import { CreateBarberDTO } from './dto/barber.dto';
 /** Moment js Time handler module */
 import * as momentZone from 'moment-timezone';
-
 @Injectable()
 export class BarberService {
 

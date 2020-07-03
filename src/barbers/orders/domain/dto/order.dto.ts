@@ -1,5 +1,5 @@
 /* Interfaces */
-import { Address } from "../../user/interfaces/address.interface";
+import { Address } from "../../../user/interfaces/address.interface";
 import { ServiceOrderRepository  } from "../interfaces/service.interface";
 /*
   The CreateOrderDTO is the object

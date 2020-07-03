@@ -3,8 +3,7 @@ import { Controller, Get, Res, HttpStatus } from '@nestjs/common';
 // External services
 import { UserService } from "../../user/user.service";
 import { TimeService } from '../../time/time.service';
-import { resolve } from 'path';
-import { rejects } from 'assert';
+import { OrdersService } from 'src/barbers/orders/application/orders.service';
 
 
 @Controller('admin')
@@ -13,6 +12,7 @@ export class AdminController {
   constructor(
     private userService : UserService,
     private timeService : TimeService,
+    private ordersService : OrdersService
   ){}
   /*
     This endpoint return all barbers in a city

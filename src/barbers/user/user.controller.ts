@@ -8,7 +8,7 @@ import { UserService } from "./user.service";
 import { LogBarbersService } from "../log-barbers/log-barbers.service";
 import { PromotionalCodeService } from '../promotional-codes/promotional-codes.service';
 import { TimeService } from '../time/time.service';
-import { OrdersService } from '../orders/orders.service';
+import { OrdersService } from '../orders/application/orders.service';
 /*Interfaces*/
 import { UserPromCodeInterface } from './interfaces/user-promcode.interface';
 

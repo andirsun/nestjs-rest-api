@@ -7,11 +7,13 @@ import { AdminController } from './admin.controller';
 // Modules
 import { UserModule } from '../../user/user.module';
 import { TimeModule } from '../../time/time.module';
+import { OrdersBarbersModule } from 'src/barbers/orders/infrastructure/orders.module';
 
 @Module({
   imports : [
     UserModule,
-    TimeModule
+    TimeModule,
+    OrdersBarbersModule
   ],
   providers: [AdminService],
   controllers: [AdminController]

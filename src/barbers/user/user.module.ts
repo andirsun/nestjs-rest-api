@@ -10,7 +10,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { LogBarbersModule } from 'src/barbers/log-barbers/log-barbers.module';
 import { PromotionalCodesModule } from '../promotional-codes/promotional-codes.module';
 import { TimeModule } from '../time/time.module';
-import { OrdersBarbersModule } from '../orders/orders.module';
+import { OrdersBarbersModule } from '../orders/infrastructure/orders.module';
 
 
 @Module({

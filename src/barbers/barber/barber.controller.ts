@@ -3,7 +3,7 @@ import { Controller, Get, Res, Query, HttpStatus, Post, Body, Ip, UseInterceptor
 /* Services*/
 import { LogBarbersService } from '../log-barbers/log-barbers.service';
 import { BarberService } from './barber.service';
-import { OrdersService } from '../orders/orders.service';
+import { OrdersService } from '../orders/application/orders.service';
 import { FilesService } from '../../modules/files/files.service';
 import { UserService } from '../user/user.service';
 import { TimeService } from '../time/time.service';

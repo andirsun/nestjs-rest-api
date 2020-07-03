@@ -10,7 +10,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { BarberSchema } from './schemas/barber.schema';
 /* Aditional Modules */
 import { LogBarbersModule } from '../log-barbers/log-barbers.module';
-import { OrdersBarbersModule } from '../orders/orders.module';
+import { OrdersBarbersModule } from '../orders/infrastructure/orders.module';
 import { FilesModule } from '../../modules/files/files.module';
 import { UserModule } from '../user/user.module';
 import { TimeModule } from '../time/time.module';

@@ -3,9 +3,9 @@ import { Controller,Get,Post,Put,Delete,Res,HttpStatus,Body, Query} from '@nestj
 /*
     Data Onjects Transfer are all the interfaces to transfer betwen this class en requests
 */
-import { CreateOrderDTO } from "./dto/order.dto";
+import { CreateOrderDTO } from "../domain/dto/order.dto";
 /* Services */
-import { OrdersService } from './orders.service';
+import { OrdersService } from '../application/orders.service';
 
 
 @Controller('orders-barbers')

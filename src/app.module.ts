@@ -23,14 +23,14 @@ import { AuthModule } from './modules/auth/auth.module';
 import { ProductsModule } from './pets/products/products.module';
 import { ServiceModule } from './pets/service/service.module';
 import { BarberModule } from './barbers/barber/barber.module';
-import { OrdersBarbersModule } from './barbers/orders/orders.module';
+import { OrdersBarbersModule } from './barbers/orders/infrastructure/orders.module';
 import { BarberyServiceModule } from './barbers/barbery-service/barbery-service.module';
 import { ReferredCodesModule } from './barbers/referred-codes/referred-codes.module';
 import { OrdersPetsModule } from './pets/orders/orders.module';
 
 import { FilesModule } from './modules/files/files.module';
 import { TimeModule } from './barbers/time/time.module';
-import { AdminBarbersModule } from './barbers/admin/infraestructure/admin.module';
+import { AdminBarbersModule } from './barbers/admin/infrastructure/admin.module';
 import { PromotionalCodesModule } from './barbers/promotional-codes/promotional-codes.module';
 require("dotenv").config();
 // ============================
