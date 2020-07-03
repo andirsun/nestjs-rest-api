@@ -87,4 +87,18 @@ export class OrdersService {
     return await this.orders.findByIdAndUpdate(orderId, { img : urlImg }, {new : true});
   }
 
+  /*
+    This function fetch all FINISHED OR CANCELLED orders
+  */
+  async getAllOrders() : Promise <barberyOrder[]>{
+    return await this.orders.find({status : {$in : ['Finished','FINISHED','Cancelled','CANCELLED']}},'dateFinishOrder status');
+  }
+
+  /*
+    This function fetch all Orders of specific user
+  */
+  async getAllUserOrders(idClient : string) : Promise <barberyOrder[]>{
+    return await this.orders.find({idClient});
+  }
+
 }
