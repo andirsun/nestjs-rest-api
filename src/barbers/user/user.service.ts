@@ -5,9 +5,9 @@ import { Model } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
 /*Require Interface to handle info*/
 import { User } from "./interfaces/user.interfaces";
+import { UserPromCodeInterface } from './interfaces/user-promcode.interface';
 //data transfer object
 import { CreateUserDTO } from "./dto/user.dto";
-import { UserPromCodeInterface } from './interfaces/user-promcode.interface';
 
 
 // This file works to make queries to the databse 
@@ -44,6 +44,13 @@ export class UserService {
   async getUserByPhone(phone : number):Promise<User>{
     const user = await  this.userModel.findOne({phone : phone });
     return user;                                                                                                                    
+  }
+  /*
+    Function that returns all codes links to user
+  */
+  async getUserPromCodes(userId: string) : Promise<UserPromCodeInterface[]>{
+    const user = await this.userModel.findById(userId)
+    return user.promotionalCodes
   }
   /*
     THis function create an user. you need to pass the

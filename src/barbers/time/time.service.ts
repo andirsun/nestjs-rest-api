@@ -1,5 +1,9 @@
 import { Injectable } from "@nestjs/common";
+/*JS Moment dependence */
 const moment = require('moment-timezone');
+/*Additional interfaces*/
+import { UserPromCodeInterface } from "../user/interfaces/user-promcode.interface";
+
 
 @Injectable()
 export class TimeService{
@@ -52,7 +56,7 @@ export class TimeService{
   }
 
   /*
-    check if a code has already expired
+    check if a code is not expired
   */
   async getPromCodeExpiryConfirmation(expirationDate: string): Promise <boolean>{
     let currentDate: string = this.getCurrentDate();
@@ -61,6 +65,21 @@ export class TimeService{
     }
     return false
   }
+  /*
+    check in a array of codes, which code is not expired
+  */
+ async getExpiredCodes(codesArray: UserPromCodeInterface[]): Promise<UserPromCodeInterface[]>{
+   let codes:UserPromCodeInterface[] = [];
+   //Check which code has already expired and forget it
+   for(let i = 0; i < codesArray.length; i++){
+     let isExpired: boolean = await this.getPromCodeExpiryConfirmation(codesArray[i].expirationDate)
+     //Set array with valid codes only 
+     if(isExpired){
+      codes.push(codesArray[i])
+     }
+   }
+   return codes;
+ }
 
   /*
     Get a year of a specific date
