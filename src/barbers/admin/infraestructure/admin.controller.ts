@@ -1,8 +1,8 @@
 // Nest dependencies
 import { Controller, Get, Res, HttpStatus } from '@nestjs/common';
 // External services
-import { UserService } from "../user/user.service";
-import { TimeService } from '../time/time.service';
+import { UserService } from "../../user/user.service";
+import { TimeService } from '../../time/time.service';
 import { resolve } from 'path';
 import { rejects } from 'assert';
 
@@ -143,5 +143,13 @@ export class AdminController {
         });
         throw new Error(err);
       })
+  }
+   /*
+    Endpoint to return the total amount of register users
+  */
+  @Get('/barbers/orders/all')
+  async getServices(@Res() res){
+    
+    
   }
 }

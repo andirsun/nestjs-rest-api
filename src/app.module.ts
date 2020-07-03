@@ -30,7 +30,7 @@ import { OrdersPetsModule } from './pets/orders/orders.module';
 
 import { FilesModule } from './modules/files/files.module';
 import { TimeModule } from './barbers/time/time.module';
-import { AdminBarbersModule } from './barbers/admin/admin.module';
+import { AdminBarbersModule } from './barbers/admin/infraestructure/admin.module';
 import { PromotionalCodesModule } from './barbers/promotional-codes/promotional-codes.module';
 require("dotenv").config();
 // ============================
