@@ -12,7 +12,7 @@ import { BarberSchema } from './schemas/barber.schema';
 import { LogBarbersModule } from '../../log-barbers/log-barbers.module';
 import { OrdersBarbersModule } from '../../orders/infrastructure/orders.module';
 import { FilesModule } from '../../../modules/files/infrastructure/files.module';
-import { UserModule } from '../../user/user.module';
+import { UserModule } from '../../user/infrastructure/user.module';
 import { TimeModule } from '../../time/time.module';
 
 

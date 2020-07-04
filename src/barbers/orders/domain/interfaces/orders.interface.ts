@@ -1,7 +1,7 @@
 /* Mongoose Dependencies*/
 import { Document } from "mongoose";
 /* Interfaces */
-import { Address } from "../../../user/interfaces/address.interface";
+import { Address } from "../../../user/domain/interfaces/address.interface";
 import { ServiceOrderRepository } from "./service.interface";
 import { LogPaymentInterface } from './logpayment.interface';
 

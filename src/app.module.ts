@@ -5,7 +5,7 @@ import { AppService } from './app.service';
 //Mongoose ORM Database Module COnection
 import { MongooseModule } from "@nestjs/mongoose";
 //Timugo Barber Users Module
-import { UserModule } from './barbers/user/user.module';
+import { UserModule } from './barbers/user/infrastructure/user.module';
 //Timugo Barber Feedback Module
 import { FeedbackModule } from './barbers/feedback/feedback.module';
 

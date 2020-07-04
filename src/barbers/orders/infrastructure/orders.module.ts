@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { OrdersController } from './orders.controller';
 import { OrdersService } from '../application/orders.service';
-import { UserModule } from '../../user/user.module';
+import { UserModule } from '../../user/infrastructure/user.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { orderSchema } from './schemas/order.schema';
 import { TimeModule } from '../../time/time.module';

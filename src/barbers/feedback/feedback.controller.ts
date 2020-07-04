@@ -2,7 +2,7 @@
 import { Controller, Post, Get, Res, Body, HttpStatus } from '@nestjs/common';
 /* services*/ 
 import { FeedbackService } from './feedback.service';
-import { UserService } from '../user/user.service';
+import { UserService } from '../user/application/user.service';
 /* Dtos */
 import {FeedbackCreateDTO } from './dto/feedback.dto';
 

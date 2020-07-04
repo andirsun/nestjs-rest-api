@@ -1,7 +1,7 @@
 // Nest dependencies
 import { Controller, Get, Res, HttpStatus } from '@nestjs/common';
 // External services
-import { UserService } from "../../user/user.service";
+import { UserService } from "../../user/application/user.service";
 import { TimeService } from '../../time/time.service';
 import { OrdersService } from 'src/barbers/orders/application/orders.service';
 

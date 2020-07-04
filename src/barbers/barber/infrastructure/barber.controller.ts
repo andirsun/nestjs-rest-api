@@ -5,7 +5,7 @@ import { LogBarbersService } from '../../log-barbers/log-barbers.service';
 import { BarberService } from '../application/barber.service';
 import { OrdersService } from '../../orders/application/orders.service';
 import { FilesService } from '../../../modules/files/application/files.service';
-import { UserService } from '../../user/user.service';
+import { UserService } from '../../user/application/user.service';
 import { TimeService } from '../../time/time.service';
 
 /* Dtos*/

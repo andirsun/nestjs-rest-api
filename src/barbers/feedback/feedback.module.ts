@@ -8,7 +8,7 @@ import { FeedbackService } from './feedback.service';
 /* Controllers */
 import { FeedbackController }  from './feedback.controller'
 /* Modules */
-import { UserModule } from '../user/user.module';
+import { UserModule } from '../user/infrastructure/user.module';
 
 
 @Module({
