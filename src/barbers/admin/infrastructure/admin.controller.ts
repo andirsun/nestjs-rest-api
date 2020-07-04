@@ -140,7 +140,7 @@ export class AdminController {
         throw new Error(err);
       })
   }
-   /*
+  /*
     Endpoint to return the total amount of register users
   */
   @Get('/barbers/orders/all')
@@ -235,6 +235,123 @@ export class AdminController {
               totalOrders : finishedOrders + cancelledOrders ,
               finishedOrders,
               cancelledOrders,
+              orders : weeks
+            }
+          });
+        })
+      });
+    })
+    .catch(err=>{
+      res.status(HttpStatus.BAD_REQUEST).json({
+        response: 1,
+        content: {
+          message : "Ups, no se pudo obtener los usuarios"
+        }
+      });
+      throw new Error(err);
+    });    
+  }
+
+  /*
+    Endpoint to return the company balance
+  */
+  @Get('/barbers/balance')
+  async getBalance(@Res() res){
+    //Preperties
+    var totalFactured : number = 0;
+    var totalUtilities : number = 0;
+    this.ordersService.getAllOrdersBalance()
+      .then(orders=>{
+        // Define the interface of weeks to return
+        interface weeksFormat {
+          year : number, //year pf registration
+          numberWeek : number, // week number ex 1,2,3,4
+          firstDayOfWeekDate : string, //example "2020-05-10"
+          totalFactured : number,
+          utilities : number
+        }
+        //First week number
+        let firstWeek : number = this.timeService.getWeekNumber(orders[0].dateFinishOrder);
+        // last week number
+        let lastWeek : number = this.timeService.getWeekNumber(orders[orders.length-1].dateFinishOrder);
+        // Incremental array of number from 1 to last week
+        let weekArray : number[]= Array.from({length:lastWeek},(v,k)=>k+1);
+        // segment the array only to first week number to last week number
+        weekArray = weekArray.slice(firstWeek-1);
+        // creating a empty dictionary with format <string : weeksFormat>
+        let weeks: { [key: string] : weeksFormat; } = {};
+
+        /*
+          this foreach create every initialize key : value
+          with the range from firsWeek and last Week
+          Example : 
+          "2020-19": {
+            "year": 2020,
+            "numberWeek": 19,
+            totalFacture : number,
+            utilities : number
+            "firstDayOfWeekDate": "2020-05-10"
+          },
+          "2020-20": {
+              "year": 2020,
+              "numberWeek": 20,
+              totalFacture : number,
+              utilities : number
+              "firstDayOfWeekDate": "2020-05-17"
+          },
+        */
+       var firstLoop = new Promise((resolve, reject) => {
+        weekArray.forEach((week,index,array) =>  {
+          //build the format of interface
+          let week2Push : weeksFormat = {
+            year : 2020,
+            numberWeek : week,
+            totalFactured : 0,
+            utilities : 0,
+            firstDayOfWeekDate : this.timeService.getTimeWithYearAndWeek(2020,week)
+          }
+          let key = `${2020}-${week}`;
+          // push the week item into dictionary of weeks with key : value
+          weeks[key] = week2Push;
+          if (index === array.length -1) resolve();
+        });
+      });
+      // Excecutes only when the first loop ends  
+      firstLoop.then(() => {
+        let secondLoop = new Promise((resolve,reject)=>{
+          /*
+            This foreach set the status to every order
+          */
+          orders.forEach((order,index,array) => {
+            // create a composed key: 'year-week'
+            const yearWeek = `${this.timeService.getYear(order.dateFinishOrder)}-${this.timeService.getWeekNumber(order.dateFinishOrder)}`;
+            //INcrease total factured and utilities ammount
+            totalFactured += order.price;
+            //increase the week factured ammount
+            weeks[yearWeek].totalFactured += order.price ; 
+            if(!order.commission){
+              //If the order doenst have commission(old formats doesnt have the propertie), then add the 30% of order
+              totalUtilities += (order.price*0.3);
+              weeks[yearWeek].utilities += (order.price*0.3) ;
+            }else{
+              // increase the week utility amount
+              totalUtilities += order.commission;
+              weeks[yearWeek].utilities += order.commission ; 
+            }
+            
+            // Stop condition or rejection
+            if (index === array.length -1) resolve();
+          });
+        
+        })
+        // excecute when the second loop ends  
+        secondLoop.then(()=>{
+          //Return the response
+          return res.status(HttpStatus.OK).json({
+            response: 2,
+            content: {
+              totalFactured,
+              totalUtilities,
               orders : weeks
             }
           });

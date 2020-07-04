@@ -32,6 +32,7 @@ export interface barberyOrder extends Document {
   logPayment : [LogPaymentInterface],
   status : string,
   price : number,
+  commission : number
   img: string,
-  comment: string
+  comment: string,
 }

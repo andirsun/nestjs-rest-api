@@ -95,6 +95,13 @@ export class OrdersService {
   }
 
   /*
+    This function fetch all FINISHED OR CANCELLED orders
+  */
+  async getAllOrdersBalance() : Promise <barberyOrder[]>{
+    return await this.orders.find({status : {$in : ['Finished','FINISHED']}},'dateFinishOrder price commission');
+  }
+
+  /*
     This function fetch all Orders of specific user
   */
   async getAllUserOrders(idClient : string) : Promise <barberyOrder[]>{

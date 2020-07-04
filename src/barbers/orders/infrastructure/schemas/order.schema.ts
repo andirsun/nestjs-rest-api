@@ -88,6 +88,10 @@ export const orderSchema = new Schema({
     type: Number,
     required:[true, "EL precio es estrictamente necesario"]
   },
+  commission : {
+    type : Number,
+    required : [true, "La comision es necesaria"]
+  },
   img: {
     type: String,
     // required:[true, "La imagen es necesaria"]
