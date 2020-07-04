@@ -9,11 +9,11 @@ import { MongooseModule } from '@nestjs/mongoose';
 /* Aditinal Schemas */
 import { BarberSchema } from './schemas/barber.schema';
 /* Aditional Modules */
-import { LogBarbersModule } from '../../log-barbers/log-barbers.module';
+import { LogBarbersModule } from '../../log-barbers/infrastructure/log-barbers.module';
 import { OrdersBarbersModule } from '../../orders/infrastructure/orders.module';
-import { FilesModule } from '../../../modules/files/files.module';
-import { UserModule } from '../../user/user.module';
-import { TimeModule } from '../../time/time.module';
+import { FilesModule } from '../../../modules/files/infrastructure/files.module';
+import { UserModule } from '../../user/infrastructure/user.module';
+import { TimeModule } from '../../../modules/time/infrastructure/time.module';
 
 
 @Module({

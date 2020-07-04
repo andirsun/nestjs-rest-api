@@ -4,11 +4,11 @@ import { MongooseModule } from '@nestjs/mongoose';
 /* Schemas */
 import { FeedbackSchema } from './schema/feedback.schema';
 /* Services */
-import { FeedbackService } from './feedback.service';
+import { FeedbackService } from '../application/feedback.service';
 /* Controllers */
 import { FeedbackController }  from './feedback.controller'
 /* Modules */
-import { UserModule } from '../user/user.module';
+import { UserModule } from '../../user/infrastructure/user.module';
 
 
 @Module({

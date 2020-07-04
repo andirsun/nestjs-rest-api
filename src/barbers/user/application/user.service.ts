@@ -4,10 +4,10 @@ import { Injectable } from '@nestjs/common';
 import { Model } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
 /*Require Interface to handle info*/
-import { User } from "./interfaces/user.interfaces";
-import { UserPromCodeInterface } from './interfaces/user-promcode.interface';
+import { User } from "../domain/interfaces/user.interfaces";
+import { UserPromCodeInterface } from '../domain/interfaces/user-promcode.interface';
 //data transfer object
-import { CreateUserDTO } from "./dto/user.dto";
+import { CreateUserDTO } from "../domain/dto/user.dto";
 
 
 // This file works to make queries to the databse 

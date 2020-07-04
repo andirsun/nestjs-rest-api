@@ -4,7 +4,7 @@ import { Controller, Injectable, Put, Res, Body, Query, HttpStatus, Get } from '
 /*Service*/
 import { ReferredCodesService } from './referred-codes.service';
 /*Aditional Services*/
-import { TimeService } from '../time/time.service';
+import { TimeService } from '../../modules/time/application/time.service';
 
 
 /*

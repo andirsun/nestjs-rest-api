@@ -4,7 +4,7 @@ import { Schema } from "mongoose";
 import uniqueValidator = require("mongoose-unique-validator");
 /* Schemas */
 import { ServiceSchema } from "src/pets/service/schemas/service.schema";
-import { AddressSchema } from "src/barbers/user/schemas/address.schema";
+import { AddressSchema } from "src/barbers/user/infrastructure/schemas/address.schema";
 import { LogPaymentSchema } from './logpayment.schema'
 /** Moment js Time handler module */
 import * as momentZone from 'moment-timezone';

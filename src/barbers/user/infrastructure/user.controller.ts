@@ -1,16 +1,16 @@
 /* Nest Js dependencies */
-import { Controller,Get,Post,Put,Delete,Res,HttpStatus,Body, Query, Inject, forwardRef} from '@nestjs/common';
+import { Controller,Get,Post,Res,HttpStatus,Body, Query} from '@nestjs/common';
 //Data Onjects Transfer are all the interfaces to transfer betwen this class en requests
-import { CreateUserDTO } from "./dto/user.dto";
-import { UserPromCodeDTO } from './dto/user-promcode.dto';
+import { CreateUserDTO } from "../domain/dto/user.dto";
+import { UserPromCodeDTO } from '../domain/dto/user-promcode.dto';
 /* Services */
-import { UserService } from "./user.service";
-import { LogBarbersService } from "../log-barbers/log-barbers.service";
-import { PromotionalCodeService } from '../promotional-codes/promotional-codes.service';
-import { TimeService } from '../time/time.service';
-import { OrdersService } from '../orders/application/orders.service';
+import { UserService } from "../application/user.service";
+import { LogBarbersService } from "../../log-barbers/application/log-barbers.service";
+import { PromotionalCodeService } from '../../promotional-codes/promotional-codes.service';
+import { TimeService } from '../../../modules/time/application/time.service';
+import { OrdersService } from '../../orders/application/orders.service';
 /*Interfaces*/
-import { UserPromCodeInterface } from './interfaces/user-promcode.interface';
+import { UserPromCodeInterface } from '../domain/interfaces/user-promcode.interface';
 
 
 @Controller('user')

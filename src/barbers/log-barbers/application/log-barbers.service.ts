@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Model } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
 //Require Interface to handle info
-import { Log } from "./interfaces/logBarbers.interface";
+import { Log } from "../domain/interfaces/logBarbers.interface";
 
 
 @Injectable()

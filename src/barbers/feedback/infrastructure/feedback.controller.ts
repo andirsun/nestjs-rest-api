@@ -1,10 +1,10 @@
 /*Nest dependences */
 import { Controller, Post, Get, Res, Body, HttpStatus } from '@nestjs/common';
 /* services*/ 
-import { FeedbackService } from './feedback.service';
-import { UserService } from '../user/user.service';
+import { FeedbackService } from '../application/feedback.service';
+import { UserService } from '../../user/application/user.service';
 /* Dtos */
-import {FeedbackCreateDTO } from './dto/feedback.dto';
+import {FeedbackCreateDTO } from '../domain/dto/feedback.dto';
 
 
 @Controller('feedback')

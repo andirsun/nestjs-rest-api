@@ -10,7 +10,7 @@ import { CreateOrderPetsDTO } from './dto/order.dto';
 /* Services */
 import { UserPetsService } from '../user-pets/user-pets.service';
 import { PartnerService } from '../partner/partner.service';
-import { TwilioService } from 'src/modules/twilio/twilio.service';
+import { TwilioService } from 'src/modules/twilio/application/twilio.service';
 /* Time zone handler plugin */
 import * as momentZone from 'moment-timezone';
 import { OrderChangeDTO } from './dto/changeOrder.dto';

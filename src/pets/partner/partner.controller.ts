@@ -20,9 +20,9 @@ import { AuthGuard } from '@nestjs/passport';
 /* Services */
 import { PartnerService } from "./partner.service";
 import { LogPetsService } from "../log-pets/log-pets.service";
-import { TwilioService } from "src/modules/twilio/twilio.service";
+import { TwilioService } from "src/modules/twilio/application/twilio.service";
 import { ProductsService } from "../products/products.service";
-import { FilesService } from 'src/modules/files/files.service';
+import { FilesService } from 'src/modules/files/application/files.service';
 import { OrdersService } from '../orders/orders.service';
 /* DTOs */
 import { CreatePartnerDTO } from "./dto/partner.dto";
@@ -32,7 +32,7 @@ import { OrderChangeDTO } from '../orders/dto/changeOrder.dto';
 /* Interfaces */
 import { Product } from "../products/interfaces/product.interface";
 import { Partner } from "../partner/interfaces/partner.interface";
-import { FileInterface } from 'src/modules/files/file.interface';
+import { FileInterface } from 'src/modules/files/domain/file.interface';
 
 
 
