@@ -4,7 +4,7 @@ import { Controller, Get, Res, Query, HttpStatus, Post, Body, Ip, UseInterceptor
 import { LogBarbersService } from '../../log-barbers/log-barbers.service';
 import { BarberService } from '../application/barber.service';
 import { OrdersService } from '../../orders/application/orders.service';
-import { FilesService } from '../../../modules/files/files.service';
+import { FilesService } from '../../../modules/files/application/files.service';
 import { UserService } from '../../user/user.service';
 import { TimeService } from '../../time/time.service';
 
@@ -16,7 +16,7 @@ import { CreateBarberDTO } from '../domain/dto/barber.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 /*Interfaces*/
-import { FileInterface } from '../../../modules/files/file.interface';
+import { FileInterface } from '../../../modules/files/domain/file.interface';
 
 
 

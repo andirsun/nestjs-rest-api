@@ -28,7 +28,7 @@ import { BarberyServiceModule } from './barbers/barbery-service/infrastructure/b
 import { ReferredCodesModule } from './barbers/referred-codes/referred-codes.module';
 import { OrdersPetsModule } from './pets/orders/orders.module';
 
-import { FilesModule } from './modules/files/files.module';
+import { FilesModule } from './modules/files/infrastructure/files.module';
 import { TimeModule } from './barbers/time/time.module';
 import { AdminBarbersModule } from './barbers/admin/infrastructure/admin.module';
 import { PromotionalCodesModule } from './barbers/promotional-codes/promotional-codes.module';
