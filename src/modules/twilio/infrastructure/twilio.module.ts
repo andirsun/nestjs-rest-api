@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TwilioController } from './twilio.controller';
-import { TwilioService } from './twilio.service';
+import { TwilioService } from '../application/twilio.service';
 
 @Module({
   controllers: [TwilioController],

@@ -10,7 +10,7 @@ import { PartnerSchema } from "./schemas/partner.schema";
 /* Extra modules importations */
 import { LogPetsModule } from '../log-pets/log-pets.module';
 import { ProductsModule } from '../products/products.module';
-import { TwilioModule } from 'src/modules/twilio/twilio.module';
+import { TwilioModule } from 'src/modules/twilio/infrastructure/twilio.module';
 import { FilesModule } from 'src/modules/files/infrastructure/files.module';
 
 

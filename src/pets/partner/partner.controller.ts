@@ -20,7 +20,7 @@ import { AuthGuard } from '@nestjs/passport';
 /* Services */
 import { PartnerService } from "./partner.service";
 import { LogPetsService } from "../log-pets/log-pets.service";
-import { TwilioService } from "src/modules/twilio/twilio.service";
+import { TwilioService } from "src/modules/twilio/application/twilio.service";
 import { ProductsService } from "../products/products.service";
 import { FilesService } from 'src/modules/files/application/files.service';
 import { OrdersService } from '../orders/orders.service';

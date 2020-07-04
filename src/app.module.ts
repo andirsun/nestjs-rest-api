@@ -13,7 +13,7 @@ import { FeedbackModule } from './barbers/feedback/feedback.module';
 /* Timugo Pets Users module */
 import { UserPetsModule } from './pets/user-pets/user-pets.module';
 //Twilio Notification MOdule
-import { TwilioModule } from './modules/twilio/twilio.module';
+import { TwilioModule } from './modules/twilio/infrastructure/twilio.module';
 /** Logs modules */
 import { LogBarbersModule } from './barbers/log-barbers/log-barbers.module';
 import { LogPetsModule } from './pets/log-pets/log-pets.module';
