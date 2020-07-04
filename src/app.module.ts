@@ -29,7 +29,7 @@ import { ReferredCodesModule } from './barbers/referred-codes/referred-codes.mod
 import { OrdersPetsModule } from './pets/orders/orders.module';
 
 import { FilesModule } from './modules/files/infrastructure/files.module';
-import { TimeModule } from './barbers/time/infrastructure/time.module';
+import { TimeModule } from './modules/time/infrastructure/time.module';
 import { AdminBarbersModule } from './barbers/admin/infrastructure/admin.module';
 import { PromotionalCodesModule } from './barbers/promotional-codes/promotional-codes.module';
 require("dotenv").config();

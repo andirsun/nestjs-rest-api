@@ -3,7 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { PromotionalCodeSchema } from "./schemas/promotional-codes.schema";
 import { PromotionalCodeService } from './promotional-codes.service';
 import { PromotionalCodeController } from "./promotional-codes.controller";
-import { TimeModule } from '../time/infrastructure/time.module';
+import { TimeModule } from '../../modules/time/infrastructure/time.module';
 
 @Module({
   imports: [

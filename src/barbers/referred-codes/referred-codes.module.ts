@@ -9,7 +9,7 @@ import { ReferredCodesService } from './referred-codes.service';
 /* Controllers */
 import { ReferredCodesController } from './referred-codes.controller';
 /*Aditional Modules*/ 
-import { TimeModule } from '../time/infrastructure/time.module';
+import { TimeModule } from '../../modules/time/infrastructure/time.module';
 
 
 @Module({

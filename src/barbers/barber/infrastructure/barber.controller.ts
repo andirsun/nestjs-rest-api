@@ -6,7 +6,7 @@ import { BarberService } from '../application/barber.service';
 import { OrdersService } from '../../orders/application/orders.service';
 import { FilesService } from '../../../modules/files/application/files.service';
 import { UserService } from '../../user/application/user.service';
-import { TimeService } from '../../time/application/time.service';
+import { TimeService } from '../../../modules/time/application/time.service';
 
 /* Dtos*/
 import { PaymentBarberLogDTO } from '../domain/dto/paymentLog.dto';

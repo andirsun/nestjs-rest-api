@@ -1,6 +1,6 @@
 import { Controller, Put, Res, Body, HttpStatus, Query, Get } from '@nestjs/common';
 import { PromotionalCodeService } from "./promotional-codes.service";
-import { TimeService } from '../time/application/time.service';
+import { TimeService } from '../../modules/time/application/time.service';
 import { PromotionalCodeDTO } from './dto/promotional-codes.dto';
 
 
