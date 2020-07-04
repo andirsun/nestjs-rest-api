@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { LogBarbersService } from './log-barbers.service';
+import { LogBarbersService } from '../application/log-barbers.service';
 import { MongooseModule } from "@nestjs/mongoose";
 import { LogBarbersSchema } from "./schemas/barberLog.schema";
 

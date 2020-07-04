@@ -7,7 +7,7 @@ import { UserService } from '../application/user.service';
 import { UserSchema } from "./schemas/user.schema";
 /* Extra modules importations */
 import { MongooseModule } from "@nestjs/mongoose";
-import { LogBarbersModule } from 'src/barbers/log-barbers/log-barbers.module';
+import { LogBarbersModule } from 'src/barbers/log-barbers/infrastructure/log-barbers.module';
 import { PromotionalCodesModule } from '../../promotional-codes/promotional-codes.module';
 import { TimeModule } from '../../../modules/time/infrastructure/time.module';
 import { OrdersBarbersModule } from '../../orders/infrastructure/orders.module';

@@ -5,7 +5,7 @@ import { CreateUserDTO } from "../domain/dto/user.dto";
 import { UserPromCodeDTO } from '../domain/dto/user-promcode.dto';
 /* Services */
 import { UserService } from "../application/user.service";
-import { LogBarbersService } from "../../log-barbers/log-barbers.service";
+import { LogBarbersService } from "../../log-barbers/application/log-barbers.service";
 import { PromotionalCodeService } from '../../promotional-codes/promotional-codes.service';
 import { TimeService } from '../../../modules/time/application/time.service';
 import { OrdersService } from '../../orders/application/orders.service';

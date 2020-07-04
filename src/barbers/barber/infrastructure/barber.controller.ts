@@ -1,7 +1,7 @@
 /*Nest js dependencies*/
 import { Controller, Get, Res, Query, HttpStatus, Post, Body, Ip, UseInterceptors, UploadedFile, Put} from '@nestjs/common';
 /* Services*/
-import { LogBarbersService } from '../../log-barbers/log-barbers.service';
+import { LogBarbersService } from '../../log-barbers/application/log-barbers.service';
 import { BarberService } from '../application/barber.service';
 import { OrdersService } from '../../orders/application/orders.service';
 import { FilesService } from '../../../modules/files/application/files.service';

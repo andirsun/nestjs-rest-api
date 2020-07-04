@@ -15,7 +15,7 @@ import { UserPetsModule } from './pets/user-pets/user-pets.module';
 //Twilio Notification MOdule
 import { TwilioModule } from './modules/twilio/infrastructure/twilio.module';
 /** Logs modules */
-import { LogBarbersModule } from './barbers/log-barbers/log-barbers.module';
+import { LogBarbersModule } from './barbers/log-barbers/infrastructure/log-barbers.module';
 import { LogPetsModule } from './pets/log-pets/log-pets.module';
 /* Extra modules */
 import { PartnerModule } from './pets/partner/partner.module';
