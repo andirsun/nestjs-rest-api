@@ -24,7 +24,7 @@ import { ProductsModule } from './pets/products/products.module';
 import { ServiceModule } from './pets/service/service.module';
 import { BarberModule } from './barbers/barber/infrastructure/barber.module';
 import { OrdersBarbersModule } from './barbers/orders/infrastructure/orders.module';
-import { BarberyServiceModule } from './barbers/barbery-service/barbery-service.module';
+import { BarberyServiceModule } from './barbers/barbery-service/infrastructure/barbery-service.module';
 import { ReferredCodesModule } from './barbers/referred-codes/referred-codes.module';
 import { OrdersPetsModule } from './pets/orders/orders.module';
 
@@ -33,10 +33,7 @@ import { TimeModule } from './barbers/time/time.module';
 import { AdminBarbersModule } from './barbers/admin/infrastructure/admin.module';
 import { PromotionalCodesModule } from './barbers/promotional-codes/promotional-codes.module';
 require("dotenv").config();
-// ============================
-//  Enviroment
-// ============================
-//process.env.NODE_ENV = process.env.NODE_ENV || "dev";
+
 
 // ============================
 //  Database
@@ -50,7 +47,7 @@ if (process.env.ENVIROMENT === 'dev' || process.env.ENVIROMENT === 'local') {
   urlMongodbTimugoBarbers = process.env.MONGO_URL_BARBERS_TEST;
   urlMongoDbTimugoPets = process.env.MONGO_URL_PETS_TEST;
 } else {
-  console.log("production mode");
+  console.log("Production MODE");
   urlMongodbTimugoBarbers = process.env.MONGO_URL_BARBERS_PRODUCTION;
   urlMongoDbTimugoPets = process.env.MONGO_URL_PETS_PRODUCTION;
 }
@@ -103,9 +100,6 @@ if (process.env.ENVIROMENT === 'dev' || process.env.ENVIROMENT === 'local') {
       useUnifiedTopology: true,
       useFindAndModify: false
     }),
-    
-    
-    
   ],
   controllers: [AppController],
   providers: [AppService],
