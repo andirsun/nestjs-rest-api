@@ -7,7 +7,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 //Timugo Barber Users Module
 import { UserModule } from './barbers/user/infrastructure/user.module';
 //Timugo Barber Feedback Module
-import { FeedbackModule } from './barbers/feedback/feedback.module';
+import { FeedbackModule } from './barbers/feedback/infrastructure/feedback.module';
 
 
 /* Timugo Pets Users module */
@@ -29,7 +29,7 @@ import { ReferredCodesModule } from './barbers/referred-codes/referred-codes.mod
 import { OrdersPetsModule } from './pets/orders/orders.module';
 
 import { FilesModule } from './modules/files/infrastructure/files.module';
-import { TimeModule } from './barbers/time/time.module';
+import { TimeModule } from './barbers/time/infrastructure/time.module';
 import { AdminBarbersModule } from './barbers/admin/infrastructure/admin.module';
 import { PromotionalCodesModule } from './barbers/promotional-codes/promotional-codes.module';
 require("dotenv").config();

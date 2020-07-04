@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 /*JS Moment dependence */
 const moment = require('moment-timezone');
 /*Additional interfaces*/
-import { UserPromCodeInterface } from "../user/domain/interfaces/user-promcode.interface";
+import { UserPromCodeInterface } from "../../user/domain/interfaces/user-promcode.interface";
 
 
 @Injectable()

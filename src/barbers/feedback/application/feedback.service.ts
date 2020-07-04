@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 /* Respositories */
-import { Feedback } from './interfaces/feedback.interfaces';
+import { Feedback } from '../domain/interfaces/feedback.interfaces';
 
 
 

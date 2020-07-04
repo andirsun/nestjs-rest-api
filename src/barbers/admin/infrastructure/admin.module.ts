@@ -6,7 +6,7 @@ import { AdminService } from '../application/admin.service';
 import { AdminController } from './admin.controller';
 // Modules
 import { UserModule } from '../../user/infrastructure/user.module';
-import { TimeModule } from '../../time/time.module';
+import { TimeModule } from '../../time/infrastructure/time.module';
 import { OrdersBarbersModule } from 'src/barbers/orders/infrastructure/orders.module';
 
 @Module({

@@ -7,7 +7,7 @@ import { UserPromCodeDTO } from '../domain/dto/user-promcode.dto';
 import { UserService } from "../application/user.service";
 import { LogBarbersService } from "../../log-barbers/log-barbers.service";
 import { PromotionalCodeService } from '../../promotional-codes/promotional-codes.service';
-import { TimeService } from '../../time/time.service';
+import { TimeService } from '../../time/application/time.service';
 import { OrdersService } from '../../orders/application/orders.service';
 /*Interfaces*/
 import { UserPromCodeInterface } from '../domain/interfaces/user-promcode.interface';

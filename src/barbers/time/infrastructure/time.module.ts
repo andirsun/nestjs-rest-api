@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { TimeService } from "./time.service";
+import { TimeService } from "../application/time.service";
 
 
 @Module({
