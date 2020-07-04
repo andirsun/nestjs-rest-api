@@ -1,7 +1,7 @@
 /* Nest Js dependencies */
 import { Module } from '@nestjs/common';
 /* Services */
-import { BarberService } from './barber.service';
+import { BarberService } from '../application/barber.service';
 /* Controllers */
 import { BarberController } from './barber.controller';
 /* MOngoose dependencies */
@@ -9,11 +9,11 @@ import { MongooseModule } from '@nestjs/mongoose';
 /* Aditinal Schemas */
 import { BarberSchema } from './schemas/barber.schema';
 /* Aditional Modules */
-import { LogBarbersModule } from '../log-barbers/log-barbers.module';
-import { OrdersBarbersModule } from '../orders/infrastructure/orders.module';
-import { FilesModule } from '../../modules/files/files.module';
-import { UserModule } from '../user/user.module';
-import { TimeModule } from '../time/time.module';
+import { LogBarbersModule } from '../../log-barbers/log-barbers.module';
+import { OrdersBarbersModule } from '../../orders/infrastructure/orders.module';
+import { FilesModule } from '../../../modules/files/files.module';
+import { UserModule } from '../../user/user.module';
+import { TimeModule } from '../../time/time.module';
 
 
 @Module({

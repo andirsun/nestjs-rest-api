@@ -22,7 +22,7 @@ import { PartnerModule } from './pets/partner/partner.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ProductsModule } from './pets/products/products.module';
 import { ServiceModule } from './pets/service/service.module';
-import { BarberModule } from './barbers/barber/barber.module';
+import { BarberModule } from './barbers/barber/infrastructure/barber.module';
 import { OrdersBarbersModule } from './barbers/orders/infrastructure/orders.module';
 import { BarberyServiceModule } from './barbers/barbery-service/barbery-service.module';
 import { ReferredCodesModule } from './barbers/referred-codes/referred-codes.module';

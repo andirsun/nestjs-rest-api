@@ -2,7 +2,7 @@
 import { Schema } from "mongoose";
 import uniqueValidator = require("mongoose-unique-validator");
 /* INterfaces */
-import { BarbersPaymentsInterface } from "../interfaces/payments.interface";
+import { BarbersPaymentsInterface } from "../../domain/interfaces/payments.interface";
 
 export const PaymentSchema = new Schema<BarbersPaymentsInterface>({
   date : String,

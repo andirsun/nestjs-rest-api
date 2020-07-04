@@ -1,22 +1,22 @@
 /*Nest js dependencies*/
 import { Controller, Get, Res, Query, HttpStatus, Post, Body, Ip, UseInterceptors, UploadedFile, Put} from '@nestjs/common';
 /* Services*/
-import { LogBarbersService } from '../log-barbers/log-barbers.service';
-import { BarberService } from './barber.service';
-import { OrdersService } from '../orders/application/orders.service';
-import { FilesService } from '../../modules/files/files.service';
-import { UserService } from '../user/user.service';
-import { TimeService } from '../time/time.service';
+import { LogBarbersService } from '../../log-barbers/log-barbers.service';
+import { BarberService } from '../application/barber.service';
+import { OrdersService } from '../../orders/application/orders.service';
+import { FilesService } from '../../../modules/files/files.service';
+import { UserService } from '../../user/user.service';
+import { TimeService } from '../../time/time.service';
 
 /* Dtos*/
-import { PaymentBarberLogDTO } from './dto/paymentLog.dto';
-import { CreateBarberDTO } from './dto/barber.dto';
+import { PaymentBarberLogDTO } from '../domain/dto/paymentLog.dto';
+import { CreateBarberDTO } from '../domain/dto/barber.dto';
 
 /*Interceptors*/
 import { FileInterceptor } from '@nestjs/platform-express';
 
 /*Interfaces*/
-import { FileInterface } from '../../modules/files/file.interface';
+import { FileInterface } from '../../../modules/files/file.interface';
 
 
 

@@ -4,10 +4,10 @@ import { InjectModel } from '@nestjs/mongoose';
 /* MOngoose dependecies */
 import { Model } from 'mongoose';
 /* Repositories */
-import { BarberInterface } from "./interfaces/barber.interface";
-import { BarbersPaymentsInterface } from './interfaces/payments.interface';
+import { BarberInterface } from "../domain/interfaces/barber.interface";
+import { BarbersPaymentsInterface } from '../domain/interfaces/payments.interface';
 /* Dtos*/
-import { CreateBarberDTO } from './dto/barber.dto';
+import { CreateBarberDTO } from '../domain/dto/barber.dto';
 /** Moment js Time handler module */
 import * as momentZone from 'moment-timezone';
 @Injectable()
