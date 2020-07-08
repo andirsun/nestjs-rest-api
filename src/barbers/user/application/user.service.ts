@@ -68,11 +68,12 @@ export class UserService {
     THis function create an user. you need to pass the
     CreateUserDto object to works
   */
-  async createUser(createUserDTO : CreateUserDTO) : Promise<User>{
+  async createUser(createUserDTO : CreateUserDTO, method : string) : Promise<User>{
     //create the user model with all parameters from interface
     let user = new this.userModel(createUserDTO);
-    //Add the current date
+    //Add the current date and registration method
     user.registrationDate = this.timeService.getCurrentDate();
+    user.registrationMethod = method;
     return await user.save();
   }
 

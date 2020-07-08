@@ -1,27 +1,30 @@
 //File use for mongodb schemas
 import { Schema } from "mongoose"; 
 import uniqueValidator = require("mongoose-unique-validator");
-//import mongoose = require('mongoose');
-//const AutoIncrement = require('mongoose-sequence')(mongoose);
 /*Aditional Required Schemas*/ 
 import { AddressSchema } from "./address.schema";
 import { CardSchema } from "./card.schema";
 import { NequiSchema } from "./nequi.schema";
 import { UserPromCodeSchema } from "./user-promcode.schema";
+//Interfaces
 import { User } from "../../domain/interfaces/user.interface";
-//Services 
+ 
 
-
+//User valid Roles
 let validRoles = {
   values: ["USER_ROLE", "REFERRED_USER_ROLE"],
   message: "{VALUE} is not a valid Role"
 };
-
+// Valid Registration Methods
+let validRegistrationMethods = {
+  values: ["FACEBOOK", "APPLE", "PHONE"],
+  message: "{VALUE} is not a valid method"
+};
 export const UserSchema = new Schema<User>({
   id: {
-      type: Number,
-      require: [true, "EL id es necesario"],
-      default: 0
+    type: Number,
+    require: [true, "EL id es necesario"],
+    default: 0
   },
   phoneToken:{
     type:String,
@@ -90,12 +93,15 @@ export const UserSchema = new Schema<User>({
     type: String,
     default: "none"
   },
+  registrationMethod :{
+    type : String,
+    required : [true, "El metodo de registro es necesario"],
+    enum : validRegistrationMethods,
+  },
   promotionalCodes:[UserPromCodeSchema]
 });
 /*PLUGINS ZONE*/
 // Plugin to make unique validator
 UserSchema.plugin(uniqueValidator, { message: "{PATH} debe de ser único" });
-
-//UserSchema.plugin(AutoIncrement, {inc_field: 'id'});
 
 
