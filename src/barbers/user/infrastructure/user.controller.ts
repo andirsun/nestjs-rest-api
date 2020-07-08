@@ -83,6 +83,36 @@ export class UserController {
   }
 
   /*
+    Check if user is already registered
+  */
+  @Get('/register/status')
+  async getRegisterStatus(@Res()res, @Query('method')method : "PHONE" | "SOCIAL",@Query('phone')phone : number,@Query('email')email : string){
+    let user : User ; 
+    if(method == "PHONE"){
+      user = await this.userService.getUserByPhone(phone);
+    }else if(method == "SOCIAL") {
+      user = await this.userService.getUserByEmail(email);
+    }
+    //check if exists an user with phone or email
+    if(!user){  
+      return res.status(HttpStatus.OK).json({
+        response: 2,
+        content:{
+          status : "NEW",
+          message : "No encontramos a un usuario con ese telefono o correo"
+        }
+      });
+    }else {
+      return res.status(HttpStatus.OK).json({
+        response: 2,
+        content:{
+          status : "REGISTERED",
+          message : "El usuario ya esta registrado"
+        }
+      });
+    }
+  }
+  /*
     This endpoint return a specific user
     searching by id
   */

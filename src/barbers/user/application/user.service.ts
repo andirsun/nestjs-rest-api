@@ -51,6 +51,13 @@ export class UserService {
     return user;                                                                                                                    
   }
   /*
+    Function that returns a user by email
+  */
+  async getUserByEmail(email : string):Promise<User>{
+    const user = await this.userModel.findOne({email});
+    return user;                                                                                                                    
+  }
+  /*
     Function that returns all codes links to user
   */
   async getUserPromCodes(userId: string) : Promise<UserPromCodeInterface[]>{
