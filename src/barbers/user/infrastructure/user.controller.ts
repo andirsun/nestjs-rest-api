@@ -323,14 +323,23 @@ export class UserController {
     This enpoint create a new user with a phone, email, and name
   */
   @Post('/signUp')
-  async signUp(@Res()res, @Body() createUserDTO : CreateUserDTO){
-    
-    this.userService.createUser(createUserDTO)
+  async signUp(@Res()res, @Body() createUserDTO : CreateUserDTO, @Query('method')method : "APPLE"| "FACEBOOK"| "PHONE"){
+    if(!method){
+      res.status(HttpStatus.BAD_REQUEST).json({
+        response: 3,
+        content: {
+          message : "Falta el metodo de registro en la query param"
+        }
+      });
+      throw new Error("Falta el metodo de registro en la query param");
+    }
+
+    this.userService.createUser(createUserDTO,method)
       .then((user)=>{
         return res.status(HttpStatus.OK).json({
           response: 2,
           content: {
-            user
+            message : "El usuario se registro correctamente"
           }
         });
       })
