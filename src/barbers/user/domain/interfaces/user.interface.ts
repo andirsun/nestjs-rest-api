@@ -10,7 +10,7 @@ export interface User extends Document {
     id: number,
     phoneToken:string,
     updated: string,
-    lastConection : string,
+    lastConnection : string,
     name: string,
     registrationDate : string,
     registrationCode :string,

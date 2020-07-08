@@ -29,7 +29,7 @@ export const UserSchema = new Schema({
     type: String,
     required:false, 
   },
-  lastConection: {
+  lastConnection: {
     type : String
   },
   registrationDate:{
