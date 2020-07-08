@@ -21,11 +21,6 @@ let validRegistrationMethods = {
   message: "{VALUE} is not a valid method"
 };
 export const UserSchema = new Schema<User>({
-  id: {
-    type: Number,
-    require: [true, "EL id es necesario"],
-    default: 0
-  },
   phoneToken:{
     type:String,
     default:"none"
