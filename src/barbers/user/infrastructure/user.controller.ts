@@ -1,5 +1,5 @@
 /* Nest Js dependencies */
-import { Controller,Get,Post,Res,HttpStatus,Body, Query} from '@nestjs/common';
+import { Controller,Get,Post,Res,HttpStatus,Body, Query, Put} from '@nestjs/common';
 //Data Onjects Transfer are all the interfaces to transfer betwen this class en requests
 import { CreateUserDTO } from "../domain/dto/user.dto";
 import { UserPromCodeDTO } from '../domain/dto/user-promcode.dto';
@@ -11,6 +11,7 @@ import { TimeService } from '../../../modules/time/application/time.service';
 import { OrdersService } from '../../orders/application/orders.service';
 /*Interfaces*/
 import { UserPromCodeInterface } from '../domain/interfaces/user-promcode.interface';
+import { User } from '../domain/interfaces/user.interface';
 
 
 @Controller('user')
@@ -312,5 +313,45 @@ export class UserController {
         });
         throw new Error(err);
       });   
+  }
+
+  /*
+    This endpoint is used to modify the last conection of user 
+  */
+  @Put('/lastConnection/update')
+  async updateLastConnection(@Res()res,@Query('phone')userPhone : number){
+    //search an user with this phone
+    const USER : User = await this.userService.getUserByPhone(userPhone);
+    //if exists an user with the phoneUser given
+    if(USER){
+      //update the last conection date
+      this.userService.updateLastConnection(USER._id)
+        .then(user =>{
+          return res.status(HttpStatus.OK).json({
+            response: 2,
+            content: {
+              message : `Propiedad actualizada a ${user.lastConnection}`
+            }
+          });
+        })
+        .catch(err=>{
+          res.status(HttpStatus.BAD_REQUEST).json({
+            response: 1,
+            content: {
+              error : err
+            }
+          });
+          throw new Error(err);
+        })
+    //if no exists an user with the given phone
+    }else{
+      res.status(HttpStatus.BAD_REQUEST).json({
+        response: 1,
+        content: {
+          message : "Ups, no encontramos a un usuario con ese telefono"
+        }
+      });
+      throw new Error("No se encontro un usuario con ese telefono");
+    }
   }
 }

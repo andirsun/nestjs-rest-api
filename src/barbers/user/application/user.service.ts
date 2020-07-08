@@ -94,6 +94,17 @@ export class UserService {
     let users : User[] = await this.userModel.find({updated : {$ne : undefined}},'updated');
     return users
   }
+
+  /*
+    Update Last conection date
+  */
+  async updateLastConnection(idUser : string): Promise<User>{
+    //get the current time from time Module
+    let currentDate : string = this.timeService.getCurrentDate();
+    // Update the propertie last connection and return the last value of user
+    let user : User = await this.userModel.findByIdAndUpdate(idUser,{lastConnection : currentDate},{new: true});
+    return user;
+  }
     
 
 }
