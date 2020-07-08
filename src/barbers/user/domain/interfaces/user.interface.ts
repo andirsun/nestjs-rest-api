@@ -24,5 +24,6 @@ export interface User extends Document {
     status: boolean,
     cards : [Card],
     publicityMethod:string,
+    registrationMethod : string,
     promotionalCodes:[UserPromCodeInterface]
 };
