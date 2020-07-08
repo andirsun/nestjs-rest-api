@@ -29,6 +29,9 @@ export const UserSchema = new Schema({
     type: String,
     required:false, 
   },
+  lastConection: {
+    type : String
+  },
   registrationDate:{
     type : String,
     required : [true, "La fecha de registro es necesaria"]
