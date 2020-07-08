@@ -107,6 +107,7 @@ export class UserController {
         throw new Error(err);
       })
   }
+
   /*
     This endpoint return all users of Timugo Barbers
   */
@@ -129,6 +130,7 @@ export class UserController {
         throw new Error(err);
       })
   }
+
   /*
     this function check if an user is in a order in progress
   */
@@ -162,6 +164,7 @@ export class UserController {
         throw new Error(err);
       })
   }
+
   /*
     this function check if an user has token
   */
@@ -201,7 +204,8 @@ export class UserController {
         });
         throw new Error(err);
       })
- }
+  }
+  
   /*
     This endpoint create an user
   */
