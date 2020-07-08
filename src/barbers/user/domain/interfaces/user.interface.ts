@@ -11,6 +11,7 @@ export interface User extends Document {
     phoneToken:string,
     updated: string,
     name: string,
+    registrationDate : string,
     registrationCode :string,
     phone: number,
     birth: string,
