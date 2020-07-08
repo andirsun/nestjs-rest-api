@@ -8,14 +8,16 @@ import { AddressSchema } from "./address.schema";
 import { CardSchema } from "./card.schema";
 import { NequiSchema } from "./nequi.schema";
 import { UserPromCodeSchema } from "./user-promcode.schema";
+import { User } from "../../domain/interfaces/user.interface";
+//Services 
 
 
-let rolesValidos = {
-    values: ["USER_ROLE", "REFERRED_USER_ROLE"],
-    message: "{VALUE} no es un rol válido"
+let validRoles = {
+  values: ["USER_ROLE", "REFERRED_USER_ROLE"],
+  message: "{VALUE} is not a valid Role"
 };
 
-export const UserSchema = new Schema({
+export const UserSchema = new Schema<User>({
   id: {
       type: Number,
       require: [true, "EL id es necesario"],
@@ -28,6 +30,10 @@ export const UserSchema = new Schema({
   updated: { 
     type: String,
     required:false, 
+  },
+  lastConnection: {
+    type : String,
+    default : ""
   },
   registrationDate:{
     type : String,
@@ -74,7 +80,7 @@ export const UserSchema = new Schema({
   role: {
     type: String,
     default: "USER_ROLE",
-    enum: rolesValidos
+    enum: validRoles
   },
   status: {
     type: Boolean,
