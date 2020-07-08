@@ -11,7 +11,7 @@ import { UserPromCodeSchema } from "./user-promcode.schema";
 
 
 let rolesValidos = {
-    values: ["USER_ROLE", "USER_VIP_ROLE"],
+    values: ["USER_ROLE", "REFERRED_USER_ROLE"],
     message: "{VALUE} no es un rol válido"
 };
 
@@ -28,6 +28,10 @@ export const UserSchema = new Schema({
   updated: { 
     type: String,
     required:false, 
+  },
+  registrationDate:{
+    type : String,
+    required : [true, "La fecha de registro es necesaria"]
   },
   name: {
     type: String,

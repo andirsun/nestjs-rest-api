@@ -4,17 +4,22 @@ import { Injectable } from '@nestjs/common';
 import { Model } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
 /*Require Interface to handle info*/
-import { User } from "../domain/interfaces/user.interfaces";
+import { User } from "../domain/interfaces/user.interface";
 import { UserPromCodeInterface } from '../domain/interfaces/user-promcode.interface';
 //data transfer object
 import { CreateUserDTO } from "../domain/dto/user.dto";
+//services
+import { TimeService } from 'src/modules/time/application/time.service';
 
 
 // This file works to make queries to the databse 
 @Injectable()
 export class UserService {
 
-  constructor(@InjectModel('User') private readonly userModel : Model<User>){}
+  constructor(
+    @InjectModel('User') private readonly userModel : Model<User>,
+    private timeService: TimeService,
+  ){}
   /* Queries */
   /*
     This function return the all the users in the database
@@ -57,8 +62,10 @@ export class UserService {
     CreateUserDto object to works
   */
   async createUser(createUserDTO : CreateUserDTO) : Promise<User>{
-    const user = new this.userModel(createUserDTO);
-    console.log("object");
+    //create the user model with all parameters from interface
+    let user = new this.userModel(createUserDTO);
+    //Add the current date
+    user.registrationDate = this.timeService.getCurrentDate();
     return await user.save();
   }
 

@@ -205,32 +205,7 @@ export class UserController {
         throw new Error(err);
       })
   }
-  
-  /*
-    This endpoint create an user
-  */
-  @Post('/createUser')
-  async createUser(@Res() res, @Body() createUserDTO : CreateUserDTO){
-    await this.userService.createUser(createUserDTO)
-      .then((user)=>{
-        return res.status(HttpStatus.OK).json({
-          response: 2,
-          content: {
-            user
-          }
-        });
-      })
-      .catch((err)=>{
-        res.status(HttpStatus.BAD_REQUEST).json({
-          response: 3,
-          content: {
-            error : err
-          }
-        });
-        throw new Error(err);
-      });   
-  }
-  
+
   @Post('/linkPromCode')
   async linkPromCode(@Res() res, @Body() userPromCodeDTO: UserPromCodeDTO){
     /*Check if the received code exists*/
@@ -311,5 +286,31 @@ export class UserController {
         })
         throw new Error(err);
       })  
-  }	
+  }
+  
+  /*
+    This enpoint create a new user with a phone, email, and name
+  */
+  @Post('/signUp')
+  async signUp(@Res()res, @Body() createUserDTO : CreateUserDTO){
+    
+    this.userService.createUser(createUserDTO)
+      .then((user)=>{
+        return res.status(HttpStatus.OK).json({
+          response: 2,
+          content: {
+            user
+          }
+        });
+      })
+      .catch((err)=>{
+        res.status(HttpStatus.BAD_REQUEST).json({
+          response: 3,
+          content: {
+            error : err
+          }
+        });
+        throw new Error(err);
+      });   
+  }
 }
