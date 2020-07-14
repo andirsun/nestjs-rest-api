@@ -25,7 +25,6 @@ app.get("/getBarbersTop",function(req,res){
       });
     }
     if(response){
-      
       res.status(200).json({
         response: 2,
         content:response
