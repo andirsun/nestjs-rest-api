@@ -845,7 +845,7 @@ app.post("/verificationCode",function(req,res){
   let body = req.body;
   let phone = body.phone;
   let code = body.code.toString();
-  User.findOne({phone:phone,registrationCode:code},function(err,response){
+  User.findOne({phone:phone,registrationCode:code},function(err,user){
     if (err) {
       return res.status(400).json({
         response: 3,
@@ -855,8 +855,7 @@ app.post("/verificationCode",function(req,res){
         } 
       });
     }
-    if(response){
-      let user = response.toJSON();
+    if(user){
       if(!user.name){
         return res.status(200).json({
           response: 2,
@@ -875,7 +874,7 @@ app.post("/verificationCode",function(req,res){
         });
       }
     }else{
-      res.status(400).json({
+      return res.status(400).json({
         response: 1,
         content:"No encontramos al usuario o el codigo no coincide" //1 its because user isnt registered and need to continious with the registration
       });
