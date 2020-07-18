@@ -69,6 +69,48 @@ app.get("/checkUserOrder",function(req,res){
     }
   });
 });
+app.get("/checkOrder",function(req,res){
+  let phoneUser = req.query.phone;
+  User.findOne({phone : phoneUser},(err, user)=>{
+    if (err) {return res.status(400).json({response: 3,content: {error: err,message: "Error al buscar la orden del cliente" }});}
+    if(!user){
+      return res.status(200).json({
+        response: 1,
+        content: {
+          message : "No se encontro al cliente"
+        }
+      }); 
+    }else {
+      temporalOrder.findOne({idClient:user._id,status:true},function(err,response){
+        if (err) {
+          return res.status(400).json({
+            response: 3,
+            content: {
+              error: err,
+              message: "Error al buscar la orden del cliente"
+            }
+          });
+        }
+        if(response){
+          return res.status(200).json({
+            response: 2,
+            content: {
+              order : response
+            }
+          }); 
+        }else{
+          return res.status(200).json({
+            response: 1,
+            content: {
+              message : "El cliente no tiene pedidos en curos"
+            }
+          }); 
+    
+        }
+      });
+    }
+  });
+});
 app.get("/checkTokenUser",function(req,res){
   let phoneUser = req.query.phoneUser;
   User.findOne({phone:phoneUser},function(err,user){
