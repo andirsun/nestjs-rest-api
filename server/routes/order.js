@@ -638,7 +638,7 @@ app.post("/createTemporalOrder",function(req,res){
 app.post("/orders-barbers/new",function(req,res){
   //diferenciar si el metodo de pago es efectivo entonces el pendiente lo pongo en false y creo la orden sin que notifique a los barberos pero a nosotros si
   let body = req.body;
-  let idClient = body.idClient; //this id is the mongoDB id _id 
+  let phoneClient = body.phone; 
   
   temporalOrder.find(function (err, temporalOrderDB) {
     if (err) {return res.status(400).json({response: 3,content: err});}
@@ -651,7 +651,7 @@ app.post("/orders-barbers/new",function(req,res){
     }
    
       
-    user.findOne({_id:idClient},function(err,client){
+    user.findOne({phone:phoneClient},function(err,client){
       //searching the user to have his name
       if (err) {//Handling error in qeury
         return res.status(500).json({
@@ -689,14 +689,14 @@ app.post("/orders-barbers/new",function(req,res){
         let order = new temporalOrder({//creating the order to save in database
           id,
           pending : pending,
-          idClient : body.idClient,
-          idBarber : body.idBarber || 0,
+          idClient : client._id,
+          idBarber : 0,
           nameClient: client.name,
           address : address,
           //newAddress : address, //new Address Format
           dateBeginOrder :  moment().tz('America/Bogota').format("YYYY-MM-DD"),
           hourStart :  moment().tz('America/Bogota').format("HH:mm"),
-          status : body.status,
+          status : true,
           services,
           price:price,
           updated: moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")
@@ -705,7 +705,7 @@ app.post("/orders-barbers/new",function(req,res){
         order.save((err, response) => {
           if (err) return res.status(400).json({response: 1,content:{err,message:"Error al guardar la orden, contacta con el administrador"}});
           if (response) {
-            let orderMessage = "Nombre: "+response.nameClient
+            let orderMessage = "Nombre: "+client.name
                             +",celular: "+client.phone
                             +",dir: "+ response.address 
                             + ", Valor: " + response.price ;
