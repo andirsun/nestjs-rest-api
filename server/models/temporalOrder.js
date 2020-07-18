@@ -35,12 +35,11 @@ let temporalOrder = new Schema({
     required:true, 
   },
   idClient: {
-    type: Number,
+    type: String,
     required: [true, "El id del cliente es necesario"]
   },
   nameClient:{
     type: String,
-    required:[true,"EL nombre del cliente es necesario"]
   },
   idBarber: {
     type: Number,
@@ -61,7 +60,6 @@ let temporalOrder = new Schema({
   },
   city:{
     type: String,
-    required: [true, "la ciudad es necesaria"]
   },
   dateBeginOrder: {
     type: String,
