@@ -906,7 +906,7 @@ app.post("/finishOrCancellOrder",function(req,res){
   let idOrder = parseInt(body.idOrder);
   let comment = body.comment || "Sin comentarios";
   let status = body.status; /* "Finished | Cancelled" */
-  temporalOrder.findOneAndUpdate({id:idOrder,status:true},{status:false,updated: moment().tz('America/Bogota').format("YYYY-MM-DD HH:mm")},function(err,temporalOrderDB){
+  temporalOrder.findOneAndUpdate({id:idOrder,status:true},{status:false},function(err,temporalOrderDB){
     if (err) {
       return res.status(500).json({
         response: 1,
@@ -930,19 +930,6 @@ app.post("/finishOrCancellOrder",function(req,res){
             console.log("se sumaron los puntos al barbero");
           }else{
             console.log("No se le sumaron los puntos al barbero");
-          }
-        });
-        user.findOneAndUpdate({id:tempOrder.idClient},{$inc:{points:50}},function(err,userDb){//updating points to a barber
-          if (err) {
-            return res.status(500).json({
-              response: 3,
-              content: err
-            });
-          }
-          if(userDb){
-            console.log("Se sumaron los punto al usuario");
-          }else{
-            console.log("No se le sumaron los puntos al usuario");
           }
         });
       }
