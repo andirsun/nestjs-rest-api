@@ -25,6 +25,33 @@ export class UserController {
     private ordersService : OrdersService
   ){}
   /*
+		This endpoint return all users
+	*/
+  @Get('/get/all')
+  async getAll(@Res() res){
+    //Check all user codes
+    this.userService.getUsers()
+      .then( (users) => {
+        //Check if the user has codes
+        return res.status(HttpStatus.OK).json({
+          response: 2,
+          content:{
+            users
+          }
+        })
+      })
+      .catch ( (err) => {
+        res.status(HttpStatus.BAD_REQUEST).json({
+          response: 3,
+          content : {
+            message: 'Ups! Ha ocurrido un error'
+          }
+        })
+        throw new Error(err);
+      })
+  }
+
+  /*
 		This endpoint return all valid user's prom codes
 	*/
   @Get('/getUserPromCodes')
