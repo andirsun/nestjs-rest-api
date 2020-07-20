@@ -25,7 +25,7 @@ export class UserController {
     private ordersService : OrdersService
   ){}
   /*
-		This endpoint return all users registered in database
+		This endpoint return all users registered in db
 	*/
   @Get('/get/all')
   async getAll(@Res() res){
