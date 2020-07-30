@@ -1,3 +1,7 @@
+/*
+  This file is only readed by Firebase Cloud Functions
+*/
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ExpressAdapter } from "@nestjs/platform-express";
@@ -16,12 +20,6 @@ const createNestServer = async (expressInstance ): Promise<void> =>{
   await app.init();
 }
 
-// createNestServer(server)
-
-//   .then(v => console.log('Nest Ready'))
-//   .catch(err => console.log(`Nest Error ${err}`));
-
-//export const api = functions.https.onRequest(server);
 export const api = functions.https.onRequest(async (request, response) => {
     await createNestServer(server);
     server(request, response);
