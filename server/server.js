@@ -50,6 +50,11 @@ process.on("unhandledRejection", (reason, promise) => {
   // Recommended: send the information to sentry.io
   // or whatever crash reporting service you use
 });
-server.listen(process.env.PORT, () => {
-  console.log("Escuchando puerto: ", process.env.PORT);
+
+app.get("/",function(req,res){
+  return res.status(400).send("Bienvenido al backend V1 de Timugo");
 });
+
+module.exports ={
+  app
+}
