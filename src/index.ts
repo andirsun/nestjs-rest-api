@@ -11,7 +11,7 @@ import * as express from 'express';
 
 const server = express();
 
-const createNestServer = async (expressInstance ): Promise<void> =>{
+const createNestServer = async (expressInstance : any): Promise<void> =>{
   const app =await NestFactory.create(
     AppModule,
     new ExpressAdapter(expressInstance)
@@ -20,7 +20,7 @@ const createNestServer = async (expressInstance ): Promise<void> =>{
   await app.init();
 }
 
-export const api = functions.https.onRequest(async (request, response) => {
+export const apiv2 = functions.https.onRequest(async (request, response) => {
     await createNestServer(server);
     server(request, response);
   });
