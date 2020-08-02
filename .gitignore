@@ -2,6 +2,4 @@ node_modules/
 server/data/data.json
 package-lock.json
 dist/
-
-
 .DS_Store
