@@ -1,5 +1,5 @@
 {
   "projects": {
-    "default": "timugo-dashboard"
+    "default": "timugo-api"
   }
 }
